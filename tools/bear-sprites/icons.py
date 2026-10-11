@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """アイコンの1枚絵(サイズ別の絵が並んだもの)から、拡張のアイコン extension/icons/icon-{16,32,48,128}.png を作る。
 
-    python3 -I tools/bear-sprites/icons.py docs/style/ref/icon-sheet.png [--sheet out.png]
+    python3 -I tools/bear-sprites/icons.py docs/style/ref/icon-sheet.png [--sheet out.png] [--store docs/store/icon-128.png]
 
 - 小さいサイズほど絵を単純にしてある(顔が大きく、線が太い)ので、サイズごとにその大きさ用の絵を使う
 - 箱(TILES)は 1536×1024 の絵で、タイル(生成りの角丸)を含む広めの範囲。中でタイルの外形を探して切り抜く
 - タイルの外(角の外側)は透明にする。角丸は絵の柔らかい縁ではなく、ここで描き直した滑らかな形
 - 128px はストアの勧めに合わせて周りに少し余白を取る(タイルを 112px にして真ん中に置く)
+- --store はストアの掲載用のアイコン(128px の中に 96px のタイル・周り 16px は透明。ストアの画像の決まり)
 """
 
 import argparse
@@ -82,6 +83,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('src')
     ap.add_argument('--sheet', help='確認用の一覧画像の書き出し先')
+    ap.add_argument('--store', help='ストアの掲載用のアイコン(96px のタイル)の書き出し先')
     args = ap.parse_args()
     sheet = Image.open(args.src)
     done = []
@@ -92,6 +94,9 @@ def main():
         print(f'icon-{size}.png')
     if args.sheet:
         preview(done, args.sheet)
+    if args.store:
+        make(sheet, TILES[128][0], 96, 128).save(args.store, optimize=True)
+        print(args.store)
 
 
 if __name__ == '__main__':
