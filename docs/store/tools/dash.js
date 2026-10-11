@@ -7,7 +7,7 @@ const STUB = `<script>
   window.chrome = {
     runtime: {
       sendMessage: async (m) => ({ ok: true, theta: 3.2, goal: m.goal ?? null }),
-      getManifest: () => ({ version: '0.24.0', update_url: 'https://clients2.google.com/service/update2/crx' }),
+      getManifest: () => ({ version: '${require(EXT + '/manifest.json').version}', update_url: 'https://clients2.google.com/service/update2/crx' }),
       getURL: (p) => location.origin + '/' + p,
     },
     storage: { local: { get: async () => ({}), set: async () => {} } },

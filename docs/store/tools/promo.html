@@ -1,0 +1,141 @@
+<!doctype html>
+<!--
+  ストアのタイル(小さいプロモーション タイル 440×280・マーキー 1400×560)。絵は拡張の中のくまと、よみりんの話のコマ。
+  色と字は docs/style.md(静の紙と茶のインク、動のパステルは虹の線と光の筋にだけ)。撮り方は README.md。
+    ?size=small   … 440×280
+    ?size=marquee … 1400×560
+-->
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>よみりん — タイル</title>
+    <style>
+      :root {
+        --bg: #f6f0e6;
+        --ink: #4f3a2c;
+        --muted: rgba(79, 58, 44, 0.68);
+        --rainbow: linear-gradient(#f7a1b4 0 16.6%, #ffc98a 0 33.3%, #ffe27a 0 50%, #8fdcc0 0 66.6%, #94c6f0 0 83.3%, #c4b2fb 0);
+      }
+      * {
+        margin: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        overflow: hidden;
+      }
+      body {
+        position: relative;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Hiragino Maru Gothic ProN', 'Zen Maru Gothic', 'M PLUS Rounded 1c', 'Hiragino Sans', sans-serif;
+      }
+      /* ごく薄い紙のノイズ(不透明度 .03) */
+      body::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        opacity: 0.03;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+        pointer-events: none;
+      }
+      img {
+        position: absolute;
+        display: block;
+      }
+      .title {
+        position: absolute;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        line-height: 1;
+      }
+      .rainbow {
+        position: absolute;
+        background: var(--rainbow);
+        border-radius: 999px;
+      }
+      .tag {
+        position: absolute;
+        font-weight: 500;
+        line-height: 1.55;
+      }
+      /* 光の筋(フィーバーの名残り)。パステルの円錐グラデーションを淡く */
+      .rays {
+        position: absolute;
+        border-radius: 50%;
+        background: repeating-conic-gradient(from 8deg, #f7a1b4 0 7deg, transparent 7deg 30deg, #ffe27a 30deg 37deg, transparent 37deg 60deg, #94c6f0 60deg 67deg, transparent 67deg 90deg);
+        -webkit-mask: radial-gradient(closest-side, #000 20%, transparent);
+        mask: radial-gradient(closest-side, #000 20%, transparent);
+        opacity: 0.32;
+      }
+
+      /* 小さいプロモーション タイル 440×280 */
+      .small {
+        width: 440px;
+        height: 280px;
+      }
+      .small .title {
+        left: 32px;
+        top: 92px;
+        font-size: 46px;
+      }
+      .small .rainbow {
+        left: 34px;
+        top: 152px;
+        width: 140px;
+        height: 8px;
+      }
+      .small .tag {
+        left: 32px;
+        top: 172px;
+        font-size: 15px;
+        color: var(--muted);
+      }
+
+      /* マーキー 1400×560 */
+      .marquee {
+        width: 1400px;
+        height: 560px;
+      }
+      .marquee .title {
+        left: 110px;
+        top: 168px;
+        font-size: 120px;
+      }
+      .marquee .rainbow {
+        left: 114px;
+        top: 320px;
+        width: 330px;
+        height: 18px;
+      }
+      .marquee .tag {
+        left: 110px;
+        top: 366px;
+        font-size: 30px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      const A = '../../../extension/assets/';
+      const size = new URLSearchParams(location.search).get('size') === 'marquee' ? 'marquee' : 'small';
+      document.body.className = size;
+      const add = (html) => document.body.insertAdjacentHTML('beforeend', html);
+      const img = (src, style) => add(`<img src="${A}${src}.webp" alt="" style="${style}">`);
+      if (size === 'small') {
+        img('bear/read', 'right: 18px; bottom: 44px; height: 130px;');
+        add('<div class="title">よみりん</div><div class="rainbow"></div><div class="tag">だんだん外れていく、<br>読書の補助輪</div>');
+      } else {
+        // 絵はどれも元の大きさの 1.2 倍(大きく伸ばすとぼやける。くまの大きさもそろう)
+        const k = 1.2;
+        add('<div class="rays" style="left: 650px; top: -200px; width: 960px; height: 960px;"></div>');
+        img('story/balloons-3', `left: 1150px; top: 46px; height: ${210 * k}px;`);
+        img('bear/read', `left: 760px; bottom: 80px; height: ${180 * k}px;`);
+        img('story/pancakes-5', `left: 1080px; bottom: 80px; height: ${198 * k}px;`);
+        add('<div class="title">よみりん</div><div class="rainbow"></div><div class="tag">Google Play ブックスの読書に、<br>だんだん外れていく補助輪。</div>');
+      }
+      Promise.all([...document.images].map((i) => i.decode().catch(() => {}))).then(() => (document.title = 'ready'));
+    </script>
+  </body>
+</html>
