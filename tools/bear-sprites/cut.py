@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'extension' / 'assets' / 'bear'
 REF = (1536, 1024)
 
-# id: (x0, y0, x1, y1) か ((x0, y0, x1, y1), {'keep': 'all'})。ポーズ集の見出しの名前を添える。
+# id: (x0, y0, x1, y1) か ((x0, y0, x1, y1), {'keep': 'all'} | {'matte': 'color'})。ポーズ集の見出しの名前を添える。
 # keep='all' は離れた部品(電球・虹など)も残す。ふだんは一番大きい塊とそれに触れるものだけ
 POSES = {
     # 基本の姿
@@ -44,7 +44,7 @@ POSES = {
     'tower': (1272, 286, 1388, 390),  # 積読の上
     'turn': (1404, 282, 1504, 384),  # 振り向く
     # ちいさなリアクション
-    'hyo': (52, 494, 124, 552),  # ひょっ(左の縁から)
+    'hyo': ((52, 494, 124, 552), {'matte': 'color'}),  # ひょっ(左の縁から)。壁の板は AI が落とすので色の距離で
     'ear': (140, 462, 238, 552),  # 耳ぴこ(左の縁から)
     'chira': (236, 484, 346, 552),  # ちらっ
     'idea': ((350, 450, 464, 556), {'keep': 'all'}),  # ひらめき(電球ごと)
@@ -57,7 +57,7 @@ POSES = {
     'jump': (276, 632, 400, 756),  # ジャンプ開始
     'launch': (404, 648, 522, 756),  # 射出
     'spin': (488, 612, 694, 774),  # 空中で回転(虹に乗る)
-    'tumble': (696, 636, 866, 776),  # くるくる
+    'tumble': ((696, 636, 866, 776), {'matte': 'color'}),  # くるくる。周りのきらきらごと残すので色の距離で
     'fall': (1124, 664, 1206, 745),  # 落下
     'land': (1236, 676, 1376, 766),  # 着地
     'back': (1386, 662, 1514, 766),  # 元に戻る
@@ -85,8 +85,23 @@ TOL = 30  # 地とみなす色の距離
 EDGE = 110  # 縁の画素の不透明度: 地からの距離 / EDGE
 
 
-def cut(sheet: np.ndarray, box, scale, keep_all=False):
+def ai_alpha(rgb: np.ndarray) -> np.ndarray:
+    """AI の切り抜き(rembg・isnet-anime)で、絵の不透明度 0〜1 を返す。色の距離より縁がきれいで、足元の影を拾わない。"""
+    global _SESSION
+    from rembg import new_session, remove
+
+    if _SESSION is None:
+        _SESSION = new_session('isnet-anime')
+    out = remove(Image.fromarray(rgb.round().astype(np.uint8), 'RGB'), session=_SESSION)
+    return np.asarray(out)[..., 3].astype(np.float32) / 255
+
+
+_SESSION = None
+
+
+def cut(sheet: np.ndarray, box, scale, keep_all=False, matte='ai'):
     x0, y0, x1, y1 = (round(v * s) for v, s in zip(box, scale * 2))
+    k = max(1, round(scale[0]))  # 1536 幅の絵に対する倍率(4倍のシートなら 4)
     rgb = sheet[y0:y1, x0:x1, :3].astype(np.float32)
     border = np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]])
     bg = np.median(border, axis=0)
@@ -106,7 +121,7 @@ def cut(sheet: np.ndarray, box, scale, keep_all=False):
     sizes = ndimage.sum(fg, lab, range(1, n + 1))
     main = int(np.argmax(sizes)) + 1
     keep = lab == main
-    near_main = ndimage.binary_dilation(keep, iterations=3)
+    near_main = ndimage.binary_dilation(keep, iterations=3 * k)
     for i, size in enumerate(sizes, start=1):
         if i == main:
             continue
@@ -117,14 +132,23 @@ def cut(sheet: np.ndarray, box, scale, keep_all=False):
     keep = ndimage.binary_fill_holes(keep)
 
     # 縁は地との混ざり具合で半透明に。色は地を差し引いて戻す(生成りのふちを残さない)
-    band = keep & ndimage.binary_dilation(~keep, iterations=2)
+    band = keep & ndimage.binary_dilation(~keep, iterations=2 * k)
     alpha = keep.astype(np.float32)
     alpha[band] = np.clip(dist[band] / EDGE, 0, 1)
+    if matte == 'ai' and not keep_all:
+        # 形は AI の切り抜きに任せ、色の距離で残した塊の近くだけに限る(隣のくま・文字を拾わない)。
+        # 離れた飾り(keep='all')は AI が落とすので、そのポーズは色の距離のまま
+        ai = ai_alpha(rgb) * ndimage.binary_dilation(keep, iterations=4 * k)
+        if ai.max() >= 0.5:
+            alpha = ai
+            band = (alpha > 0) & (alpha < 1)
+        else:
+            print(f'  AI が絵を見つけられなかった {box}: 色の距離で切る')
     a = np.maximum(alpha, 1e-3)[..., None]
     color = np.where(band[..., None], np.clip(bg + (rgb - bg) / a, 0, 255), rgb)
 
     ys, xs = np.nonzero(alpha > 0.02)
-    pad = 4
+    pad = 4 * k
     t, b = max(0, ys.min() - pad), min(alpha.shape[0], ys.max() + pad + 1)
     l, r = max(0, xs.min() - pad), min(alpha.shape[1], xs.max() + pad + 1)
     out = np.dstack([color[t:b, l:r], alpha[t:b, l:r] * 255]).round().astype(np.uint8)
@@ -154,6 +178,8 @@ def main():
     ap.add_argument('src')
     ap.add_argument('--sheet', help='確認用の一覧画像の書き出し先')
     ap.add_argument('--only', nargs='*')
+    ap.add_argument('--matte', choices=['ai', 'color'], default='ai', help='切り抜き: AI(rembg)か 色の距離')
+    ap.add_argument('--scale', type=float, default=1.0, help='書き出す絵の倍率(4倍のシートなら 1 のままで 1体 400px ほど)')
     args = ap.parse_args()
     img = Image.open(args.src).convert('RGBA')
     sheet = np.asarray(img)
@@ -164,10 +190,11 @@ def main():
         if args.only and name not in args.only:
             continue
         box, opts = spec if isinstance(spec[0], tuple) else (spec, {})
-        im = cut(sheet, box, scale, keep_all=opts.get('keep') == 'all')
-        # 2倍に引き伸ばしておく(ブラウザの拡大より輪郭がにじみにくい)
-        im = im.resize((im.width * 2, im.height * 2), Image.LANCZOS)
-        im.save(OUT / f'{name}.webp', 'WEBP', quality=88, method=6)
+        im = cut(sheet, box, scale, keep_all=opts.get('keep') == 'all', matte=opts.get('matte', args.matte))
+        if args.scale != 1:
+            im = im.resize((round(im.width * args.scale), round(im.height * args.scale)), Image.LANCZOS)
+        # 色がにじまないよう高品質で。exact で透明な所の色も残す(縁に地の色が戻らない)
+        im.save(OUT / f'{name}.webp', 'WEBP', quality=95, method=6, exact=True)
         done.append((name, im))
         print(f'{name:12s} {im.width}x{im.height}')
     if args.sheet:

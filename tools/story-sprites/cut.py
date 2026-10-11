@@ -48,6 +48,9 @@ STORIES = [
     ('boat', [1111, 1214, 1342], set(), 'clip'),  # 18 紙の船
 ]
 
+K = 1  # 1536×1024 の絵に対する倍率(4倍に拡大したシートなら 4。main で決める)
+_SESSION = None
+
 PAGE_TOL = 6  # 紙の地とみなす色の距離(パネル探し)
 FG = 22  # パネルの地からこれだけ離れた色を絵とみなす
 SOFT = 70  # 線の外の淡いにじみは、地からの距離 / SOFT の不透明度にする
@@ -76,10 +79,10 @@ def panels(img):
     """話のパネルの矩形 (x0, y0, x1, y1) を、左上から右へ・上から下へ。"""
     page = img[5, 5]
     d = np.sqrt(((img - page) ** 2).sum(axis=2))
-    rows = [r for r in runs((d < PAGE_TOL).mean(axis=1) < 0.6) if r[1] - r[0] > 100]
+    rows = [r for r in runs((d < PAGE_TOL).mean(axis=1) < 0.6) if r[1] - r[0] > 100 * K]
     out = []
     for y0, y1 in rows:
-        cols = [c for c in runs((d[y0 + 10 : y1 - 10] < PAGE_TOL).mean(axis=0) < 0.6) if c[1] - c[0] > 200]
+        cols = [c for c in runs((d[y0 + 10 * K : y1 - 10 * K] < PAGE_TOL).mean(axis=0) < 0.6) if c[1] - c[0] > 200 * K]
         out += [(x0, y0, x1, y1) for x0, x1 in cols]
     return out
 
@@ -89,15 +92,32 @@ def ground(rgb):
     med = np.median(rgb.reshape(-1, 3), axis=0)
     w = (np.sqrt(((rgb - med) ** 2).sum(axis=2)) < 40).astype(np.float32)
     for _ in range(3):
-        num = np.stack([ndimage.gaussian_filter(rgb[..., k] * w, 12) for k in range(3)], axis=-1)
-        den = ndimage.gaussian_filter(w, 12)[..., None] + 1e-6
+        num = np.stack([ndimage.gaussian_filter(rgb[..., k] * w, 12 * K) for k in range(3)], axis=-1)
+        den = ndimage.gaussian_filter(w, 12 * K)[..., None] + 1e-6
         bg = num / den
         dist = np.sqrt(((rgb - bg) ** 2).sum(axis=2))
         w = (dist < FG * 0.6).astype(np.float32)
     return bg, dist
 
 
-def cut_frame(rgb, bg, dist, fg, keep_all, feather):
+def ai_alpha(rgb, where):
+    """AI の切り抜き(rembg・isnet-anime)。where(主役の塊の周り)の範囲だけを見せて、不透明度 0〜1 を返す。"""
+    global _SESSION
+    from rembg import new_session, remove
+
+    if _SESSION is None:
+        _SESSION = new_session('isnet-anime')
+    ys, xs = np.nonzero(where)
+    pad = 8 * K
+    t, b = max(0, ys.min() - pad), min(where.shape[0], ys.max() + pad + 1)
+    l, r = max(0, xs.min() - pad), min(where.shape[1], xs.max() + pad + 1)
+    crop = Image.fromarray(rgb[t:b, l:r].round().astype(np.uint8), 'RGB')
+    out = np.zeros(where.shape, np.float32)
+    out[t:b, l:r] = np.asarray(remove(crop, session=_SESSION))[..., 3] / 255
+    return out * where
+
+
+def cut_frame(rgb, bg, dist, fg, keep_all, feather, matte='ai'):
     """コマ(区切りの間)の絵を切り抜いて RGBA に。feather は (左, 右) の端でにじみをぼかすか。"""
     lab, n = ndimage.label(fg)
     if n == 0:
@@ -105,7 +125,7 @@ def cut_frame(rgb, bg, dist, fg, keep_all, feather):
     sizes = ndimage.sum(fg, lab, range(1, n + 1))
     main = int(np.argmax(sizes)) + 1
     keep = lab == main
-    near_main = ndimage.binary_dilation(keep, iterations=3)
+    near_main = ndimage.binary_dilation(keep, iterations=3 * K)
     for i, size in enumerate(sizes, start=1):
         if i == main:
             continue
@@ -118,47 +138,59 @@ def cut_frame(rgb, bg, dist, fg, keep_all, feather):
 
     # 線の内側(穴)は不透明。線の外の淡い所(にじみ・影)は地からの距離で半透明にし、色は地を差し引いて戻す
     alpha = np.where(holes, 1.0, np.clip(dist / SOFT, 0, 1)) * filled
+    if matte == 'ai':
+        # 主役の塊(とそれに触れる塊)の形は AI に任せる(縁がきれいで、影を拾わない)。
+        # 離れた部品(keep)は AI が落とすので、色の距離の切り抜きをそのまま使う
+        body = ndimage.binary_fill_holes(lab == main) | (near_main & filled)
+        zone = ndimage.binary_dilation(body, iterations=4 * K)
+        ai = ai_alpha(rgb, zone)
+        if ai.max() >= 0.5:
+            alpha = np.where(zone, ai, alpha)
+        else:
+            print('  AI が絵を見つけられなかったコマ: 色の距離で切る')
     w = alpha.shape[1]
     ramp = np.ones(w, np.float32)
     x = np.arange(w, dtype=np.float32)
     if feather[0]:
-        ramp = np.minimum(ramp, np.clip(x / FEATHER, 0, 1))
+        ramp = np.minimum(ramp, np.clip(x / (FEATHER * K), 0, 1))
     if feather[1]:
-        ramp = np.minimum(ramp, np.clip((w - 1 - x) / FEATHER, 0, 1))
+        ramp = np.minimum(ramp, np.clip((w - 1 - x) / (FEATHER * K), 0, 1))
     alpha = alpha * ramp[None, :]
     a = np.maximum(alpha, 1e-3)[..., None]
     soft = (alpha < 1)[..., None]
     color = np.where(soft, np.clip(bg + (rgb - bg) / a, 0, 255), rgb)
 
     ys, xs = np.nonzero(alpha > 0.03)
-    pad = 3
+    pad = 3 * K
     t, b = max(0, ys.min() - pad), min(alpha.shape[0], ys.max() + pad + 1)
     l, r = max(0, xs.min() - pad), min(alpha.shape[1], xs.max() + pad + 1)
     out = np.dstack([color[t:b, l:r], alpha[t:b, l:r] * 255]).round().astype(np.uint8)
     return Image.fromarray(out, 'RGBA')
 
 
-def cut_story(img, box, cuts, keep, mode=''):
+def cut_story(img, box, cuts, keep, mode='', matte='ai'):
     x0, y0, x1, y1 = box
-    rgb = img[y0 + INSET : y1 - INSET, x0 + INSET : x1 - INSET]
+    inset = INSET * K
+    rgb = img[y0 + inset : y1 - inset, x0 + inset : x1 - inset]
     bg, dist = ground(rgb)
     fg = dist > FG
     lab, n = ndimage.label(fg)
     objs = ndimage.find_objects(lab)
     # 見出し(番号と話の名前): 左上の四角に収まる塊だけ捨てる(はみ出す風船などは残す)
     for i, (ys, xs_) in enumerate(objs, start=1):
-        if ys.stop <= TITLE[1] and xs_.stop <= TITLE[0]:
+        if ys.stop <= TITLE[1] * K and xs_.stop <= TITLE[0] * K:
             fg[lab == i] = False
-    arrows = [c for c in cuts if isinstance(c, tuple)]
-    xs = [(c[0] if isinstance(c, tuple) else c) - x0 - INSET for c in cuts]
+    # 区切りの座標は 1536 幅の絵で測ったもの。拡大したシートでは K 倍
+    arrows = [(c[0] * K, c[1] * K) for c in cuts if isinstance(c, tuple)]
+    xs = [(c[0] if isinstance(c, tuple) else c) * K - x0 - inset for c in cuts]
     # → を捨てる: 区切りの線にかかる小さな塊。絵の影とつながった → は、表に書いた高さの周りだけ消す
     for x in xs:
-        for i in np.unique(lab[:, max(0, x - 7) : x + 7]):
-            if i and (lab == i).sum() <= ARROW:
+        for i in np.unique(lab[:, max(0, x - 7 * K) : x + 7 * K]):
+            if i and (lab == i).sum() <= ARROW * K * K:
                 fg[lab == i] = False
     for x, y in arrows:
-        lx, ly = x - x0 - INSET, y - y0 - INSET
-        fg[max(0, ly - 7) : ly + 7, max(0, lx - 6) : lx + 6] = False
+        lx, ly = x - x0 - inset, y - y0 - inset
+        fg[max(0, ly - 7 * K) : ly + 7 * K, max(0, lx - 6 * K) : lx + 6 * K] = False
     edges = [0, *xs, rgb.shape[1]]
     if mode != 'clip':
         # 塊ごとに、真ん中のある側のコマへ
@@ -175,7 +207,7 @@ def cut_story(img, box, cuts, keep, mode=''):
             sl = np.s_[:, :]
             part = np.isin(lab, np.nonzero(side == k)[0] + 1)
             feather = (False, False)
-        im = cut_frame(rgb[sl], bg[sl], dist[sl], part, k + 1 in keep, feather)
+        im = cut_frame(rgb[sl], bg[sl], dist[sl], part, k + 1 in keep, feather, matte)
         if im is None:
             raise SystemExit(f'空のコマ: {box} の {k + 1}コマ目')
         frames.append(im)
@@ -202,10 +234,13 @@ def main():
     ap.add_argument('src')
     ap.add_argument('--sheet', help='確認用の一覧画像の書き出し先')
     ap.add_argument('--only', nargs='*')
+    ap.add_argument('--matte', choices=['ai', 'color'], default='ai', help='切り抜き: AI(rembg)か 色の距離')
     args = ap.parse_args()
     pil = Image.open(args.src).convert('RGB')
-    if pil.size != REF:
-        raise SystemExit(f'絵の大きさが {REF} ではない: {pil.size}')
+    global K
+    K = pil.width // REF[0]
+    if K < 1 or pil.size != (REF[0] * K, REF[1] * K):
+        raise SystemExit(f'絵の大きさが {REF} の整数倍ではない: {pil.size}')
     img = np.asarray(pil).astype(np.float32)
     boxes = panels(img)
     if len(boxes) != len(STORIES):
@@ -215,14 +250,13 @@ def main():
     for (name, cuts, keep, *mode), box in zip(STORIES, boxes):
         if args.only and name not in args.only:
             continue
-        frames = cut_story(img, box, cuts, keep, *mode)
+        frames = cut_story(img, box, cuts, keep, *(mode or ['']), args.matte)
         for old in OUT.glob(f'{name}-*.webp'):
             old.unlink()
         for k, im in enumerate(frames, start=1):
-            # 2倍に引き伸ばしておく(ブラウザの拡大より輪郭がにじみにくい)
-            big = im.resize((im.width * 2, im.height * 2), Image.LANCZOS)
-            big.save(OUT / f'{name}-{k}.webp', 'WEBP', quality=88, method=6)
-        print(f'{name:9s} {len(frames)}コマ ' + ' '.join(f'{im.width * 2}x{im.height * 2}' for im in frames))
+            # 色がにじまないよう高品質で。exact で透明な所の色も残す(縁に地の色が戻らない)
+            im.save(OUT / f'{name}-{k}.webp', 'WEBP', quality=95, method=6, exact=True)
+        print(f'{name:9s} {len(frames)}コマ ' + ' '.join(f'{im.width}x{im.height}' for im in frames))
         rows.append((name, frames))
     if args.sheet:
         contact(rows, args.sheet)
