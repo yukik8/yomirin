@@ -26,12 +26,14 @@ body:
     validations:
       required: true
   - type: textarea
-    id: method
+    id: design
     attributes:
-      label: 方法
-      description: 使うもの・時間・条件
+      label: 設計
+      description: 実験の仕組み(道具・測る信号の定義・記録の形)・使うもの・時間・条件。docs/ に別の文書を作らない
+    validations:
+      required: true
   - type: textarea
     id: result
     attributes:
       label: 結果
-      description: 測ったら書く。判定と、docs/design.md に反映すること
+      description: 測ったら書く。判定と、関係する issue の設計に反映すること

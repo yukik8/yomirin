@@ -39,6 +39,11 @@ body:
         - サーバ
     validations:
       required: true
+  - type: textarea
+    id: design
+    attributes:
+      label: 原因と直し方の設計
+      description: 分かったら書き、直す前に必ず埋める。原因・直し方(どこをどう変えるか)・同じことが起きないための仕組み・関係する不変条件
   - type: input
     id: env
     attributes:
