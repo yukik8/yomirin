@@ -2,4 +2,4 @@ blank_issues_enabled: true
 contact_links:
   - name: 設計と不変条件(docs/design.md)
     url: https://github.com/yukik8/yomirin/blob/main/docs/design.md
-    about: 決めたことはここに書く。issue は「いま何をしているか」の置き場
+    about: いまの仕組みと不変条件。これから作るものの設計は issue に書き、作り終えた PR でここへ移す

@@ -31,7 +31,7 @@ Closes #
 
 文書:
 
-- [ ] docs/design.md(決めたこと・現物の説明)/ 変更なし
+- [ ] docs/design.md(issue の設計を、できあがった仕組みの説明として移す)/ 変更なし
 - [ ] docs/style.md(見た目・言葉を変えたとき)
 - [ ] PRIVACY.md / docs/release.md(外へ送るもの・権限を変えたとき)
 - [ ] manifest.json の version

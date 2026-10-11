@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',sans-serif">
+<title>よみりんの仕組み(プレゼン用)</title>
+<defs>
+<marker id="a-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="22" markerHeight="22" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#534ab7"/></marker>
+<marker id="a-call" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="17" markerHeight="17" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3d3d3a"/></marker>
+<marker id="a-egress" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="20" markerHeight="20" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/></marker>
+</defs>
+<rect width="1920" height="1080" fill="#ffffff"/>
+<text x="40" y="82" font-size="46" font-weight="700" fill="#2c2c2a" text-anchor="start">よみりん — 読書の補助を、本人が気づかない速さで 0 へ</text>
+<text x="40" y="130" font-size="25" font-weight="400" fill="#5f5e5a" text-anchor="start">Google Play ブックス専用の Chrome 拡張。動かす数字は、補助の量 θ(0〜8)ひとつだけ</text>
+<rect x="40" y="170" width="1490" height="880" rx="12" fill="#fcfcfb" stroke="#0f6e56" stroke-width="2.4"/>
+<text x="62" y="210" font-size="25" font-weight="700" fill="#2c2c2a" text-anchor="start">利用者の Chrome — 本文と読書の記録は、ここから出ない</text>
+<rect x="62" y="235" width="366" height="555" rx="12" fill="#ffffff" stroke="#8fbfae" stroke-width="1.4"/>
+<text x="82" y="272" font-size="24" font-weight="700" fill="#2c2c2a" text-anchor="start">拡張ページ</text>
+<rect x="82" y="295" width="326" height="115" rx="10" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+<text x="245.0" y="345" font-size="30" font-weight="700" fill="#2c2c2a" text-anchor="middle">ポップアップ</text>
+<text x="245.0" y="389" font-size="23" font-weight="400" fill="#2c2c2a" text-anchor="middle">読む / 終える</text>
+<rect x="82" y="435" width="326" height="115" rx="10" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+<text x="245.0" y="485" font-size="30" font-weight="700" fill="#2c2c2a" text-anchor="middle">オンボーディング</text>
+<text x="245.0" y="529" font-size="22" font-weight="400" fill="#2c2c2a" text-anchor="middle">4問で θ の初期値を決める</text>
+<rect x="82" y="595" width="326" height="170" rx="10" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+<text x="245.0" y="655" font-size="30" font-weight="700" fill="#2c2c2a" text-anchor="middle">ダッシュボード</text>
+<text x="245.0" y="699" font-size="23" font-weight="400" fill="#2c2c2a" text-anchor="middle">本棚・読んだ区間</text>
+<text x="245.0" y="735" font-size="23" font-weight="400" fill="#2c2c2a" text-anchor="middle">補助なしで読めた時間</text>
+<rect x="248.0" y="578" width="150.0" height="34" rx="17" fill="#f1efe8" stroke="#5f5e5a" stroke-width="1.6"/>
+<text x="323.0" y="602" font-size="20" font-weight="700" fill="#2c2c2a" text-anchor="middle">記録 — 残る</text>
+<path d="M82,855 V1012 A163,18 0 0 0 408,1012 V855" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+<ellipse cx="245" cy="855" rx="163" ry="18" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+<text x="245" y="922" font-size="27" font-weight="700" fill="#2c2c2a" text-anchor="middle">記録(IndexedDB)</text>
+<text x="245" y="962" font-size="23" font-weight="400" fill="#2c2c2a" text-anchor="middle">θ・読書の記録</text>
+<text x="245" y="996" font-size="23" font-weight="400" fill="#2c2c2a" text-anchor="middle">問い・クイズ</text>
+<rect x="555" y="235" width="366" height="795" rx="12" fill="#ffffff" stroke="#8fbfae" stroke-width="1.4"/>
+<text x="575" y="272" font-size="24" font-weight="700" fill="#2c2c2a" text-anchor="start">Service Worker(裏方)</text>
+<rect x="575" y="295" width="326" height="160" rx="10" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+<text x="738.0" y="350" font-size="30" font-weight="700" fill="#2c2c2a" text-anchor="middle">セッション</text>
+<text x="738.0" y="394" font-size="23" font-weight="400" fill="#2c2c2a" text-anchor="middle">読書時間と離脱を数え</text>
+<text x="738.0" y="430" font-size="23" font-weight="400" fill="#2c2c2a" text-anchor="middle">成功か失敗かを決める</text>
+<rect x="575" y="530" width="326" height="190" rx="10" fill="#fdf3d7" stroke="#b7791f" stroke-width="2"/>
+<text x="738.0" y="585" font-size="30" font-weight="700" fill="#2c2c2a" text-anchor="middle">制御器</text>
+<text x="738.0" y="627" font-size="23" font-weight="400" fill="#2c2c2a" text-anchor="middle">成功なら θ を1割へらす</text>
+<text x="738.0" y="661" font-size="23" font-weight="400" fill="#2c2c2a" text-anchor="middle">失敗が続けば戻す</text>
+<text x="738.0" y="695" font-size="23" font-weight="400" fill="#2c2c2a" text-anchor="middle">θ = 0 で卒業</text>
+<rect x="575" y="800" width="326" height="170" rx="10" fill="#e8edf4" stroke="#5b6b7f" stroke-width="2"/>
+<text x="738.0" y="860" font-size="30" font-weight="700" fill="#2c2c2a" text-anchor="middle">Gemini Nano</text>
+<text x="738.0" y="904" font-size="22" font-weight="400" fill="#2c2c2a" text-anchor="middle">Chrome 内蔵の AI</text>
+<text x="738.0" y="940" font-size="22" font-weight="400" fill="#2c2c2a" text-anchor="middle">クイズと問いの答えを作る</text>
+<rect x="1050" y="235" width="460" height="795" rx="12" fill="#f4f7fa" stroke="#5b6b7f" stroke-width="1.4"/>
+<text x="1070" y="272" font-size="24" font-weight="700" fill="#2c2c2a" text-anchor="start">読書タブ — Google Play ブックス</text>
+<text x="1070" y="301" font-size="20" font-weight="400" fill="#5f5e5a" text-anchor="start">ページは読むだけ・書き換えない</text>
+<rect x="1075" y="320" width="410" height="120" rx="10" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+<text x="1280.0" y="373" font-size="30" font-weight="700" fill="#2c2c2a" text-anchor="middle">計測</text>
+<text x="1280.0" y="417" font-size="23" font-weight="400" fill="#2c2c2a" text-anchor="middle">本文を見つけ、めくりを拾う</text>
+<rect x="1075" y="515" width="410" height="370" rx="10" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+<rect x="1279.0" y="498" width="194.0" height="34" rx="17" fill="#eeedfe" stroke="#534ab7" stroke-width="1.6"/>
+<text x="1376.0" y="522" font-size="20" font-weight="700" fill="#26215c" text-anchor="middle">演出 — θ で減る</text>
+<text x="1280.0" y="563" font-size="30" font-weight="700" fill="#2c2c2a" text-anchor="middle">演出</text>
+<text x="1280.0" y="596" font-size="20" font-weight="400" fill="#5f5e5a" text-anchor="middle">本文に重ねない・動くのはめくる時だけ</text>
+<rect x="1087" y="611" width="386" height="61" rx="8" fill="#ffffff" stroke="#8fbfae" stroke-width="1.4"/>
+<text x="1101" y="636" font-size="20" font-weight="400" fill="#5f5e5a" text-anchor="start">めくっている間</text>
+<text x="1101" y="664" font-size="23" font-weight="600" fill="#2c2c2a" text-anchor="start">画面の縁を虹が走る</text>
+<rect x="1087" y="677" width="386" height="61" rx="8" fill="#ffffff" stroke="#8fbfae" stroke-width="1.4"/>
+<text x="1101" y="702" font-size="20" font-weight="400" fill="#5f5e5a" text-anchor="start">読んでいる間</text>
+<text x="1101" y="730" font-size="23" font-weight="600" fill="#2c2c2a" text-anchor="start">右下で、くまの小さな話が進む</text>
+<rect x="1087" y="743" width="386" height="61" rx="8" fill="#ffffff" stroke="#8fbfae" stroke-width="1.4"/>
+<text x="1101" y="768" font-size="20" font-weight="400" fill="#5f5e5a" text-anchor="start">章の終わり・読み終えた時</text>
+<text x="1101" y="796" font-size="23" font-weight="600" fill="#2c2c2a" text-anchor="start">話がオチて、フィーバー</text>
+<rect x="1087" y="809" width="386" height="61" rx="8" fill="#ffffff" stroke="#8fbfae" stroke-width="1.4"/>
+<text x="1101" y="834" font-size="20" font-weight="400" fill="#5f5e5a" text-anchor="start">めくった直後(ときどき)</text>
+<text x="1101" y="862" font-size="23" font-weight="600" fill="#2c2c2a" text-anchor="start">突然クイズ・くまの一言</text>
+<rect x="1075" y="915" width="410" height="95" rx="10" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+<text x="1280.0" y="956" font-size="26" font-weight="700" fill="#2c2c2a" text-anchor="middle">自分からの問い</text>
+<text x="1280.0" y="996" font-size="21" font-weight="400" fill="#2c2c2a" text-anchor="middle">わからない所を聞く・1問1答</text>
+<rect x="1325.0" y="898" width="150.0" height="34" rx="17" fill="#f1efe8" stroke="#5f5e5a" stroke-width="1.6"/>
+<text x="1400.0" y="922" font-size="20" font-weight="700" fill="#2c2c2a" text-anchor="middle">道具 — 残る</text>
+<rect x="1570" y="170" width="310" height="310" rx="12" fill="#ffffff" stroke="#d6d5d0" stroke-width="1.2"/>
+<text x="1590" y="206" font-size="22" font-weight="700" fill="#2c2c2a" text-anchor="start">凡例</text>
+<path d="M1592,248 H1652" fill="none" stroke="#534ab7" stroke-width="5" stroke-linejoin="round" marker-end="url(#a-main)"/>
+<text x="1668" y="255" font-size="21" font-weight="400" fill="#2c2c2a" text-anchor="start">中核の流れ ①〜④</text>
+<path d="M1592,288 H1652" fill="none" stroke="#3d3d3a" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<text x="1668" y="295" font-size="21" font-weight="400" fill="#2c2c2a" text-anchor="start">呼び出し・データ</text>
+<path d="M1592,328 H1652" fill="none" stroke="#c2410c" stroke-width="3.5" stroke-linejoin="round" marker-end="url(#a-egress)"/>
+<text x="1668" y="335" font-size="21" font-weight="400" fill="#2c2c2a" text-anchor="start">端末の外へ出る</text>
+<rect x="1592" y="355" width="58" height="26" rx="6" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.8"/>
+<text x="1668" y="375" font-size="21" font-weight="400" fill="#2c2c2a" text-anchor="start">できている</text>
+<rect x="1592" y="395" width="58" height="26" rx="6" fill="#fdf3d7" stroke="#b7791f" stroke-width="1.8"/>
+<text x="1668" y="415" font-size="21" font-weight="400" fill="#2c2c2a" text-anchor="start">動くが、残りがある</text>
+<rect x="1592" y="435" width="58" height="26" rx="6" fill="#e8edf4" stroke="#5b6b7f" stroke-width="1.8"/>
+<text x="1668" y="455" font-size="21" font-weight="400" fill="#2c2c2a" text-anchor="start">サードパーティ</text>
+<rect x="1570" y="510" width="310" height="540" rx="12" fill="#fdf8f5" stroke="#c2410c" stroke-width="2.4"/>
+<text x="1590" y="548" font-size="24" font-weight="700" fill="#2c2c2a" text-anchor="start">Chrome の外</text>
+<text x="1590" y="577" font-size="20" font-weight="400" fill="#5f5e5a" text-anchor="start">本人が同意したときだけ</text>
+<rect x="1590" y="610" width="270" height="210" rx="10" fill="#fdf3d7" stroke="#b7791f" stroke-width="2"/>
+<text x="1725.0" y="674" font-size="27" font-weight="700" fill="#2c2c2a" text-anchor="middle">うんちくサーバ</text>
+<text x="1725.0" y="716" font-size="22" font-weight="400" fill="#2c2c2a" text-anchor="middle">単語の候補だけ</text>
+<text x="1725.0" y="750" font-size="22" font-weight="400" fill="#2c2c2a" text-anchor="middle">最大8語</text>
+<text x="1725.0" y="784" font-size="22" font-weight="400" fill="#2c2c2a" text-anchor="middle">単語は残さない</text>
+<rect x="1590" y="900" width="270" height="120" rx="10" fill="#e8edf4" stroke="#5b6b7f" stroke-width="2"/>
+<text x="1725.0" y="952" font-size="28" font-weight="700" fill="#2c2c2a" text-anchor="middle">Claude</text>
+<text x="1725.0" y="996" font-size="22" font-weight="400" fill="#2c2c2a" text-anchor="middle">Anthropic API</text>
+<path d="M408,352 H573" fill="none" stroke="#534ab7" stroke-width="5" stroke-linejoin="round" marker-end="url(#a-main)"/>
+<rect x="442.2" y="331.825" width="97.6" height="40.35" rx="7" fill="#ffffff" stroke="#d6d5d0" stroke-width="1.2"/>
+<text x="491" y="359" font-size="21" font-weight="600" fill="#534ab7" text-anchor="middle">① 読む</text>
+<path d="M1075,380 H903" fill="none" stroke="#534ab7" stroke-width="5" stroke-linejoin="round" marker-end="url(#a-main)"/>
+<rect x="937.2" y="359.825" width="97.6" height="40.35" rx="7" fill="#ffffff" stroke="#d6d5d0" stroke-width="1.2"/>
+<text x="986" y="387" font-size="21" font-weight="600" fill="#534ab7" text-anchor="middle">② 計測</text>
+<path d="M738,455 V528" fill="none" stroke="#534ab7" stroke-width="5" stroke-linejoin="round" marker-end="url(#a-main)"/>
+<rect x="657.7" y="470.825" width="160.6" height="40.35" rx="7" fill="#ffffff" stroke="#d6d5d0" stroke-width="1.2"/>
+<text x="738" y="498" font-size="21" font-weight="600" fill="#534ab7" text-anchor="middle">③ 終わったら</text>
+<path d="M575,690 H491 V930 H410" fill="none" stroke="#534ab7" stroke-width="5" stroke-linejoin="round" marker-end="url(#a-main)"/>
+<rect x="459.0" y="784.825" width="64.0" height="40.35" rx="7" fill="#ffffff" stroke="#d6d5d0" stroke-width="1.2"/>
+<text x="491" y="812" font-size="21" font-weight="600" fill="#534ab7" text-anchor="middle">保存</text>
+<path d="M901,625 H1073" fill="none" stroke="#534ab7" stroke-width="5" stroke-linejoin="round" marker-end="url(#a-main)"/>
+<rect x="909.0" y="545.0" width="154.0" height="66.0" rx="7" fill="#ffffff" stroke="#d6d5d0" stroke-width="1.2"/>
+<text x="986" y="571" font-size="20" font-weight="600" fill="#534ab7" text-anchor="middle">④ 次の読書は</text>
+<text x="986" y="598" font-size="20" font-weight="600" fill="#534ab7" text-anchor="middle">θ の量だけ</text>
+<path d="M1180,440 V513" fill="none" stroke="#3d3d3a" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<rect x="1109.0" y="456.5" width="142.0" height="39.0" rx="7" fill="#ffffff" stroke="#d6d5d0" stroke-width="1.2"/>
+<text x="1180" y="483" font-size="20" font-weight="600" fill="#2c2c2a" text-anchor="middle">めくった瞬間</text>
+<path d="M245,837 V767" fill="none" stroke="#3d3d3a" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<rect x="214.0" y="792.5" width="62.0" height="39.0" rx="7" fill="#ffffff" stroke="#d6d5d0" stroke-width="1.2"/>
+<text x="245" y="819" font-size="20" font-weight="600" fill="#2c2c2a" text-anchor="middle">読む</text>
+<path d="M1075,850 H903" fill="none" stroke="#3d3d3a" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<rect x="917.0" y="830.5" width="142.0" height="39.0" rx="7" fill="#ffffff" stroke="#d6d5d0" stroke-width="1.2"/>
+<text x="988" y="857" font-size="20" font-weight="600" fill="#2c2c2a" text-anchor="middle">本文は端末内</text>
+<path d="M1075,962 H903" fill="none" stroke="#3d3d3a" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1485,715 H1588" fill="none" stroke="#c2410c" stroke-width="3.5" stroke-linejoin="round" marker-end="url(#a-egress)"/>
+<rect x="1486.0" y="695.5" width="102.0" height="39.0" rx="7" fill="#ffffff" stroke="#d6d5d0" stroke-width="1.2"/>
+<text x="1537" y="722" font-size="20" font-weight="600" fill="#c2410c" text-anchor="middle">単語だけ</text>
+<path d="M1725,820 V898" fill="none" stroke="#c2410c" stroke-width="3.5" stroke-linejoin="round" marker-end="url(#a-egress)"/>
+</svg>

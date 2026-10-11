@@ -16,10 +16,12 @@ body:
       label: 背景・目的
       description: なぜ必要か。どんな問題を解くか
   - type: textarea
-    id: proposal
+    id: design
     attributes:
-      label: 提案する実装
-      description: 設計の文書(docs/plans/xxx.md・docs/design.md の節)へのリンクと、要点
+      label: 設計
+      description: 設計はここに書く(docs/ に別の文書を作らない)。仕組み(どこで何が動くか)・データ(残すものと形)・θ と不変条件との関係・やらないこと・決めていないこと(Open Questions)・触るファイル。できあがったら、PR で docs/design.md の現物の説明に移す
+    validations:
+      required: true
   - type: dropdown
     id: category
     attributes:

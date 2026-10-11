@@ -1,7 +1,7 @@
 # 設計: reading-scaffold
 
 - **Status:** 唯一の設計書(2026-10-08)。architecture-v1・data-design v2・reward-design・ask-and-nano-design・overview を統合した。旧版は [archive/](archive/)
-- **対応コード:** v0.21.1。「計画」と書いた項以外は現物
+- **対応コード:** v0.21.1。現物(いまの仕組み)だけを書く。これから作るものの設計は [GitHub の issue](https://github.com/yukik8/yomirin/issues) に書き、作り終えた PR でここへ移す
 - **対象:** Google Play ブックス(ウェブ版)専用。Web 記事の経路はコードに一部残るが、開始できない
 - **関連:** 公開の手順は [release.md](release.md)、利用者向けの説明は [../PRIVACY.md](../PRIVACY.md)、サーバは [../server/README.md](../server/README.md)、文献は [research/](research/)
 
@@ -492,11 +492,15 @@ recalls       想起の記録(追記のみ) { recall_id, item_id, kind, page_id,
 
 ### これから
 
-1. **Chrome ウェブストアに出す** — 製品名・アイコン・掲載文・プライバシーポリシーの公開([release.md](release.md))。固定則・binary のまま出し、これをベースラインにする
-2. **自分の記録で検証してから切り替える** — ダッシュボードの JSON を `replay --export` に通す(fixed が記録を再現するか・staircase の軌跡)。速さと S の並走データがたまったら `SUCCESS.judge = 'stability'`、次に `CONTROLLER.policy = 'staircase'`
-3. 記憶の層の続き: 想起の記録が数百件たまったら FSRS の重みを本人の記録で最適化。ハイライト(選んだ箇所の記録)を取るなら `passages` を足す
-4. 難しさの目安が弱ければ Nano で「概念の密度」を採点(毎ページ生成のコストと引き換え)。ダッシュボードに速さ・閾値の推定を事実として出す(開発用)
-5. 他人の環境で動くか: Play ブックスの画面の変化への追従、Nano が使える端末の割合
+やることと、その設計は GitHub の issue に置く(進み具合は[プロジェクトボード](https://github.com/users/yukik8/projects/1))。大きな流れだけ:
+
+1. **Chrome ウェブストアに出す**([#15](https://github.com/yukik8/yomirin/issues/15))— 固定則・binary のまま出し、これをベースラインにする
+2. **自分の記録で検証してから切り替える**([#3](https://github.com/yukik8/yomirin/issues/3))— replay → `SUCCESS.judge = 'stability'` → `CONTROLLER.policy = 'staircase'`
+3. 記憶の層の続き: FSRS の重みを本人の記録で最適化([#4](https://github.com/yukik8/yomirin/issues/4))
+4. **目(カメラ)**([#6](https://github.com/yukik8/yomirin/issues/6) 実測 → [#7](https://github.com/yukik8/yomirin/issues/7) 本体 → [#8](https://github.com/yukik8/yomirin/issues/8) 読み進み)
+5. 振り返り([#9](https://github.com/yukik8/yomirin/issues/9)〜#12)・本文をサーバで使う実験([#13](https://github.com/yukik8/yomirin/issues/13)・[#14](https://github.com/yukik8/yomirin/issues/14))
+
+まだ issue にしていない案: ハイライト(選んだ箇所の記録)を取るなら `passages` を足す / 難しさの目安が弱ければ Nano で「概念の密度」を採点(毎ページ生成のコストと引き換え)・ダッシュボードに速さ・閾値の推定を事実として出す(開発用)/ 他人の環境で動くか(Play ブックスの画面の変化への追従、Nano が使える端末の割合)
 
 ### Open Questions
 
