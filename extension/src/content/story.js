@@ -19,7 +19,7 @@ import { STORIES } from './stories.js';
 
 export const storyURL = (name) => new URL(`../../assets/story/${name}.webp`, import.meta.url).href;
 
-const SCALE = 0.9; // 切り抜いた絵(元の絵の2倍)の何倍で描くか(θ=8 のとき。θ が低いほど小さい)
+const SCALE = 0.45; // 切り抜いた絵(元の絵の4倍・v0.26。前は2倍で 0.9)の何倍で描くか(θ=8 のとき。θ が低いほど小さい)
 const MIN_SCALE = 0.3; // これより小さくしか入らなければ置かない
 const PAD = 8; // 本文の枠からこれだけ離す
 const EDGE = 12; // 画面の縁からこれだけ離す
