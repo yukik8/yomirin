@@ -1,0 +1,34 @@
+# 版のタグ(v0.26.1 など)を push したら、拡張の zip を作って GitHub Release の下書きに付ける(#19)。
+# ストアへは、下書きから zip を落として手で上げる(docs/release.md)。
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write # Release の下書きを作る
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Tokyo
+      TAG: ${{ github.ref_name }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: main に入ったコミットか
+        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main || { echo "::error::$TAG は main に入っていないコミットに付いている"; exit 1; }
+      - name: タグと manifest の版・版の表
+        run: node tools/ci/version.mjs tag "$TAG" > notes.md
+      - run: node --test "tests/extension/*.test.mjs"
+      - name: zip(docs/release.md と同じ中身)
+        run: cd extension && zip -r "../yomirin-${TAG#v}.zip" manifest.json icons assets src -x '*.DS_Store'
+      - name: Release の下書き
+        run: gh release create "$TAG" --draft --title "よみりん $TAG" --notes-file notes.md "yomirin-${TAG#v}.zip"

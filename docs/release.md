@@ -23,7 +23,7 @@
 
 - プロジェクト `reading-scaffold`(yukik8s-projects)。本番は `https://reading-scaffold.vercel.app`。拡張の `SERVER.base` と同じ
 - `ANTHROPIC_API_KEY`(Production)を登録してある。本番でうんちくが返り、ログに単語が残らない
-- GitHub の `yukik8/yomirin` と繋いである。**main に push すると本番に出る**(Root Directory は `server`、`server/` が前回のデプロイから変わっていない push は飛ばす)。手で出すときはリポジトリの一番上で `vercel deploy --prod`(詳しくは [../server/README.md](../server/README.md))
+- GitHub の `yukik8/yomirin` と繋いである。**main に merge すると本番に出る**(main へは PR からだけ入る。Root Directory は `server`、`server/` が前回のデプロイから変わっていない push は飛ばす)。手で出すときはリポジトリの一番上で `vercel deploy --prod`(詳しくは [../server/README.md](../server/README.md))
 
 残り:
 
@@ -52,11 +52,22 @@
 - `extension/manifest.json` の `version` を上げる。ローダーは版が変わると開いたままのタブにも入れ直す
 - 動きが変わるなら 0.x を、修正だけなら 0.x.y を上げる
 - 版を上げたら design.md の版の表に1行足す
+- PR で `extension/` を変えたのに版を上げていない・版の表に行が無いと、CI の `version` が落ちる(`tools/ci/version.mjs`)。画像だけの変更でも上げる
 - 拡張を更新すると、進行中のセッションは最後の記録の時点で閉じられる(design.md §3)
 
 ### zip を作る
 
-リポジトリの一番上で:
+版を上げた PR を main に入れたら、その版のタグを push する。Actions(`.github/workflows/release.yml`)がテストを通し、zip を作って GitHub Release の**下書き**に付ける(本文は design.md の版の表の行):
+
+```bash
+git switch main && git pull
+V=v$(node -p "require('./extension/manifest.json').version")
+git tag "$V" && git push origin "$V"
+```
+
+タグが manifest の版と違う・main に入っていないコミットに付いている・版の表に行が無い・manifest に `update_url` がある、のどれかなら落ちて zip は作らない。下書きは公開しない(ストアへは下書きから zip を落として上げる)。
+
+手で作るときは、リポジトリの一番上で(Actions と同じ中身):
 
 ```bash
 cd extension && zip -r ../yomirin-$(node -p "require('./manifest.json').version").zip manifest.json icons assets src -x '*.DS_Store'
@@ -197,4 +208,4 @@ Google Play ブックス(ウェブ版)で「読む」を押すと、読んでい
 
 1. ストアの拡張 ID で `RS_ALLOWED_ORIGINS` を入れ、出し直す(リポジトリの一番上で `vercel deploy --prod`)
 2. Vercel のログと Anthropic の利用額を、最初の数週はときどき見る
-3. 直すときは版を上げて zip を作り直し、ストアにアップロードする(審査がある)
+3. 直すときは版を上げた PR を入れ、タグを push して、Release の下書きから zip を落としてストアにアップロードする(審査がある)

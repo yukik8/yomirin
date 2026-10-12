@@ -62,7 +62,7 @@ cd server
 
 Vercel のプロジェクト `reading-scaffold`(yukik8s-projects)は、GitHub の `yukik8/yomirin` と繋がっている(2026-10-09〜)。
 
-- **main に push すると本番に出る。** ほかのブランチの push は確認用の Preview になる(保護つき。`vercel curl /healthz --deployment <URL>` で叩ける)
+- **main に merge すると本番に出る**(main へは PR からだけ入り、CI が緑でないと merge できない)。 ほかのブランチの push は確認用の Preview になる(保護つき。`vercel curl /healthz --deployment <URL>` で叩ける)
 - プロジェクトの Root Directory は `server`。`server/` の中が**前回デプロイしたときから**変わっていない push は、ビルドせずに飛ばす。拡張だけの変更ではデプロイされない
   - 判定は `vercel.json` の `ignoreCommand`(画面の Ignored Build Step より優先される)。`git diff --quiet "${VERCEL_GIT_PREVIOUS_SHA:-HEAD^}" HEAD -- .` が 0(変わっていない)なら飛ばし、それ以外は 1 にしてビルドする。前回デプロイしたコミットは Vercel が `VERCEL_GIT_PREVIOUS_SHA` で渡す(ブランチの最初のデプロイでは空なので、1つ前のコミットと比べる)
   - 終了コードは 0 か 1 にそろえる。Vercel は 0 と 1 以外(比べるコミットが無いときの 128 など)をデプロイの失敗にする(2026-10-12、これで本番のデプロイが1回失敗した)
