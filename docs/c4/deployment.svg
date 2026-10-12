@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2100 1370" width="2100" height="1370" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',sans-serif">
+<title>よみりん — 配置図(C4 補足)</title>
+<defs>
+<marker id="a-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#534ab7"/></marker>
+<marker id="a-call" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3d3d3a"/></marker>
+<marker id="a-user" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a3a29d"/></marker>
+<marker id="a-egress" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/></marker>
+</defs>
+<rect width="2100" height="1370" fill="#ffffff"/>
+<!-- 枠 -->
+<rect x="40" y="200" width="1240" height="1045" rx="12" fill="none" stroke="#0f6e56" stroke-width="2.2"/>
+<text x="56" y="1215" font-size="14" font-weight="700" fill="#2c2c2a">利用者の PC</text>
+<text x="56" y="1232" font-size="12" fill="#5f5e5a">[デプロイノード: macOS・Windows・ChromeOS — 本の本文と読書の記録はここから出ない]</text>
+<rect x="70" y="240" width="1180" height="945" rx="12" fill="none" stroke="#8a8984" stroke-width="1.2"/>
+<text x="86" y="1155" font-size="14" font-weight="700" fill="#2c2c2a">Google Chrome 138 以降</text>
+<text x="86" y="1172" font-size="12" fill="#5f5e5a">[ブラウザ・ひとつのプロフィール]</text>
+<rect x="100" y="280" width="520" height="540" rx="12" fill="none" stroke="#8a8984" stroke-width="1.2"/>
+<text x="116" y="304" font-size="14" font-weight="700" fill="#2c2c2a">Play ブックスのタブ</text>
+<text x="116" y="321" font-size="12" fill="#5f5e5a">[タブ・2つのドメインのフレーム]</text>
+<rect x="125" y="335" width="470" height="200" rx="12" fill="none" stroke="#8a8984" stroke-width="1.2"/>
+<text x="141" y="359" font-size="14" font-weight="700" fill="#2c2c2a">最上位のフレーム</text>
+<text x="141" y="376" font-size="12" fill="#5f5e5a">[play.google.com/books/reader]</text>
+<rect x="125" y="560" width="470" height="235" rx="12" fill="none" stroke="#8a8984" stroke-width="1.2"/>
+<text x="141" y="584" font-size="14" font-weight="700" fill="#2c2c2a">本文のフレーム</text>
+<text x="141" y="601" font-size="12" fill="#5f5e5a">[books.googleusercontent.com]</text>
+<rect x="680" y="280" width="540" height="420" rx="12" fill="none" stroke="#8a8984" stroke-width="1.2"/>
+<text x="696" y="304" font-size="14" font-weight="700" fill="#2c2c2a">拡張「よみりん」v0.26</text>
+<text x="696" y="321" font-size="12" fill="#5f5e5a">[chrome-extension://&lt;ストアの ID&gt;]</text>
+<rect x="680" y="760" width="540" height="280" rx="12" fill="none" stroke="#8a8984" stroke-width="1.2"/>
+<text x="696" y="784" font-size="14" font-weight="700" fill="#2c2c2a">プロフィールの保存領域</text>
+<text x="696" y="801" font-size="12" fill="#5f5e5a">[ディスク]</text>
+<rect x="100" y="880" width="520" height="240" rx="12" fill="none" stroke="#8a8984" stroke-width="1.2"/>
+<text x="116" y="904" font-size="14" font-weight="700" fill="#2c2c2a">オンデバイスのモデル</text>
+<text x="116" y="921" font-size="12" fill="#5f5e5a">[Chrome が入れて管理する]</text>
+<rect x="1380" y="300" width="680" height="440" rx="12" fill="none" stroke="#8a8984" stroke-width="1.2"/>
+<text x="1396" y="324" font-size="14" font-weight="700" fill="#2c2c2a">Vercel</text>
+<text x="1396" y="341" font-size="12" fill="#5f5e5a">[プロジェクト reading-scaffold・本番 https://reading-scaffold.vercel.app]</text>
+<rect x="1405" y="355" width="380" height="230" rx="12" fill="none" stroke="#8a8984" stroke-width="1.2"/>
+<text x="1421" y="379" font-size="14" font-weight="700" fill="#2c2c2a">Vercel Functions</text>
+<text x="1421" y="396" font-size="12" fill="#5f5e5a">[Python 3.12]</text>
+<rect x="1380" y="1030" width="680" height="200" rx="12" fill="none" stroke="#8a8984" stroke-width="1.2"/>
+<text x="1396" y="1054" font-size="14" font-weight="700" fill="#2c2c2a">GitHub</text>
+<text x="1396" y="1071" font-size="12" fill="#5f5e5a">[yukik8/yomirin]</text>
+<!-- 線 -->
+<path d="M570,455 L650,455 L650,560 L710,560" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M570,690 L650,690 L650,600 L710,600" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M825,640 L825,815" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1080,640 L1080,815" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M730,640 L730,740 L650,740 L650,1010 L590,1010" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1190,570 L1320,570 L1320,485 L1430,485" fill="none" stroke="#c2410c" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#a-egress)"/>
+<path d="M1760,485 L1820,485" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1595,560 L1595,820" fill="none" stroke="#c2410c" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#a-egress)"/>
+<path d="M1380,175 L950,175 L950,280" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1960,1030 L1960,740" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<!-- 箱 -->
+<!-- content script -->
+<rect x="150" y="395" width="420" height="120" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="360" y="441.45" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">content script</text>
+<text x="360" y="460.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンテナのインスタンス]</text>
+<text x="360" y="483.5" text-anchor="middle" font-size="12.5" fill="#04342c">loader・pager(ページ表示の見張り)</text>
+<!-- content script -->
+<rect x="150" y="615" width="420" height="150" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="360" y="667.2" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">content script</text>
+<text x="360" y="685.77" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンテナのインスタンス]</text>
+<text x="360" y="709.25" text-anchor="middle" font-size="12.5" fill="#04342c">loader・pager・main</text>
+<text x="360" y="727.75" text-anchor="middle" font-size="12.5" fill="#04342c">余白・舞台・問いのボタン</text>
+<!-- 拡張ページ -->
+<rect x="710" y="335" width="480" height="110" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="950" y="376.45" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">拡張ページ</text>
+<text x="950" y="395.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンテナ]</text>
+<text x="950" y="418.5" text-anchor="middle" font-size="12.5" fill="#04342c">popup・onboarding・dashboard</text>
+<!-- Service Worker -->
+<rect x="710" y="490" width="480" height="150" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="950" y="551.45" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">Service Worker</text>
+<text x="950" y="570.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンテナ]</text>
+<text x="950" y="593.5" text-anchor="middle" font-size="12.5" fill="#04342c">セッション・θ・生成の窓口</text>
+<!-- IndexedDB -->
+<path d="M710,827 a115,12 0 0 1 230,0 v156 a115,12 0 0 1 -230,0 z" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<path d="M710,827 a115,12 0 0 0 230,0" fill="none" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="825" y="901.45" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">IndexedDB</text>
+<text x="825" y="920.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンテナ]</text>
+<text x="825" y="943.5" text-anchor="middle" font-size="12.5" fill="#04342c">v5</text>
+<!-- chrome.storage.local -->
+<path d="M970,827 a110,12 0 0 1 220,0 v156 a110,12 0 0 1 -220,0 z" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<path d="M970,827 a110,12 0 0 0 220,0" fill="none" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="1080" y="901.45" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">chrome.storage.local</text>
+<text x="1080" y="920.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンテナ]</text>
+<text x="1080" y="943.5" text-anchor="middle" font-size="12.5" fill="#04342c">現在値・同意</text>
+<!-- Gemini Nano -->
+<rect x="130" y="940" width="460" height="140" rx="8" fill="#e8edf4" stroke="#5b6b7f" stroke-width="1.6"/>
+<text x="360" y="996.45" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2a37">Gemini Nano</text>
+<text x="360" y="1015.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[外部システム]</text>
+<text x="360" y="1038.5" text-anchor="middle" font-size="12.5" fill="#1f2a37">Prompt API</text>
+<!-- うんちくサーバ -->
+<rect x="1430" y="410" width="330" height="150" rx="8" fill="#fdf3d7" stroke="#b7791f" stroke-width="1.6"/>
+<text x="1595" y="462.2" text-anchor="middle" font-size="15" font-weight="700" fill="#4a3410">うんちくサーバ</text>
+<text x="1595" y="480.77" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンテナのインスタンス]</text>
+<text x="1595" y="504.25" text-anchor="middle" font-size="12.5" fill="#4a3410">server/main.py(FastAPI)</text>
+<text x="1595" y="522.75" text-anchor="middle" font-size="12.5" fill="#4a3410">POST /trivia・GET /healthz</text>
+<!-- Upstash Redis -->
+<path d="M1820,422 a110,12 0 0 1 220,0 v126 a110,12 0 0 1 -220,0 z" fill="#fdf3d7" stroke="#b7791f" stroke-width="1.6"/>
+<path d="M1820,422 a110,12 0 0 0 220,0" fill="none" stroke="#b7791f" stroke-width="1.6"/>
+<text x="1930" y="481.45" text-anchor="middle" font-size="15" font-weight="700" fill="#4a3410">Upstash Redis</text>
+<text x="1930" y="500.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[Marketplace・任意]</text>
+<text x="1930" y="523.5" text-anchor="middle" font-size="12.5" fill="#4a3410">1日の回数</text>
+<!-- Anthropic API -->
+<rect x="1420" y="820" width="360" height="130" rx="8" fill="#e8edf4" stroke="#5b6b7f" stroke-width="1.6"/>
+<text x="1600" y="871.45" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2a37">Anthropic API</text>
+<text x="1600" y="890.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[外部システム]</text>
+<text x="1600" y="913.5" text-anchor="middle" font-size="12.5" fill="#1f2a37">Claude(環境変数 RS_MODEL)</text>
+<!-- GitHub Actions -->
+<rect x="1410" y="1085" width="360" height="120" rx="8" fill="#e8edf4" stroke="#5b6b7f" stroke-width="1.6"/>
+<text x="1590" y="1131.45" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2a37">GitHub Actions</text>
+<text x="1590" y="1150.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[CI]</text>
+<text x="1590" y="1173.5" text-anchor="middle" font-size="12.5" fill="#1f2a37">PR ごとに node --test</text>
+<!-- Chrome ウェブストア -->
+<rect x="1380" y="130" width="380" height="120" rx="8" fill="#e8edf4" stroke="#5b6b7f" stroke-width="1.6"/>
+<text x="1570" y="176.45" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2a37">Chrome ウェブストア</text>
+<text x="1570" y="195.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[外部システム: 配布]</text>
+<text x="1570" y="218.5" text-anchor="middle" font-size="12.5" fill="#1f2a37">申請の準備中(#15)・zip は手で上げる</text>
+<!-- 札・見出し・凡例 -->
+<text x="40" y="50" font-size="24" font-weight="700" fill="#2c2c2a">よみりん — 配置図(C4 補足)</text>
+<text x="40" y="78" font-size="13" fill="#5f5e5a">それぞれのコンテナが、どの機械・どのサービスの上で動くか。本番(ストア版)の配置。v0.26 の構成(2026-10-12)</text>
+<rect x="40" y="94" width="117.04" height="22" rx="11" fill="#ffffff" stroke="#c9c7bf" stroke-width="1"/>
+<text x="98.52" y="109.5" text-anchor="middle" font-size="12" fill="#5f5e5a">1 システムの文脈</text>
+<text x="165.04" y="109.5" font-size="13" fill="#a3a29d">›</text>
+<rect x="177.04" y="94" width="81.04" height="22" rx="11" fill="#ffffff" stroke="#c9c7bf" stroke-width="1"/>
+<text x="217.56" y="109.5" text-anchor="middle" font-size="12" fill="#5f5e5a">2 コンテナ</text>
+<text x="266.08" y="109.5" font-size="13" fill="#a3a29d">›</text>
+<rect x="278.08" y="94" width="215.92" height="22" rx="11" fill="#ffffff" stroke="#c9c7bf" stroke-width="1"/>
+<text x="386.04" y="109.5" text-anchor="middle" font-size="12" fill="#5f5e5a">3 コンポーネント: Service Worker</text>
+<text x="502" y="109.5" font-size="13" fill="#a3a29d">›</text>
+<rect x="514" y="94" width="172.72" height="22" rx="11" fill="#ffffff" stroke="#c9c7bf" stroke-width="1"/>
+<text x="600.36" y="109.5" text-anchor="middle" font-size="12" fill="#5f5e5a">3 コンポーネント: 読書タブ</text>
+<text x="694.72" y="109.5" font-size="13" fill="#a3a29d">›</text>
+<rect x="706.72" y="94" width="89.68" height="22" rx="11" fill="#26215c" stroke="#26215c" stroke-width="1"/>
+<text x="751.56" y="109.5" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">配置図(補足)</text>
+<rect x="595.8" y="479" width="108.5" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="650" y="496" text-anchor="middle" font-size="12.5" fill="#2c2c2a">REPORT</text>
+<text x="650" y="513" text-anchor="middle" font-size="12.5" fill="#2c2c2a">book_progress</text>
+<rect x="610.8" y="634" width="78.5" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="650" y="651" text-anchor="middle" font-size="12.5" fill="#2c2c2a">メッセージ</text>
+<text x="650" y="668" text-anchor="middle" font-size="12.5" fill="#2c2c2a">(双方向)</text>
+<rect x="783.8" y="715.5" width="82.4" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="825" y="732.5" text-anchor="middle" font-size="11" fill="#5f5e5a">[IndexedDB]</text>
+<rect x="1026" y="715.5" width="108" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1080" y="732.5" text-anchor="middle" font-size="11" fill="#5f5e5a">[chrome.storage]</text>
+<rect x="605.7" y="837.5" width="88.6" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="650" y="854.5" text-anchor="middle" font-size="11" fill="#5f5e5a">[Prompt API]</text>
+<rect x="1245.8" y="506" width="148.4" height="42" rx="4" fill="#ffffff" stroke="#e6b8a2" stroke-width="1"/>
+<text x="1320" y="523" text-anchor="middle" font-size="12.5" font-weight="600" fill="#9a3412">POST /trivia</text>
+<text x="1320" y="540" text-anchor="middle" font-size="11" fill="#5f5e5a">[HTTPS・単語の候補だけ]</text>
+<rect x="1765" y="472.5" width="50" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1790" y="489.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">REST</text>
+<rect x="1543.5" y="659" width="103" height="42" rx="4" fill="#ffffff" stroke="#e6b8a2" stroke-width="1"/>
+<text x="1595" y="676" text-anchor="middle" font-size="12.5" font-weight="600" fill="#9a3412">Messages API</text>
+<text x="1595" y="693" text-anchor="middle" font-size="11" fill="#5f5e5a">[HTTPS]</text>
+<rect x="1094.5" y="162.5" width="141" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1165" y="179.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">拡張を配る・自動更新</text>
+<rect x="1865.2" y="864" width="189.5" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1960" y="881" text-anchor="middle" font-size="12.5" fill="#2c2c2a">main に push → 本番</text>
+<text x="1960" y="898" text-anchor="middle" font-size="12.5" fill="#2c2c2a">(server/ が変わったときだけ)</text>
+<text x="40" y="1275" font-size="12.5" fill="#5f5e5a">開発版(パッケージ化されていない拡張)は http://127.0.0.1:8787 のサーバを呼ぶ。ストア版かどうかは manifest の update_url の有無で見分ける(IS_STORE_BUILD)</text>
+<rect x="40" y="1310" width="1153.5" height="40" rx="8" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="40" y="1304" font-size="12" font-weight="600" fill="#5f5e5a">凡例</text>
+<path d="M56,1330 L100,1330" stroke="#3d3d3a" stroke-width="1.4" marker-end="url(#a-call)"/>
+<text x="110" y="1334.5" font-size="12.5" fill="#2c2c2a">呼び出し・データ</text>
+<path d="M236,1330 L280,1330" stroke="#c2410c" stroke-width="2.4" marker-end="url(#a-egress)"/>
+<text x="290" y="1334.5" font-size="12.5" fill="#2c2c2a">端末の外へ出る</text>
+<rect x="403.5" y="1321" width="36" height="18" rx="4" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.4"/>
+<text x="447.5" y="1334.5" font-size="12.5" fill="#2c2c2a">自作・できている</text>
+<rect x="573.5" y="1321" width="36" height="18" rx="4" fill="#fdf3d7" stroke="#b7791f" stroke-width="1.4"/>
+<text x="617.5" y="1334.5" font-size="12.5" fill="#2c2c2a">自作・動くが残りがある</text>
+<rect x="781" y="1321" width="36" height="18" rx="4" fill="#e8edf4" stroke="#5b6b7f" stroke-width="1.4"/>
+<text x="825" y="1334.5" font-size="12.5" fill="#2c2c2a">外部のシステム</text>
+<rect x="938.5" y="1321" width="36" height="18" rx="4" fill="#ffffff" stroke="#8a8984" stroke-width="1.2"/>
+<text x="982.5" y="1334.5" font-size="12.5" fill="#2c2c2a">デプロイノード</text>
+<path d="M1100,1324 a14,4 0 0 1 28,0 v12 a14,4 0 0 1 -28,0 z" fill="#ffffff" stroke="#5f5e5a" stroke-width="1.2"/>
+<path d="M1100,1324 a14,4 0 0 0 28,0" fill="none" stroke="#5f5e5a" stroke-width="1.2"/>
+<text x="1140" y="1334.5" font-size="12.5" fill="#2c2c2a">保存先</text>
+</svg>
