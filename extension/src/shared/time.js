@@ -30,7 +30,10 @@ export function recentWeeks(n, now = Date.now()) {
   const start = weekStart(now);
   const out = [];
   for (let i = n - 1; i >= 0; i -= 1) {
-    const ts = start - i * 7 * 24 * 60 * 60 * 1000;
+    // 7×24時間ではなく日付で戻る(夏時間の始まった週は167時間しかなく、時間で戻ると前の日曜に落ちて1週飛ぶ)
+    const d = new Date(start);
+    d.setDate(d.getDate() - i * 7);
+    const ts = d.getTime();
     out.push({ key: weekKey(ts), label: weekLabel(ts), start: weekStart(ts) });
   }
   return out;
