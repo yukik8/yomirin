@@ -23,7 +23,7 @@
 
 - プロジェクト `reading-scaffold`(yukik8s-projects)。本番は `https://reading-scaffold.vercel.app`。拡張の `SERVER.base` と同じ
 - `ANTHROPIC_API_KEY`(Production)を登録してある。本番でうんちくが返り、ログに単語が残らない
-- GitHub の `yukik8/yomirin` と繋いである。**main に push すると本番に出る**(Root Directory は `server`、`server/` が変わっていない push は飛ばす)。手で出すときはリポジトリの一番上で `vercel deploy --prod`(詳しくは [../server/README.md](../server/README.md))
+- GitHub の `yukik8/yomirin` と繋いである。**main に push すると本番に出る**(Root Directory は `server`、`server/` が前回のデプロイから変わっていない push は飛ばす)。手で出すときはリポジトリの一番上で `vercel deploy --prod`(詳しくは [../server/README.md](../server/README.md))
 
 残り:
 

@@ -4,6 +4,7 @@
 # server (v0後半)
 .venv/
 __pycache__/
+.pytest_cache/
 *.pyc
 .env
 .vercel/

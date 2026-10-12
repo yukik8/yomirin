@@ -45,12 +45,28 @@ echo 'ANTHROPIC_API_KEY=sk-ant-...' > .env                             # 鍵は�
 開発中の拡張(パッケージ化されていないもの)は `http://127.0.0.1:8787` を呼ぶ。
 ストア版(manifest に `update_url` が付く)は本番の URL を呼ぶ(`extension/src/shared/config.js` の `SERVER`)。
 
+## テスト
+
+```bash
+cd server
+./.venv/bin/python -m pip install -r requirements-dev.txt   # 初回のみ(pytest)
+./.venv/bin/python -m pytest
+```
+
+- 本物の Anthropic と Upstash は使わない(`tests/conftest.py` で偽物に差し替える)。鍵は要らない
+- 確かめること: 単語の候補のほか(本文・書名など)は 422・Anthropic へ渡すのは候補の並びだけ・回数制限・生成の検め・**ログに単語も生成文も出ない**
+- 擬音らしい語の表(`../tests/fixtures/terms.json`)は、拡張のテスト(`ai.js` の `looksLikeSound`)と同じものを通す。片方の式を変えたら、もう片方も
+- PR ごとに GitHub Actions(`.github/workflows/ci.yml` の `server`)で回る。テストは `.vercelignore` で Vercel に上げない
+
 ## Vercel にデプロイ
 
 Vercel のプロジェクト `reading-scaffold`(yukik8s-projects)は、GitHub の `yukik8/yomirin` と繋がっている(2026-10-09〜)。
 
 - **main に push すると本番に出る。** ほかのブランチの push は確認用の Preview になる(保護つき。`vercel curl /healthz --deployment <URL>` で叩ける)
-- プロジェクトの Root Directory は `server`。`server/` の中が変わっていない push は、ビルドせずに飛ばす(Ignored Build Step: `git diff HEAD^ HEAD --quiet -- .`)。拡張だけの変更ではデプロイされない
+- プロジェクトの Root Directory は `server`。`server/` の中が**前回デプロイしたときから**変わっていない push は、ビルドせずに飛ばす。拡張だけの変更ではデプロイされない
+  - 判定は `vercel.json` の `ignoreCommand`(画面の Ignored Build Step より優先される): `git diff --quiet "${VERCEL_GIT_PREVIOUS_SHA:-HEAD^}" HEAD -- .`。前回デプロイしたコミットは Vercel が `VERCEL_GIT_PREVIOUS_SHA` で渡す(ブランチの最初のデプロイでは空なので、1つ前のコミットと比べる)
+  - 前は1つ前のコミットとだけ比べていたので、何コミットかまとめて main に入れると、途中のコミットの `server/` の変更を見落として本番に出なかった
+  - Vercel は直近10コミットしか取ってこない。前回のデプロイがそれより古いと比べられないので、`server/` が変わっていなくても1回ビルドする(同じものが出るだけ)
 - 手で出すときは、**リポジトリの一番上で** CLI を使う(Root Directory が `server` なので、`server/` の中で出すと `server/server` を探して失敗する)。一番上でまだ `vercel link` していなければ、先に一度だけ
 
 ```bash
