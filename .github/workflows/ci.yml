@@ -1,0 +1,23 @@
+# PR と main への push ごとに、テストを回す(#18)。secrets は使わない。
+# paths で絞らない: どれも数十秒で終わり、必須チェックにしたとき飛ばされた job が「待ち」で残らないように。
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  extension:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Tokyo # time.js はローカル時刻で日と週を切る。Actions の既定(UTC)だと境がずれる
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: node --test "tests/extension/*.test.mjs"

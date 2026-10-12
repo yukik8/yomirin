@@ -77,7 +77,9 @@ zip を展開して「パッケージ化されていない拡張機能を読み�
 7. 同意をオンにしてうんちくが出たら、Vercel のログに単語が残っていないこと(`vercel logs --environment production --since 15m --no-branch`)
 8. 全消去で、本棚とインストール ID が消える
 
-自動テストはリポジトリに置いていない。足すなら、Puppeteer で模擬の Play ブックスを作り、拡張を読み込んで通すもの。Chrome は起動時の `--load-extension` を受け付けないので、自動で読み込むときは DevTools のパイプ(`--remote-debugging-pipe --enable-unsafe-extension-debugging`)から `Extensions.loadUnpacked` を呼ぶ。
+自動テストは `tests/extension/`(依存なし。`node --test "tests/extension/*.test.mjs"`)。PR ごとに GitHub Actions(`.github/workflows/ci.yml`)で回る。上の手順の代わりにはならない: テストが見るのは制御器・権限・外へ送るものだけで、画面と Play ブックスとの繋がりは見ない。manifest の権限は §3「権限の用途」の表と同じでないと落ちる(権限を足すなら、表・PRIVACY.md・申告を先に直す)。
+
+模擬の Play ブックスでの E2E は置いていない(#18 の「やらないこと」)。作るなら、Chrome は起動時の `--load-extension` を受け付けないので、DevTools のパイプ(`--remote-debugging-pipe --enable-unsafe-extension-debugging`)から `Extensions.loadUnpacked` を呼ぶ。
 
 ## 3. ストアに申請する
 

@@ -11,4 +11,5 @@ Google Play ブックス専用の読書拡張(Chrome MV3・ビルド工程なし
 - **やることは GitHub の issue で管理する。** 作る前に issue を立て(テンプレート: 機能要望 `[feature]` / バグ報告 `[bug]` / 検証・実験 `[experiment]`)、進み具合はプロジェクトボード(Not started → In progress → Testing → Released)で動かす
 - **設計は issue に書く。** どの issue にも「設計」の欄を埋めてから作る(仕組み・データ・θ と不変条件との関係・やらないこと・決めていないこと・触るファイル)。docs/plans/ のような別の設計文書は作らない。作り終えた PR で、できあがった仕組みを docs/design.md に移す
 - **変更は PR で。** `.github/pull_request_template.md` のチェックリスト(三分法・不変条件・文書・動作確認)を埋める。`Closes #N` で issue と結ぶ
+- **テスト:** `node --test "tests/extension/*.test.mjs"`(依存なし)。PR ごとに GitHub Actions(`.github/workflows/ci.yml`)で回る
 - ラベルは英語、題と本文は日本語
