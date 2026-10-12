@@ -3,3 +3,7 @@
 .venv
 __pycache__
 *.pyc
+# テストは上げない
+tests
+requirements-dev.txt
+.pytest_cache

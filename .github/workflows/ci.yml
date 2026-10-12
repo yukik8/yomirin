@@ -21,3 +21,16 @@ jobs:
         with:
           node-version: 24
       - run: node --test "tests/extension/*.test.mjs"
+
+  server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version-file: server/.python-version
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: python -m pytest # 本物の Anthropic・Upstash は使わない(tests/conftest.py)

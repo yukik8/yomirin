@@ -1,0 +1,2 @@
+# テストだけで使う(Vercel は requirements.txt しか入れない。.vercelignore で上げない)
+pytest==9.1.1
