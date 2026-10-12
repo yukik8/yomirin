@@ -64,9 +64,10 @@ Vercel のプロジェクト `reading-scaffold`(yukik8s-projects)は、GitHub �
 
 - **main に push すると本番に出る。** ほかのブランチの push は確認用の Preview になる(保護つき。`vercel curl /healthz --deployment <URL>` で叩ける)
 - プロジェクトの Root Directory は `server`。`server/` の中が**前回デプロイしたときから**変わっていない push は、ビルドせずに飛ばす。拡張だけの変更ではデプロイされない
-  - 判定は `vercel.json` の `ignoreCommand`(画面の Ignored Build Step より優先される): `git diff --quiet "${VERCEL_GIT_PREVIOUS_SHA:-HEAD^}" HEAD -- .`。前回デプロイしたコミットは Vercel が `VERCEL_GIT_PREVIOUS_SHA` で渡す(ブランチの最初のデプロイでは空なので、1つ前のコミットと比べる)
+  - 判定は `vercel.json` の `ignoreCommand`(画面の Ignored Build Step より優先される)。`git diff --quiet "${VERCEL_GIT_PREVIOUS_SHA:-HEAD^}" HEAD -- .` が 0(変わっていない)なら飛ばし、それ以外は 1 にしてビルドする。前回デプロイしたコミットは Vercel が `VERCEL_GIT_PREVIOUS_SHA` で渡す(ブランチの最初のデプロイでは空なので、1つ前のコミットと比べる)
+  - 終了コードは 0 か 1 にそろえる。Vercel は 0 と 1 以外(比べるコミットが無いときの 128 など)をデプロイの失敗にする(2026-10-12、これで本番のデプロイが1回失敗した)
   - 前は1つ前のコミットとだけ比べていたので、何コミットかまとめて main に入れると、途中のコミットの `server/` の変更を見落として本番に出なかった
-  - Vercel は直近10コミットしか取ってこない。前回のデプロイがそれより古いと比べられないので、`server/` が変わっていなくても1回ビルドする(同じものが出るだけ)
+  - Vercel は直近10コミットしか取ってこない。前回のデプロイがそれより古いと比べられないので、`server/` が変わっていなくても1回ビルドする(同じものが出るだけ)。手元で確かめるときは `git clone --depth=10` した所で
 - 手で出すときは、**リポジトリの一番上で** CLI を使う(Root Directory が `server` なので、`server/` の中で出すと `server/server` を探して失敗する)。一番上でまだ `vercel link` していなければ、先に一度だけ
 
 ```bash
