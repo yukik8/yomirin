@@ -40,6 +40,17 @@ P(成功 | θ) = γ + (1 − γ − λ) · σ((log θ − ν) / w)
 - **P(成功)後半** タペリングの後半で、制御器が読者を置いた θ での成功確率。低いほど「読めない θ まで追い込んでいる」
 - **上げた回数** θ を戻した回数
 
+## スナップショット(tests/extension/replay.test.mjs)
+
+`--simulate --seed 1` の表を、テストのスナップショットに残している。制御器の式や config の値を変えると CI で落ちる。
+わざと変えたときは書き直し、PR に理由と表の差分を書く:
+
+```
+node --test --test-update-snapshots "tests/extension/*.test.mjs"
+```
+
+表の見た目(列・桁)を直したときも落ちるので、同じように書き直す。
+
 ## 制御器を足す
 
 `lib/controllers.mjs` の `CONTROLLERS` に `{ init, step, theta }` を足す。拡張側の実装を import して包む。
