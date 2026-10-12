@@ -10,7 +10,8 @@ Google Play ブックス専用の読書拡張(Chrome MV3・ビルド工程なし
 
 - **やることは GitHub の issue で管理する。** 作る前に issue を立て(テンプレート: 機能要望 `[feature]` / バグ報告 `[bug]` / 検証・実験 `[experiment]`)、進み具合はプロジェクトボード(Not started → In progress → Testing → Released)で動かす。issue を閉じても自動では動かないので、閉じたら Released に動かす(下の「プロジェクトボードを動かす」)
 - **設計は issue に書く。** どの issue にも「設計」の欄を埋めてから作る(仕組み・データ・θ と不変条件との関係・やらないこと・決めていないこと・触るファイル)。docs/plans/ のような別の設計文書は作らない。作り終えた PR で、できあがった仕組みを docs/design.md に移す
-- **変更は PR で。** `.github/pull_request_template.md` のチェックリスト(三分法・不変条件・文書・動作確認)を埋める。`Closes #N` で issue と結ぶ
+- **変更は PR で。** `.github/pull_request_template.md` のチェックリスト(三分法・不変条件・文書・動作確認)を埋める。`Closes #N` で issue と結ぶ。main へは PR からだけ入る(ルールセット。CI の `extension`・`server`・`version` が緑でないと merge できず、管理者も抜けられない)
+- **版とリリース:** `extension/` を変えたら manifest の version を上げ、docs/design.md の版の表に行を足す(CI の `version` が見る)。出すときは版のタグ(`v0.26.1` など)を push すると、zip が GitHub Release の下書きに付く(docs/release.md §2)
 - **テスト:** 拡張は `node --test "tests/extension/*.test.mjs"`(依存なし)、サーバは `cd server && ./.venv/bin/python -m pytest`。PR ごとに GitHub Actions(`.github/workflows/ci.yml`)で回る。制御の式や config の値を変えると replay のスナップショットが落ちる。わざとなら `--test-update-snapshots` を付けて書き直し、PR に理由と表の差分を書く
 - ラベルは英語、題と本文は日本語
 
