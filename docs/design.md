@@ -53,7 +53,7 @@
 
 ![全体の組み立て](overview.png)
 
-紫の太線 ①〜⑤ が中核の流れ(読む → 開始 → 注入 → 計測 → 終了時に θ を更新)。橙の線が端末の外へ出る唯一の経路で、本人が同意したときに、端末で選んだ単語の候補(最大8語)だけが通る(§9)。黄色の箱は動くが残りがあるもの。図の元は [overview.svg](overview.svg)(素の SVG。直したら PNG を書き出し直す)。考え方だけを字を大きく描いたプレゼン用の一枚は [concept.png](concept.png)(元は [concept.svg](concept.svg)・16:9)。
+紫の太線 ①〜⑤ が中核の流れ(読む → 開始 → 注入 → 計測 → 終了時に θ を更新)。橙の線が端末の外へ出る唯一の経路で、本人が同意したときに、端末で選んだ単語の候補(最大8語)だけが通る(§9)。黄色の箱は動くが残りがあるもの。図の元は [overview.svg](overview.svg)(素の SVG。直したら PNG を書き出し直す)。考え方だけを字を大きく描いたプレゼン用の一枚は [concept.png](concept.png)(元は [concept.svg](concept.svg)・16:9)。C4 の図(文脈・コンテナ・コンポーネント・配置)は [c4/](c4/)(PNG と、元の SVG)。
 
 - **Play ブックスのフレーム:** 最上位は `play.google.com/books/reader`、本文とページ表示は `books.googleusercontent.com` のフレームの中。ローダーは全フレームに入り、本体(main.js)は本文のあるフレームでだけ動く
 - **ビルド工程なし。** ES モジュールをそのまま読む。ストア版かどうかは manifest の `update_url` の有無で見分ける(`IS_STORE_BUILD`)

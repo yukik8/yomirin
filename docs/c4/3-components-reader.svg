@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1530" width="1920" height="1530" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',sans-serif">
+<title>よみりん — 読書タブの content script のコンポーネント(C4 レベル3)</title>
+<defs>
+<marker id="a-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#534ab7"/></marker>
+<marker id="a-call" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3d3d3a"/></marker>
+<marker id="a-user" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a3a29d"/></marker>
+<marker id="a-egress" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/></marker>
+</defs>
+<rect width="1920" height="1530" fill="#ffffff"/>
+<!-- 枠 -->
+<rect x="140" y="350" width="1620" height="830" rx="12" fill="none" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="670" y="1150" font-size="14" font-weight="700" fill="#2c2c2a">読書タブの content script</text>
+<text x="670" y="1167" font-size="12" fill="#5f5e5a">[コンテナ: JavaScript・Play ブックスの全フレームに注入される]</text>
+<!-- 線 -->
+<path d="M710,280 L710,420" fill="none" stroke="#534ab7" stroke-width="3" stroke-linejoin="round" marker-end="url(#a-main)"/>
+<path d="M340,420 L340,215 L520,215" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M560,510 L480,510" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M860,510 L960,510" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1050,420 L1050,250 L900,250" fill="none" stroke="#534ab7" stroke-width="3" stroke-linejoin="round" marker-end="url(#a-main)"/>
+<path d="M900,185 L1350,185 L1350,420" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1600,285 L1600,740" fill="none" stroke="#a3a29d" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#a-user)"/>
+<path d="M1770,235 L1840,235 L1840,1330 L1700,1330" fill="none" stroke="#a3a29d" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#a-user)"/>
+<path d="M1000,620 L1000,660 L400,660 L400,740" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1060,620 L1060,690 L750,690 L750,740" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1140,620 L1140,740" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1420,620 L1420,740" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M820,900 L820,990" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1100,900 L1100,990" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M220,600 L220,1270" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M400,900 L400,1270" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M640,900 L640,1270" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1260,900 L1260,1270" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1540,900 L1540,1270" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<!-- 箱 -->
+<!-- Service Worker -->
+<rect x="520" y="150" width="380" height="130" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="710" y="201.45" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">Service Worker</text>
+<text x="710" y="220.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンテナ]</text>
+<text x="710" y="243.5" text-anchor="middle" font-size="12.5" fill="#04342c">セッション・θ・生成の窓口</text>
+<!-- 利用者 -->
+<rect x="1550" y="185" width="220" height="100" rx="30" fill="#eeedfe" stroke="#534ab7" stroke-width="1.8"/>
+<circle cx="1660" cy="165" r="28" fill="#eeedfe" stroke="#534ab7" stroke-width="1.8"/>
+<text x="1660" y="240.18" text-anchor="middle" font-size="16" font-weight="700" fill="#26215c">利用者</text>
+<text x="1660" y="258.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[人]</text>
+<!-- playbooks-pager.js -->
+<rect x="200" y="420" width="280" height="180" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="340" y="477.95" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">playbooks-pager.js</text>
+<text x="340" y="496.52" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンポーネント: ページ表示の見張り]</text>
+<text x="340" y="520" text-anchor="middle" font-size="12.5" fill="#04342c">「N / M」を1.5秒ごとに見回る</text>
+<text x="340" y="538.5" text-anchor="middle" font-size="12.5" fill="#04342c">1ページずつ最後へ = 読了</text>
+<text x="340" y="557" text-anchor="middle" font-size="12.5" fill="#04342c">(どのフレームでも動く)</text>
+<!-- loader.js -->
+<rect x="560" y="420" width="300" height="180" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="710" y="477.95" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">loader.js</text>
+<text x="710" y="496.52" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンポーネント: ローダー(全フレーム)]</text>
+<text x="710" y="520" text-anchor="middle" font-size="12.5" fill="#04342c">版キーで二重注入を止める</text>
+<text x="710" y="538.5" text-anchor="middle" font-size="12.5" fill="#04342c">本文が出るまで待つ</text>
+<text x="710" y="557" text-anchor="middle" font-size="12.5" fill="#04342c">rs_stop が来たら諦める</text>
+<!-- main.js -->
+<rect x="960" y="420" width="480" height="200" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="1200" y="479.18" text-anchor="middle" font-size="16" font-weight="700" fill="#04342c">main.js</text>
+<text x="1200" y="497.77" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンポーネント: 本体(本文のフレームだけ)]</text>
+<text x="1200" y="521.25" text-anchor="middle" font-size="12.5" fill="#04342c">本文を見つけ、20秒の鼓動で読書時間を計る</text>
+<text x="1200" y="539.75" text-anchor="middle" font-size="12.5" fill="#04342c">めくりの合図を3つの入口から拾う</text>
+<text x="1200" y="558.25" text-anchor="middle" font-size="12.5" fill="#04342c">θ から枠を計画・クイズとうんちくを作り置く</text>
+<text x="1200" y="576.75" text-anchor="middle" font-size="12.5" fill="#04342c">読む速さから、出す時刻を決める</text>
+<!-- book-text.js・difficulty.js -->
+<rect x="260" y="740" width="280" height="160" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="400" y="797.2" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">book-text.js・difficulty.js</text>
+<text x="400" y="815.77" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンポーネント: 本文の読み取り]</text>
+<text x="400" y="839.25" text-anchor="middle" font-size="12.5" fill="#04342c">段落を拾う(ルビは除く)</text>
+<text x="400" y="857.75" text-anchor="middle" font-size="12.5" fill="#04342c">難しさの目安(AI なし)</text>
+<!-- margin.js・story.js -->
+<rect x="600" y="740" width="300" height="160" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="750" y="787.95" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">margin.js・story.js</text>
+<text x="750" y="806.52" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンポーネント: 余白]</text>
+<text x="750" y="830" text-anchor="middle" font-size="12.5" fill="#04342c">めくりの光・縁の光</text>
+<text x="750" y="848.5" text-anchor="middle" font-size="12.5" fill="#04342c">よみりんの小さなストーリー</text>
+<text x="750" y="867" text-anchor="middle" font-size="12.5" fill="#04342c">(stories.js の18話)</text>
+<!-- stage.js・bear.js -->
+<rect x="980" y="740" width="320" height="160" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="1140" y="787.95" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">stage.js・bear.js</text>
+<text x="1140" y="806.52" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンポーネント: 舞台]</text>
+<text x="1140" y="830" text-anchor="middle" font-size="12.5" fill="#04342c">突然クイズ(3択)・隅のくま</text>
+<text x="1140" y="848.5" text-anchor="middle" font-size="12.5" fill="#04342c">うんちくの吹き出し</text>
+<text x="1140" y="867" text-anchor="middle" font-size="12.5" fill="#04342c">章の終わり・読了のフィーバー</text>
+<!-- overlay.js -->
+<rect x="1380" y="740" width="320" height="160" rx="8" fill="#fdf3d7" stroke="#b7791f" stroke-width="1.6"/>
+<text x="1540" y="787.95" text-anchor="middle" font-size="15" font-weight="700" fill="#4a3410">overlay.js</text>
+<text x="1540" y="806.52" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンポーネント: 道具と知らせ]</text>
+<text x="1540" y="830" text-anchor="middle" font-size="12.5" fill="#4a3410">問いのボタン・回答カード</text>
+<text x="1540" y="848.5" text-anchor="middle" font-size="12.5" fill="#4a3410">開始の知らせ</text>
+<text x="1540" y="867" text-anchor="middle" font-size="12.5" fill="#4a3410">(見た目は旧テーマのまま)</text>
+<!-- paint.js -->
+<rect x="760" y="990" width="400" height="120" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
+<text x="960" y="1036.45" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">paint.js</text>
+<text x="960" y="1055.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンポーネント: 水彩の粒]</text>
+<text x="960" y="1078.5" text-anchor="middle" font-size="12.5" fill="#04342c">形は一度だけ焼き、毎フレームは位置と透明度だけ</text>
+<!-- Google Play ブックスのページ -->
+<rect x="200" y="1270" width="1500" height="120" rx="8" fill="#e8edf4" stroke="#5b6b7f" stroke-width="1.6"/>
+<text x="950" y="1316.45" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2a37">Google Play ブックスのページ</text>
+<text x="950" y="1335.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[外部システム]</text>
+<text x="950" y="1358.5" text-anchor="middle" font-size="12.5" fill="#1f2a37">最上位 play.google.com/books/reader(ページ表示)・本文 books.googleusercontent.com(別ドメインのフレーム)</text>
+<!-- 札・見出し・凡例 -->
+<text x="40" y="50" font-size="24" font-weight="700" fill="#2c2c2a">よみりん — 読書タブの content script のコンポーネント(C4 レベル3)</text>
+<text x="40" y="78" font-size="13" fill="#5f5e5a">Play ブックスのタブに入る部品(ファイル)。ページの要素は書き換えず、本文の外の Shadow DOM の層にだけ描く。v0.26 の構成(2026-10-12)</text>
+<rect x="40" y="94" width="117.04" height="22" rx="11" fill="#ffffff" stroke="#c9c7bf" stroke-width="1"/>
+<text x="98.52" y="109.5" text-anchor="middle" font-size="12" fill="#5f5e5a">1 システムの文脈</text>
+<text x="165.04" y="109.5" font-size="13" fill="#a3a29d">›</text>
+<rect x="177.04" y="94" width="81.04" height="22" rx="11" fill="#ffffff" stroke="#c9c7bf" stroke-width="1"/>
+<text x="217.56" y="109.5" text-anchor="middle" font-size="12" fill="#5f5e5a">2 コンテナ</text>
+<text x="266.08" y="109.5" font-size="13" fill="#a3a29d">›</text>
+<rect x="278.08" y="94" width="215.92" height="22" rx="11" fill="#ffffff" stroke="#c9c7bf" stroke-width="1"/>
+<text x="386.04" y="109.5" text-anchor="middle" font-size="12" fill="#5f5e5a">3 コンポーネント: Service Worker</text>
+<text x="502" y="109.5" font-size="13" fill="#a3a29d">›</text>
+<rect x="514" y="94" width="172.72" height="22" rx="11" fill="#26215c" stroke="#26215c" stroke-width="1"/>
+<text x="600.36" y="109.5" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">3 コンポーネント: 読書タブ</text>
+<text x="694.72" y="109.5" font-size="13" fill="#a3a29d">›</text>
+<rect x="706.72" y="94" width="89.68" height="22" rx="11" fill="#ffffff" stroke="#c9c7bf" stroke-width="1"/>
+<text x="751.56" y="109.5" text-anchor="middle" font-size="12" fill="#5f5e5a">配置図(補足)</text>
+<rect x="626.1" y="309" width="167.8" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="710" y="326" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3c3489">③ 注入する</text>
+<text x="710" y="343" text-anchor="middle" font-size="11" fill="#5f5e5a">[executeScript・全フレーム]</text>
+<rect x="258.2" y="290.5" width="163.5" height="59" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="340" y="307.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">REPORT book_progress</text>
+<text x="340" y="324.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">{page, total}・book_end</text>
+<text x="340" y="341.5" text-anchor="middle" font-size="11" fill="#5f5e5a">[runtime メッセージ]</text>
+<rect x="487" y="497.5" width="66" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="520" y="514.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">読み込む</text>
+<rect x="864.5" y="489" width="91" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="910" y="506" text-anchor="middle" font-size="12.5" fill="#2c2c2a">本文が出たら</text>
+<text x="910" y="523" text-anchor="middle" font-size="11" fill="#5f5e5a">[import()]</text>
+<rect x="929.5" y="288.5" width="241" height="93" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1050" y="305.5" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3c3489">④ REPORT(鼓動・めくり・演出)</text>
+<text x="1050" y="322.5" text-anchor="middle" font-size="12.5" fill="#3c3489">GET_STATUS・QUIZ_REQUEST</text>
+<text x="1050" y="339.5" text-anchor="middle" font-size="12.5" fill="#3c3489">QUIZ_SHOWN・ASK_OPEN</text>
+<text x="1050" y="356.5" text-anchor="middle" font-size="12.5" fill="#3c3489">ASK_REQUEST・TRIVIA_REQUEST</text>
+<text x="1050" y="373.5" text-anchor="middle" font-size="11" fill="#5f5e5a">[runtime メッセージ]</text>
+<rect x="1245.2" y="273.5" width="209.5" height="93" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1350" y="290.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">めくり・θ・位置・読了・終了</text>
+<text x="1350" y="307.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">rs_page_turn・rs_theta</text>
+<text x="1350" y="324.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">rs_progress・rs_book_end</text>
+<text x="1350" y="341.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">rs_book_end_screen・rs_stop</text>
+<text x="1350" y="358.5" text-anchor="middle" font-size="11" fill="#5f5e5a">[tabs.sendMessage]</text>
+<rect x="1535.8" y="657.5" width="128.5" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1600" y="674.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">問いのボタンで問う</text>
+<rect x="1775.8" y="739" width="128.5" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1840" y="756" text-anchor="middle" font-size="12.5" fill="#2c2c2a">読む・ページを送る</text>
+<text x="1840" y="773" text-anchor="middle" font-size="12.5" fill="#2c2c2a">クイズに答える</text>
+<rect x="335.8" y="687.5" width="128.5" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="400" y="704.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">段落を拾う・難しさ</text>
+<rect x="867" y="677.5" width="66" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="900" y="694.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">余白・話</text>
+<rect x="1094.5" y="667.5" width="91" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1140" y="684.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">出来事を出す</text>
+<rect x="1374.5" y="667.5" width="91" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1420" y="684.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">問い・知らせ</text>
+<rect x="787" y="932.5" width="66" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="820" y="949.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">粒を描く</text>
+<rect x="1067" y="932.5" width="66" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1100" y="949.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">粒を描く</text>
+<rect x="133.5" y="979" width="173" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="220" y="996" text-anchor="middle" font-size="12.5" fill="#2c2c2a">ページ表示「N / M」を読む</text>
+<text x="220" y="1013" text-anchor="middle" font-size="11" fill="#5f5e5a">[DOM]</text>
+<rect x="342" y="1059" width="116" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="400" y="1076" text-anchor="middle" font-size="12.5" fill="#2c2c2a">本文の段落を読む</text>
+<text x="400" y="1093" text-anchor="middle" font-size="11" fill="#5f5e5a">[DOM]</text>
+<rect x="582.9" y="1204" width="114.1" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="640" y="1221" text-anchor="middle" font-size="12.5" fill="#2c2c2a">余白に描く</text>
+<text x="640" y="1238" text-anchor="middle" font-size="11" fill="#5f5e5a">[Shadow DOM の層]</text>
+<rect x="1202" y="1204" width="116" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1260" y="1221" text-anchor="middle" font-size="12.5" fill="#2c2c2a">幕・くま・カード</text>
+<text x="1260" y="1238" text-anchor="middle" font-size="11" fill="#5f5e5a">[Shadow DOM の層]</text>
+<rect x="1482.9" y="1204" width="114.1" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1540" y="1221" text-anchor="middle" font-size="12.5" fill="#2c2c2a">ボタン・カード</text>
+<text x="1540" y="1238" text-anchor="middle" font-size="11" fill="#5f5e5a">[Shadow DOM の層]</text>
+<text x="200" y="1425" font-size="12.5" fill="#5f5e5a">止めてあるので図から外したもの: pagecurl.js(紙の角がめくれる)・hints.js(旧ヒントの文)</text>
+<rect x="40" y="1470" width="1146.5" height="40" rx="8" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="40" y="1464" font-size="12" font-weight="600" fill="#5f5e5a">凡例</text>
+<path d="M56,1490 L100,1490" stroke="#534ab7" stroke-width="3" marker-end="url(#a-main)"/>
+<text x="110" y="1494.5" font-size="12.5" fill="#2c2c2a">中核の流れ(①〜⑤)</text>
+<path d="M244,1490 L288,1490" stroke="#3d3d3a" stroke-width="1.4" marker-end="url(#a-call)"/>
+<text x="298" y="1494.5" font-size="12.5" fill="#2c2c2a">呼び出し・データ</text>
+<path d="M424,1490 L468,1490" stroke="#a3a29d" stroke-width="1.6" marker-end="url(#a-user)"/>
+<text x="478" y="1494.5" font-size="12.5" fill="#2c2c2a">利用者の操作</text>
+<rect x="579" y="1481" width="36" height="18" rx="4" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.4"/>
+<text x="623" y="1494.5" font-size="12.5" fill="#2c2c2a">自作・できている</text>
+<rect x="749" y="1481" width="36" height="18" rx="4" fill="#fdf3d7" stroke="#b7791f" stroke-width="1.4"/>
+<text x="793" y="1494.5" font-size="12.5" fill="#2c2c2a">自作・動くが残りがある</text>
+<rect x="956.5" y="1481" width="36" height="18" rx="4" fill="#e8edf4" stroke="#5b6b7f" stroke-width="1.4"/>
+<text x="1000.5" y="1494.5" font-size="12.5" fill="#2c2c2a">外部のシステム</text>
+<circle cx="1132" cy="1490" r="8" fill="#eeedfe" stroke="#534ab7" stroke-width="1.4"/>
+<text x="1158" y="1494.5" font-size="12.5" fill="#2c2c2a">人</text>
+</svg>
