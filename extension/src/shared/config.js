@@ -112,6 +112,40 @@ export async function writeServerConsent(value) {
   }
 }
 
+// 使われ方の要約(#28・docs/design.md §9)。セッションを閉じたあと、その要約(読書時間・離脱・θ・成否など。
+// 値は数・真偽・決まった語だけ)を同じサーバの /telemetry に送る。本・本文・問い(記録層)は送らない。
+// 新しく入れた人には、最初の設定でチェックを入れた状態で見せる(既定オン)。この版より前から使っている人は、
+// 選ぶまでオフ(キーが無い=送らない。ダッシュボードで一度だけ知らせる)。
+export const TELEMETRY = {
+  v: 1, // 送る行の形の版(サーバの TmSession / TmHello と揃える)
+  maxOutbox: 50, // 送り待ちに置く行の上限(古い順に捨てる)。1回の POST もこの行数まで
+  timeoutMs: 10_000,
+};
+
+const TELEMETRY_CONSENT_KEY = 'telemetry_consent';
+
+/** 使われ方の要約を送ってよいか。true / false(本人が選んだ)/ null(まだ選んでいない=送らない)。 */
+export async function readTelemetryChoice() {
+  try {
+    const r = await chrome.storage.local.get(TELEMETRY_CONSENT_KEY);
+    return typeof r[TELEMETRY_CONSENT_KEY] === 'boolean' ? r[TELEMETRY_CONSENT_KEY] : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function readTelemetryConsent() {
+  return (await readTelemetryChoice()) === true;
+}
+
+export async function writeTelemetryConsent(value) {
+  try {
+    await chrome.storage.local.set({ [TELEMETRY_CONSENT_KEY]: value === true });
+  } catch {
+    /* 失敗は無視(次回の読みで「送らない」扱い) */
+  }
+}
+
 /** デモモードの現在値(プロフィールごと)。既定OFF。読めなければOFF扱い。 */
 export async function readDemoFlag() {
   try {

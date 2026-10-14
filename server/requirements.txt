@@ -2,5 +2,7 @@
 fastapi==0.141.1
 anthropic==0.122.0
 httpx==0.28.1
+# 使われ方の要約を Postgres(Neon)に貯める(#28)。binary は Vercel でも C のビルドなしで入る
+psycopg[binary]==3.3.6
 # ローカル起動用(Vercel では使わない)
 uvicorn==0.52.3

@@ -57,5 +57,7 @@ export const Msg = {
   ASK_OPEN: 'ask_open', // content→SW: 問いの欄を開いた(打っている間に内蔵AIを起こしておく)
   ASK_REQUEST: 'ask_request', // content→SW: 自分からの問い(道具。Nanoのみ・1問1答)
   TRIVIA_REQUEST: 'trivia_request', // content→SW: くまのうんちく(同意があれば単語の候補だけをサーバへ・なければ Nano)
+  SET_TELEMETRY: 'set_telemetry', // dashboard→SW: 使われ方の要約を送るか(#28)
+  FORGET_TELEMETRY: 'forget_telemetry', // dashboard→SW: 送った使われ方の要約をサーバから消す
   WIPE_ALL: 'wipe_all',
 };

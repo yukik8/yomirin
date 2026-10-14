@@ -4,6 +4,9 @@
 
 main.py は import のときに環境変数と server/.env を読むので、その前に置いておく
 (.env は「まだ無い変数だけ」埋めるので、ここで置いたものが勝つ)。
+
+使われ方の要約(/telemetry)の表は、RS_TEST_DATABASE_URL に捨ててよい Postgres があれば、そこで確かめる
+(CI は service の Postgres。無ければ DB を使うテストだけ飛ばす)。本物の Neon は使わない。
 """
 
 import json
@@ -25,6 +28,7 @@ os.environ.update(
         "KV_REST_API_URL": "",
         "KV_REST_API_TOKEN": "",
         "RS_ALLOWED_ORIGINS": "",
+        "DATABASE_URL": "",  # 既定は DB なし(受け取って捨てる)。DB を使うテストは db の fixture で差し替える
     }
 )
 sys.path.insert(0, str(SERVER))
@@ -76,3 +80,27 @@ def client(fake):
 @pytest.fixture
 def terms_table():
     return json.loads((FIXTURES / "terms.json").read_text(encoding="utf-8"))
+
+
+@pytest.fixture
+def tm_rows():
+    """送る行の見本(拡張のテストと同じもの)。"""
+    data = json.loads((FIXTURES / "telemetry.json").read_text(encoding="utf-8"))
+    return {"session": data["session"], "hello": data["hello"]}
+
+
+@pytest.fixture
+def db(monkeypatch):
+    """捨ててよい Postgres(RS_TEST_DATABASE_URL)。表を消してから main をそこへ向け、確かめるための接続を返す。"""
+    url = os.environ.get("RS_TEST_DATABASE_URL")
+    if not url:
+        pytest.skip("RS_TEST_DATABASE_URL が無い(DB を使うテストは CI の Postgres で回る)")
+    import psycopg
+
+    with psycopg.connect(url, autocommit=True) as conn:
+        conn.execute("DROP TABLE IF EXISTS tm_sessions, tm_installs")
+    monkeypatch.setattr(main, "DATABASE_URL", url)
+    monkeypatch.setattr(main, "_schema_ready", False)
+    conn = psycopg.connect(url, autocommit=True)
+    yield conn
+    conn.close()

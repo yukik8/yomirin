@@ -13,6 +13,19 @@
         <span id="ver" class="ver"></span>
       </header>
 
+      <!-- 使われ方の要約(#28)のお知らせ。この版より前から使っていて、まだ選んでいない人に一度だけ。
+           選ぶまでは送らない(PRIVACY.md §6: 送るものを増やすときは、あらためて同意をいただく) -->
+      <section id="tm-notice" aria-label="お知らせ" hidden>
+        <span class="eyebrow">お知らせ</span>
+        <p class="notice-lead">使われ方の要約(読書時間・補助の量など、数だけ)を、開発者に送れるようになりました。いまは送っていません。</p>
+        <p class="note">送ると、読み終えるたびに、その回の要約をよみりんのサーバに送ります。本・書名・本文・問いやクイズの中身は送りません。
+          あとで「データ」からいつでも変えられ、送ったものも消せます。</p>
+        <div class="actions">
+          <button id="tm-notice-on" type="button">送る</button>
+          <button id="tm-notice-off" type="button">送らない</button>
+        </div>
+      </section>
+
       <!-- 本棚: 本ごとの位置・残り時間・読んだ所(帯)・余白。記録カテゴリ — 事実だけを出す
            (docs/design.md §8)。θ の節より上に置く: 卒業後も残るのはこちら -->
       <section aria-label="本棚">
@@ -118,7 +131,7 @@
       <section aria-label="データ">
         <span class="eyebrow">データ</span>
         <p class="note">
-          記録はすべてこの端末のブラウザ内に保存されています。本の本文が端末の外へ送られることはありません。
+          本・問い・クイズなどの記録は、この端末のブラウザ内だけに保存されています。本の本文が端末の外へ送られることはありません。
           クイズと問いへの答えは、この端末の内蔵AI(Gemini Nano)が作ります。
         </p>
         <label class="consent-toggle">
@@ -127,6 +140,12 @@
         </label>
         <p class="note">オンの間だけ、読み終えたページからこの端末で選んだ単語を数語(最大8語)、
           よみりんのサーバ経由で Anthropic の AI に送ります。本の本文・書名・URL は送りません。</p>
+        <label class="consent-toggle">
+          <input id="telemetry" type="checkbox" />
+          <span>使われ方の要約を開発者に送る</span>
+        </label>
+        <p class="note">オンの間だけ、読み終えるたびに、その回の要約(読書時間・離れた回数・補助の量・クイズや問いの数など、数だけ)を
+          よみりんのサーバに送ります。本・書名・本文・問いやクイズの中身は送りません。</p>
         <div class="actions">
           <button id="export" type="button">JSONでエクスポート</button>
           <button id="recalibrate" type="button">診断をやり直す</button>
@@ -153,7 +172,11 @@
         </details>
         <div class="danger">
           <p class="danger-note">元に戻せない操作</p>
-          <button id="wipe" type="button">データを全部消す</button>
+          <div class="danger-buttons">
+            <button id="tm-forget" type="button">送ったものを消す</button>
+            <button id="wipe" type="button">データを全部消す</button>
+          </div>
+          <p id="tm-status" class="note" hidden></p>
         </div>
       </section>
     </main>

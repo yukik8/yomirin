@@ -1,17 +1,21 @@
 # reading-scaffold のうんちくサーバ(Vercel / ローカルの uvicorn)。
 #
-# 役目は1つ: 拡張が端末で選んだ「単語の候補」(最大8語)から、くまのうんちくを1つ返す。
-# 本の本文・書名・URL は受け取らない(Google Play の規約で、購入した本の送信・再配布は禁止。
-# 本文を扱うクイズと問いは、端末内の Gemini Nano だけで作る)。
-# 受け取った単語も生成結果も保存しない。ログには状態とトークン数だけを出し、単語は出さない。
+# 役目は2つ:
+#   1. /trivia: 拡張が端末で選んだ「単語の候補」(最大8語)から、くまのうんちくを1つ返す。
+#      本の本文・書名・URL は受け取らない(Google Play の規約で、購入した本の送信・再配布は禁止。
+#      本文を扱うクイズと問いは、端末内の Gemini Nano だけで作る)。
+#      受け取った単語も生成結果も保存しない。ログには状態とトークン数だけを出し、単語は出さない。
+#   2. /telemetry: 使われ方の要約(セッションごとの読書時間・θ など。#28)を Postgres に貯める。
+#      項目は数・真偽・決まった語だけで、本・本文・問いは受け取らない。IP は保存しない。
 #
 # 公開サーバなので、誰でも叩ける前提で守る:
-#   - インストールごとの ID(X-RS-Install)と IP ごとに、1日の回数を数える
+#   - インストールごとの ID(X-RS-Install / X-RS-Telemetry)と IP ごとに、1日の回数を数える
 #   - サーバ全体の1日の上限(これを超えたら全員に断る)
-#   - 入力の長さ・語数の上限、Anthropic 呼び出しのタイムアウト
+#   - 入力の長さ・語数・値の範囲の上限、Anthropic 呼び出しのタイムアウト
 #   - 料金の最後の砦は Anthropic Console 側の利用額の上限(server/README.md)
 # 回数は Upstash Redis(環境変数があれば)で数える。無ければインスタンスのメモリで数える(目安)。
 
+import datetime
 import json
 import os
 import re
@@ -19,11 +23,12 @@ import threading
 import time
 import uuid
 from collections import OrderedDict
-from typing import Annotated
+from typing import Annotated, Literal
 
 import anthropic
 import httpx
-from fastapi import FastAPI, Header, Request
+import psycopg
+from fastapi import FastAPI, Header, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
@@ -74,8 +79,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_origin_regex=None if ALLOWED_ORIGINS else r"chrome-extension://[a-p]{32}",
-    allow_methods=["GET", "POST"],
-    allow_headers=["content-type", "x-rs-install"],
+    allow_methods=["GET", "POST", "DELETE"],
+    allow_headers=["content-type", "x-rs-install", "x-rs-telemetry"],
     max_age=86400,
 )
 
@@ -319,3 +324,216 @@ def _check(data: dict, terms: list[str]) -> dict:
     if len(said) > 90 or _URLISH.search(said):
         return {"ok": False, "error": "rejected_text"}
     return {"ok": True, "trivia": {"text": said, "term": term}}
+
+
+# ---- 使われ方の要約(#28) -----------------------------------------------------------
+#
+# 拡張は、セッションを閉じたあとに、その要約を送り待ちに積んでまとめて送る(本人がオフにしていなければ)。
+# ここではそれを Postgres(Vercel Marketplace の Neon)に貯めるだけ。一方通行で、返すのは 204 だけ
+# (θ・演出・画面に戻すものは無い)。項目は下の TmSession / TmHello だけで、それ以外が付いてきたら 422。
+# 値は数・真偽・決まった語・版の番号だけ(自由な文字列の項目が無いので、本文や書名が混ざる余地が型で無い)。
+# IP は保存しない。ログは状態・行の数・所要時間だけで、項目の値も ID も出さない。
+# DATABASE_URL が無ければ、受け取って捨てる(ローカルでも拡張を止めない)。
+
+DATABASE_URL = os.environ.get("DATABASE_URL") or None
+TM_LIMIT_PER_ID = _int_env("RS_TM_LIMIT_PER_ID", 100)  # 1日の POST・DELETE の回数(拡張はセッションを閉じるごとに1回)
+TM_LIMIT_GLOBAL = _int_env("RS_TM_LIMIT_GLOBAL", 50000)
+TM_MAX_ROWS = 50  # 1回に受ける行の数(拡張の送り待ちの上限と同じ)
+_SQL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sql")
+
+Count = Annotated[int, Field(ge=0, le=100_000)]
+Ms = Annotated[int, Field(ge=0, le=86_400_000)]  # 24時間まで
+Theta = Annotated[float, Field(ge=0, le=8, allow_inf_nan=False)]  # 0〜THETA_MAX
+Version = Annotated[str, StringConstraints(pattern=r"^\d{1,4}(\.\d{1,4}){0,3}$")]
+
+
+class TmSession(BaseModel):
+    """セッションの要約。拡張の telemetry.js(sessionRow)と同じ項目・同じ範囲。
+    どちらかを変えたら、もう片方と sql/・tests/fixtures/telemetry.json も揃える。"""
+
+    model_config = ConfigDict(extra="forbid")
+    kind: Literal["session"]
+    v: Literal[1]  # 行の形の版
+    ext: Version  # そのセッションを測った拡張の版
+    session_id: uuid.UUID  # 送り直しの重なりを除くため
+    date: datetime.date  # 端末の日付
+    hour: Annotated[int, Field(ge=0, le=23)]
+    theta: Theta
+    theta_base: Theta
+    theta_after: Theta | None
+    controller_reason: (
+        Literal["success", "fail", "graduate", "homeostat_redeploy", "homeostat_recover", "down", "up", "hold", "explore_hold"]
+        | None
+    )
+    read_ms: Ms
+    escapes: Count
+    away_total_ms: Ms
+    quick_returns: Count
+    longest_streak_ms: Ms
+    completion_pct: Annotated[int, Field(ge=0, le=100)]
+    success: bool
+    stability: Annotated[float, Field(ge=0, le=1, allow_inf_nan=False)] | None
+    end_reason: Literal["manual", "close", "idle"] | None
+    hints_shown: Count
+    effects_shown: Count
+    pages_read: Count
+    pace_wpm: Annotated[float, Field(ge=0, le=100_000, allow_inf_nan=False)] | None
+    pace_cv: Annotated[float, Field(ge=0, le=100, allow_inf_nan=False)] | None
+    slow_pages: Count
+    fast_pages: Count
+    backs: Count
+    quiz_answered: Count
+    quiz_correct: Count
+    questions_asked: Count  # 数だけ(問いの文は受け取らない)
+    position_read: bool  # Play ブックスのページ表示が読めたか
+    reached_end: bool
+
+
+class TmHello(BaseModel):
+    """環境の行(オンボーディングの完了・版が変わったとき)。拡張の telemetry.js(helloRow)と同じ項目。"""
+
+    model_config = ConfigDict(extra="forbid")
+    kind: Literal["hello"]
+    v: Literal[1]
+    ext: Version
+    build: Literal["store", "dev"]
+    chrome: Annotated[int, Field(ge=1, le=999)] | None  # メジャー版だけ
+    theta0: Theta | None  # 診断で置いた θ の初期値
+    goal: Literal["level1", "level2", "level3"] | None
+    trivia: bool  # うんちくのサーバを使うか
+
+
+class TelemetryRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    rows: list[Annotated[TmSession | TmHello, Field(discriminator="kind")]] = Field(min_length=1, max_length=TM_MAX_ROWS)
+
+
+_SESSION_COLUMNS = [name for name in TmSession.model_fields if name != "kind"]
+_INSERT_SESSION = (
+    f"INSERT INTO tm_sessions (telemetry_id, {', '.join(_SESSION_COLUMNS)}) "
+    f"VALUES (%(telemetry_id)s, {', '.join(f'%({c})s' for c in _SESSION_COLUMNS)}) "
+    "ON CONFLICT (telemetry_id, session_id) DO NOTHING"
+)
+_TOUCH_INSTALL = "INSERT INTO tm_installs (id) VALUES (%s) ON CONFLICT (id) DO UPDATE SET last_seen = now()"
+_HELLO_COLUMNS = [name for name in TmHello.model_fields if name not in ("kind", "v")]
+_UPDATE_HELLO = (
+    f"UPDATE tm_installs SET hello_at = now(), {', '.join(f'{c} = %({c})s' for c in _HELLO_COLUMNS)} WHERE id = %(id)s"
+)
+
+_schema_lock = threading.Lock()
+_schema_ready = False
+
+
+def _connect():
+    # Neon の pooled の URL は PgBouncer(transaction mode)を通るので、サーバ側の prepared statement は使わない
+    return psycopg.connect(DATABASE_URL, connect_timeout=5, prepare_threshold=None)
+
+
+def _ensure_schema(conn) -> None:
+    """sql/ の SQL を、インスタンスごとに最初の1回だけ流す(どれも何度流しても同じになる書き方)。"""
+    global _schema_ready
+    with _schema_lock:
+        if _schema_ready:
+            return
+        for name in sorted(os.listdir(_SQL_DIR)):
+            if name.endswith(".sql"):
+                with open(os.path.join(_SQL_DIR, name), encoding="utf-8") as f:
+                    conn.execute(f.read())
+        conn.commit()
+        _schema_ready = True
+
+
+def _store(tid: str, rows: list[TmSession | TmHello]) -> None:
+    sessions = [r for r in rows if isinstance(r, TmSession)]
+    hello = next((r for r in reversed(rows) if isinstance(r, TmHello)), None)
+    with _connect() as conn:  # 抜けるときに commit(例外なら rollback)して閉じる
+        _ensure_schema(conn)
+        with conn.cursor() as cur:
+            cur.execute(_TOUCH_INSTALL, (tid,))
+            if hello is not None:
+                cur.execute(_UPDATE_HELLO, {"id": tid, **hello.model_dump(include=set(_HELLO_COLUMNS))})
+            if sessions:
+                cur.executemany(
+                    _INSERT_SESSION,
+                    [{"telemetry_id": tid, **s.model_dump(include=set(_SESSION_COLUMNS))} for s in sessions],
+                )
+
+
+def _forget(tid: str) -> None:
+    with _connect() as conn:
+        _ensure_schema(conn)
+        conn.execute("DELETE FROM tm_sessions WHERE telemetry_id = %s", (tid,))
+        conn.execute("DELETE FROM tm_installs WHERE id = %s", (tid,))
+
+
+def _tm_log(**fields) -> None:
+    """1行の JSON ログ。項目の値も telemetry_id も出さない。"""
+    print(json.dumps({"event": "telemetry", **fields}))
+
+
+def _tm_guard(request: Request, tid: str | None, op: str) -> JSONResponse | None:
+    """ID・オリジン・1日の回数を確かめる。通さないときは返す応答。"""
+    if tid is None:
+        return JSONResponse({"ok": False, "error": "no_telemetry_id"}, status_code=401)
+    if ALLOWED_ORIGINS and request.headers.get("origin") not in ALLOWED_ORIGINS:
+        return JSONResponse({"ok": False, "error": "forbidden"}, status_code=403)
+    day = _day()
+    counts = _incr([f"tm:{day}:id:{tid}", f"tm:{day}:global"])
+    if counts is not None and (counts[0] > TM_LIMIT_PER_ID or counts[1] > TM_LIMIT_GLOBAL):
+        _tm_log(op=op, status="rate_limited")
+        return JSONResponse({"ok": False, "error": "rate_limited"}, status_code=429)
+    return None
+
+
+def _telemetry_id(value: str | None) -> str | None:
+    """拡張が作るランダムな UUID(うんちくの install_id とは別)。無い・形が違うものは None。"""
+    try:
+        return str(uuid.UUID(value or ""))
+    except ValueError:
+        return None
+
+
+@app.post("/telemetry", status_code=204)
+def telemetry(
+    req: TelemetryRequest,
+    request: Request,
+    x_rs_telemetry: str | None = Header(default=None),
+):
+    tid = _telemetry_id(x_rs_telemetry)
+    denied = _tm_guard(request, tid, "post")
+    if denied is not None:
+        return denied
+    if not DATABASE_URL:
+        _tm_log(op="post", status="discarded", rows=len(req.rows))
+        return Response(status_code=204)
+    started = time.monotonic()
+    try:
+        _store(tid, req.rows)
+    except Exception as e:  # DB に届かない・落ちている。拡張は送り待ちに残して、あとで送り直す
+        _tm_log(op="post", status="db_error", error=type(e).__name__, ms=round((time.monotonic() - started) * 1000))
+        return JSONResponse({"ok": False, "error": "unavailable"}, status_code=503)
+    _tm_log(op="post", status="stored", rows=len(req.rows), ms=round((time.monotonic() - started) * 1000))
+    return Response(status_code=204)
+
+
+@app.delete("/telemetry", status_code=204)
+def telemetry_forget(
+    request: Request,
+    x_rs_telemetry: str | None = Header(default=None),
+):
+    """その ID の行を全部消す(ダッシュボードの「送ったものを消す」と全消去)。"""
+    tid = _telemetry_id(x_rs_telemetry)
+    denied = _tm_guard(request, tid, "delete")
+    if denied is not None:
+        return denied
+    if not DATABASE_URL:
+        _tm_log(op="delete", status="discarded")
+        return Response(status_code=204)
+    started = time.monotonic()
+    try:
+        _forget(tid)
+    except Exception as e:
+        _tm_log(op="delete", status="db_error", error=type(e).__name__, ms=round((time.monotonic() - started) * 1000))
+        return JSONResponse({"ok": False, "error": "unavailable"}, status_code=503)
+    _tm_log(op="delete", status="deleted", ms=round((time.monotonic() - started) * 1000))
+    return Response(status_code=204)
