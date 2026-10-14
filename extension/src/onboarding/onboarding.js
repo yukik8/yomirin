@@ -1,10 +1,11 @@
 // オンボーディング: 診断(4問)→ 目標選択 → 完了。
 // スコアと初期θは本人に見せない(ラベリングしない — PRD「診断と目標設定」)。
-// θの計算と保存はSW側(COMPLETE_ONBOARDING)。このページはUIだけを持つ。
+// θの計算と保存、外へ送るかどうかの保存はSW側(COMPLETE_ONBOARDING)。このページはUIだけを持つ。
 
 import { Msg } from '../shared/events.js';
-import { GOALS, DIAGNOSIS, writeServerConsent } from '../shared/config.js';
+import { GOALS, DIAGNOSIS, readServerConsent, readTelemetryChoice } from '../shared/config.js';
 import { nanoDiagnostics, describeNano, nanoReady } from '../background/ai.js';
+import { getState } from '../background/store.js';
 import { showBear } from '../content/bear.js';
 
 const $ = (id) => document.getElementById(id);
@@ -145,12 +146,13 @@ $('finish').addEventListener('click', async () => {
       type: Msg.COMPLETE_ONBOARDING,
       answers,
       goal: selectedGoal,
+      trivia: $('consent').checked,
+      telemetry: $('telemetry').checked,
     });
   } catch {
     /* SW不在など。下で案内する */
   }
   if (res?.ok) {
-    await writeServerConsent($('consent').checked);
     show('step-done');
   } else {
     // 黙って戻すと「終わった」と誤解して閉じてしまう。失敗は必ず見せる
@@ -183,5 +185,14 @@ $('close').addEventListener('click', () => {
   if (nanoIsReady) location.replace(chrome.runtime.getURL('src/dashboard/dashboard.html'));
   else window.close();
 });
+
+// 同意の初期値。うんちくのサーバは既定オフ、使われ方の要約は新しく入れた人だけ既定オン。
+// 診断のやり直しでは、いま選んでいるものを出す(この版より前から使っていて、まだ選んでいない人はオフ)
+(async () => {
+  $('consent').checked = await readServerConsent();
+  const choice = await readTelemetryChoice();
+  const returning = Boolean((await getState().catch(() => null))?.onboarded_at);
+  $('telemetry').checked = choice ?? !returning;
+})();
 
 show('step-intro');

@@ -12,6 +12,7 @@ import {
   writeDemoFlag,
   readServerConsent,
   writeServerConsent,
+  readTelemetryChoice,
 } from '../shared/config.js';
 import { bearImg, showBear } from '../content/bear.js';
 import { buildMirror } from '../background/mirror.js';
@@ -671,6 +672,54 @@ readServerConsent().then((on) => {
 });
 $('consent').addEventListener('change', () => writeServerConsent($('consent').checked));
 
+// 使われ方の要約(#28)。切り替えと「送ったものを消す」は SW 経由(送り待ちを捨てる・サーバの行を消すのは SW の仕事)
+async function refreshTelemetryUI() {
+  $('telemetry').checked = (await readTelemetryChoice()) === true;
+}
+async function setTelemetry(on) {
+  await send(Msg.SET_TELEMETRY, { on });
+  await refreshTelemetryUI();
+}
+$('telemetry').addEventListener('change', () => setTelemetry($('telemetry').checked));
+
+function telemetryStatus(text) {
+  $('tm-status').textContent = text;
+  $('tm-status').hidden = !text;
+}
+
+$('tm-forget').addEventListener('click', async () => {
+  if (!confirm('よみりんのサーバに送った使われ方の要約を消します。この端末の記録は消えません。')) return;
+  $('tm-forget').disabled = true;
+  const res = await send(Msg.FORGET_TELEMETRY).catch(() => null);
+  $('tm-forget').disabled = false;
+  telemetryStatus(
+    res?.deleted
+      ? '送った使われ方の要約を消しました。'
+      : 'いまはサーバに届かず、消せませんでした。次にブラウザを起動したときなどに、もう一度消しにいきます。',
+  );
+});
+
+// この版より前から使っていて、まだ選んでいない人に一度だけ知らせる(選ぶまで送らない・催促しない)
+const NOTICE_KEY = 'telemetry_notice_seen';
+async function maybeShowTelemetryNotice() {
+  const seen = (await chrome.storage.local.get(NOTICE_KEY))[NOTICE_KEY] === true;
+  const state = await getState();
+  if (seen || !state.onboarded_at || (await readTelemetryChoice()) !== null) return;
+  $('tm-notice').hidden = false;
+  await chrome.storage.local.set({ [NOTICE_KEY]: true });
+}
+for (const [id, on] of [
+  ['tm-notice-on', true],
+  ['tm-notice-off', false],
+]) {
+  $(id).addEventListener('click', async () => {
+    $('tm-notice').hidden = true;
+    await setTelemetry(on);
+  });
+}
+refreshTelemetryUI();
+maybeShowTelemetryNotice();
+
 // 開発用の欄(θの手動上書き・デモ・デモデータ投入)はストア版では出さない
 $('dev-tools').hidden = IS_STORE_BUILD;
 
@@ -728,9 +777,11 @@ function drawStabilityReport(r) {
 }
 
 $('wipe').addEventListener('click', async () => {
-  if (!confirm('計測・読書メモリ・クイズ・θの状態をすべて消します。元に戻せません。')) return;
+  if (!confirm('計測・読書メモリ・クイズ・θの状態をすべて消します。サーバに送った使われ方の要約も消します。元に戻せません。')) return;
   if (!confirm('本当に消しますか?(エクスポートしていない記録は失われます)')) return;
   await send(Msg.WIPE_ALL);
+  await refreshTelemetryUI();
+  telemetryStatus('');
   await render();
 });
 

@@ -30,6 +30,7 @@
 <path d="M940,1260 L940,1390" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
 <path d="M1960,690 L2140,690" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
 <path d="M1440,810 L1440,870 L2140,870" fill="none" stroke="#c2410c" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#a-egress)"/>
+<path d="M540,610 L540,580 L1210,580 L1210,610" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
 <!-- 箱 -->
 <!-- 読書タブの content script -->
 <rect x="420" y="150" width="340" height="120" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
@@ -50,7 +51,7 @@
 <rect x="260" y="410" width="1740" height="100" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
 <text x="1130" y="446.45" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">service-worker.js</text>
 <text x="1130" y="465.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンポーネント: メッセージの入口]</text>
-<text x="1130" y="488.5" text-anchor="middle" font-size="12.5" fill="#04342c">送信元を確かめて振り分ける(拡張ページだけの命令・計測中のタブだけの依頼)・常設リスナー・起動時と更新時に取り残しを閉じる</text>
+<text x="1130" y="488.5" text-anchor="middle" font-size="12.5" fill="#04342c">送信元を確かめて振り分ける(拡張ページだけの命令・計測中のタブだけの依頼)・常設リスナー・起動時と更新時に取り残しを閉じる・閉じたあと使われ方の要約を送る(sendTelemetry)</text>
 <!-- session.js -->
 <rect x="260" y="610" width="320" height="200" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
 <text x="420" y="668.7" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">session.js</text>
@@ -69,11 +70,12 @@
 <text x="880" y="766.25" text-anchor="middle" font-size="12.5" fill="#4a3410">閾値推定(staircase)は既定 OFF</text>
 <!-- server.js -->
 <rect x="1180" y="610" width="320" height="200" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
-<text x="1340" y="677.95" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">server.js</text>
-<text x="1340" y="696.52" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンポーネント: 外への唯一の口]</text>
-<text x="1340" y="720" text-anchor="middle" font-size="12.5" fill="#04342c">単語の候補と install_id だけを送る</text>
-<text x="1340" y="738.5" text-anchor="middle" font-size="12.5" fill="#04342c">15秒で諦める</text>
-<text x="1340" y="757" text-anchor="middle" font-size="12.5" fill="#04342c">(テストで確かめている)</text>
+<text x="1340" y="668.7" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">server.js・telemetry.js</text>
+<text x="1340" y="687.27" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンポーネント: 外への唯一の口]</text>
+<text x="1340" y="710.75" text-anchor="middle" font-size="12.5" fill="#04342c">うんちく: 単語の候補と install_id だけ</text>
+<text x="1340" y="729.25" text-anchor="middle" font-size="12.5" fill="#04342c">要約: 表の項目だけ・送り待ちに積む</text>
+<text x="1340" y="747.75" text-anchor="middle" font-size="12.5" fill="#04342c">届かなければ残す・送ったものを消す</text>
+<text x="1340" y="766.25" text-anchor="middle" font-size="12.5" fill="#04342c">(テストで確かめている)</text>
 <!-- ai.js -->
 <rect x="1640" y="610" width="320" height="200" rx="8" fill="#fdf3d7" stroke="#b7791f" stroke-width="1.6"/>
 <text x="1800" y="668.7" text-anchor="middle" font-size="15" font-weight="700" fill="#4a3410">ai.js</text>
@@ -104,17 +106,18 @@
 <text x="2280" y="676.45" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2a37">Gemini Nano</text>
 <text x="2280" y="695.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[外部システム: 端末の中]</text>
 <text x="2280" y="718.5" text-anchor="middle" font-size="12.5" fill="#1f2a37">Prompt API</text>
-<!-- うんちくサーバ -->
+<!-- よみりんのサーバ -->
 <rect x="2140" y="800" width="280" height="140" rx="8" fill="#fdf3d7" stroke="#b7791f" stroke-width="1.6"/>
-<text x="2280" y="856.45" text-anchor="middle" font-size="15" font-weight="700" fill="#4a3410">うんちくサーバ</text>
-<text x="2280" y="875.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンテナ: FastAPI・Vercel]</text>
-<text x="2280" y="898.5" text-anchor="middle" font-size="12.5" fill="#4a3410">POST /trivia</text>
+<text x="2280" y="847.2" text-anchor="middle" font-size="15" font-weight="700" fill="#4a3410">よみりんのサーバ</text>
+<text x="2280" y="865.77" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンテナ: FastAPI・Vercel]</text>
+<text x="2280" y="889.25" text-anchor="middle" font-size="12.5" fill="#4a3410">POST /trivia</text>
+<text x="2280" y="907.75" text-anchor="middle" font-size="12.5" fill="#4a3410">POST・DELETE /telemetry</text>
 <!-- chrome.storage.local -->
 <path d="M260,1402 a160,12 0 0 1 320,0 v106 a160,12 0 0 1 -320,0 z" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
 <path d="M260,1402 a160,12 0 0 0 320,0" fill="none" stroke="#0f6e56" stroke-width="1.6"/>
 <text x="420" y="1451.45" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">chrome.storage.local</text>
 <text x="420" y="1470.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンテナ]</text>
-<text x="420" y="1493.5" text-anchor="middle" font-size="12.5" fill="#04342c">セッションの現在値</text>
+<text x="420" y="1493.5" text-anchor="middle" font-size="12.5" fill="#04342c">現在値・同意・要約の送り待ち</text>
 <!-- IndexedDB(v5) -->
 <path d="M760,1402 a180,12 0 0 1 360,0 v106 a180,12 0 0 1 -360,0 z" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
 <path d="M760,1402 a180,12 0 0 0 360,0" fill="none" stroke="#0f6e56" stroke-width="1.6"/>
@@ -123,7 +126,7 @@
 <text x="940" y="1493.5" text-anchor="middle" font-size="12.5" fill="#04342c">計測層・制御層・記録層</text>
 <!-- 札・見出し・凡例 -->
 <text x="40" y="50" font-size="24" font-weight="700" fill="#2c2c2a">よみりん — Service Worker のコンポーネント(C4 レベル3)</text>
-<text x="40" y="78" font-size="13" fill="#5f5e5a">Service Worker の中の部品(ファイル)と、部品どうしの呼び出し。札の英字は関数名・メッセージ名のまま。v0.26 の構成(2026-10-12)</text>
+<text x="40" y="78" font-size="13" fill="#5f5e5a">Service Worker の中の部品(ファイル)と、部品どうしの呼び出し。札の英字は関数名・メッセージ名のまま。v0.27 の構成(2026-10-14)</text>
 <rect x="40" y="94" width="117.04" height="22" rx="11" fill="#ffffff" stroke="#c9c7bf" stroke-width="1"/>
 <text x="98.52" y="109.5" text-anchor="middle" font-size="12" fill="#5f5e5a">1 システムの文脈</text>
 <text x="165.04" y="109.5" font-size="13" fill="#a3a29d">›</text>
@@ -144,12 +147,13 @@
 <text x="590" y="339.5" text-anchor="middle" font-size="12.5" fill="#3c3489">ASK_OPEN・ASK_REQUEST</text>
 <text x="590" y="356.5" text-anchor="middle" font-size="12.5" fill="#3c3489">TRIVIA_REQUEST</text>
 <text x="590" y="373.5" text-anchor="middle" font-size="11" fill="#5f5e5a">[計測中のタブからだけ受ける]</text>
-<rect x="941" y="288.5" width="258" height="93" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
-<text x="1070" y="305.5" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3c3489">② START_SESSION・END_SESSION</text>
-<text x="1070" y="322.5" text-anchor="middle" font-size="12.5" fill="#3c3489">COMPLETE_ONBOARDING・SET_GOAL</text>
-<text x="1070" y="339.5" text-anchor="middle" font-size="12.5" fill="#3c3489">GET_MIRROR・GET_LIBRARY</text>
-<text x="1070" y="356.5" text-anchor="middle" font-size="12.5" fill="#3c3489">WIPE_ALL・SET_THETA(開発版)</text>
-<text x="1070" y="373.5" text-anchor="middle" font-size="11" fill="#5f5e5a">[拡張ページからだけ受ける]</text>
+<rect x="928" y="285" width="284" height="110" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1070" y="302" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3c3489">② START_SESSION・END_SESSION</text>
+<text x="1070" y="319" text-anchor="middle" font-size="12.5" fill="#3c3489">COMPLETE_ONBOARDING・SET_GOAL</text>
+<text x="1070" y="336" text-anchor="middle" font-size="12.5" fill="#3c3489">GET_MIRROR・GET_LIBRARY</text>
+<text x="1070" y="353" text-anchor="middle" font-size="12.5" fill="#3c3489">SET_TELEMETRY・FORGET_TELEMETRY</text>
+<text x="1070" y="370" text-anchor="middle" font-size="12.5" fill="#3c3489">WIPE_ALL・SET_THETA(開発版)</text>
+<text x="1070" y="387" text-anchor="middle" font-size="11" fill="#5f5e5a">[拡張ページからだけ受ける]</text>
 <rect x="1449.8" y="288.5" width="200.5" height="93" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
 <text x="1550" y="305.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">tabs.onActivated・onUpdated</text>
 <text x="1550" y="322.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">tabs.onRemoved</text>
@@ -159,9 +163,10 @@
 <rect x="313.2" y="539" width="213.5" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
 <text x="420" y="556" text-anchor="middle" font-size="12.5" font-weight="600" fill="#3c3489">startSession・endSession</text>
 <text x="420" y="573" text-anchor="middle" font-size="12.5" fill="#3c3489">onReport・onTab*・onWatchdog</text>
-<rect x="1257" y="539" width="166" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
-<text x="1340" y="556" text-anchor="middle" font-size="12.5" fill="#2c2c2a">serverTrivia(単語の候補)</text>
-<text x="1340" y="573" text-anchor="middle" font-size="11" fill="#5f5e5a">[同意したときだけ]</text>
+<rect x="1236" y="530.5" width="208" height="59" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1340" y="547.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">serverTrivia(単語の候補)</text>
+<text x="1340" y="564.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">flushTelemetry・forgetTelemetry</text>
+<text x="1340" y="581.5" text-anchor="middle" font-size="11" fill="#5f5e5a">[同意したとき・オフでなければ]</text>
 <rect x="1685.8" y="539" width="228.5" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
 <text x="1800" y="556" text-anchor="middle" font-size="12.5" fill="#2c2c2a">nanoQuiz・nanoAnswer</text>
 <text x="1800" y="573" text-anchor="middle" font-size="12.5" fill="#2c2c2a">nanoTrivia・wakeNano・pickTerms</text>
@@ -193,9 +198,13 @@
 <rect x="2010.8" y="669" width="78.5" height="42" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
 <text x="2050" y="686" text-anchor="middle" font-size="12.5" fill="#2c2c2a">本文を渡す</text>
 <text x="2050" y="703" text-anchor="middle" font-size="11" fill="#5f5e5a">[端末の中]</text>
-<rect x="1713.2" y="849" width="173.5" height="42" rx="4" fill="#ffffff" stroke="#e6b8a2" stroke-width="1"/>
-<text x="1800" y="866" text-anchor="middle" font-size="12.5" font-weight="600" fill="#9a3412">POST /trivia {terms ≤ 8}</text>
-<text x="1800" y="883" text-anchor="middle" font-size="11" fill="#5f5e5a">[HTTPS・X-RS-Install]</text>
+<rect x="1662" y="832" width="276" height="76" rx="4" fill="#ffffff" stroke="#e6b8a2" stroke-width="1"/>
+<text x="1800" y="849" text-anchor="middle" font-size="12.5" font-weight="600" fill="#9a3412">POST /trivia {terms ≤ 8}</text>
+<text x="1800" y="865" text-anchor="middle" font-size="11" fill="#5f5e5a">[HTTPS・X-RS-Install]</text>
+<text x="1800" y="884" text-anchor="middle" font-size="12.5" font-weight="600" fill="#9a3412">POST・DELETE /telemetry {rows ≤ 50}</text>
+<text x="1800" y="900" text-anchor="middle" font-size="11" fill="#5f5e5a">[HTTPS・X-RS-Telemetry]</text>
+<rect x="782" y="567.5" width="196" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="880" y="584.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">queueTelemetry(sessionRow)</text>
 <rect x="40" y="1600" width="1184" height="40" rx="8" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
 <text x="40" y="1594" font-size="12" font-weight="600" fill="#5f5e5a">凡例</text>
 <path d="M56,1620 L100,1620" stroke="#534ab7" stroke-width="3" marker-end="url(#a-main)"/>

@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2290 1210" width="2290" height="1210" font-family="'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',sans-serif">
-<title>reading-scaffold 全体の組み立て(v0.21.1)</title>
+<title>reading-scaffold 全体の組み立て(v0.21.1・外へ出る経路は v0.27)</title>
 <defs>
 <marker id="arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#534ab7"/></marker>
 <marker id="arrow-call" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3d3d3a"/></marker>
@@ -8,9 +8,9 @@
 </defs>
 <rect width="2290" height="1210" fill="#ffffff"/>
 <text x="40" y="52" font-size="22" font-weight="700" fill="#2c2c2a">reading-scaffold — Google Play ブックスで読む時間を支え、補助の量 θ を本人が気づかない速度で 0 へ減らしていく Chrome 拡張</text>
-<text x="40" y="76" font-size="13" fill="#5f5e5a">v0.21.1 の構成(2026-10-08)。設計の詳細は docs/design.md</text>
+<text x="40" y="76" font-size="13" fill="#5f5e5a">v0.21.1 の構成(2026-10-08)。Chrome の外へ出る経路は v0.27(2026-10-14)に合わせた。設計の詳細は docs/design.md</text>
 <rect x="300" y="100" width="1600" height="1070" rx="10" fill="#fcfcfb" stroke="#0f6e56" stroke-width="2.2"/>
-<text x="314" y="122" font-size="14" font-weight="700" fill="#2c2c2a">利用者の Chrome — 本の本文と読書の記録はここから出ない</text>
+<text x="314" y="122" font-size="14" font-weight="700" fill="#2c2c2a">利用者の Chrome — 本の本文と、本・問いの記録はここから出ない</text>
 <rect x="320" y="140" width="1115" height="1010" rx="10" fill="#f7fbf9" stroke="#0f6e56" stroke-width="1.4"/>
 <text x="334" y="162" font-size="14" font-weight="600" fill="#2c2c2a">自作: Chrome 拡張(MV3・ビルド工程なし)</text>
 <rect x="335" y="245" width="255" height="430" rx="10" fill="#ffffff" stroke="#8fbfae" stroke-width="1.2"/>
@@ -28,8 +28,8 @@
 <rect x="1550" y="885" width="320" height="160" rx="10" fill="#f4f7fa" stroke="#5b6b7f" stroke-width="1.2"/>
 <text x="1564" y="907" font-size="14" font-weight="600" fill="#2c2c2a">サードパーティ: Chrome 内蔵 AI</text>
 <rect x="1960" y="560" width="300" height="440" rx="10" fill="#fdf8f5" stroke="#c2410c" stroke-width="2.2"/>
-<text x="1974" y="582" font-size="14" font-weight="700" fill="#2c2c2a">Chrome の外 — 単語の候補だけ</text>
-<text x="1974" y="600" font-size="12.5" fill="#5f5e5a">本人が同意したときだけ</text>
+<text x="1974" y="582" font-size="14" font-weight="700" fill="#2c2c2a">Chrome の外 — 単語と要約だけ</text>
+<text x="1974" y="600" font-size="12.5" fill="#5f5e5a">単語は同意したとき・要約はオフでなければ</text>
 <rect x="30" y="470" width="120" height="60" rx="30" fill="#ffffff" stroke="#26215c" stroke-width="2"/>
 <text x="90" y="506" text-anchor="middle" font-size="15" font-weight="700" fill="#26215c">利用者</text>
 <rect x="355" y="290" width="220" height="96" rx="6" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
@@ -39,7 +39,7 @@
 <rect x="355" y="425" width="220" height="96" rx="6" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
 <text x="465.0" y="460.0" text-anchor="middle" font-size="14" font-weight="700" fill="#04342c">onboarding</text>
 <text x="465.0" y="478.0" text-anchor="middle" font-size="12.5" fill="#04342c">4問の診断 → θ の初期値</text>
-<text x="465.0" y="496.0" text-anchor="middle" font-size="12.5" fill="#04342c">目標・うんちくの同意</text>
+<text x="465.0" y="496.0" text-anchor="middle" font-size="12.5" fill="#04342c">目標・外へ送るかの同意</text>
 <rect x="355" y="560" width="220" height="96" rx="6" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
 <text x="465.0" y="595.0" text-anchor="middle" font-size="14" font-weight="700" fill="#04342c">dashboard</text>
 <text x="465.0" y="613.0" text-anchor="middle" font-size="12.5" fill="#04342c">本棚・帯・達成率×θ</text>
@@ -66,9 +66,9 @@
 <text x="875.0" y="672.0" text-anchor="middle" font-size="12.5" fill="#04342c">計測層 / 制御層 / 記録層</text>
 <text x="875.0" y="690.0" text-anchor="middle" font-size="12.5" fill="#04342c">本・読んだ区間・クイズ・問い</text>
 <rect x="760" y="795" width="230" height="96" rx="6" fill="#e1f5ee" stroke="#0f6e56" stroke-width="1.6"/>
-<text x="875.0" y="830.0" text-anchor="middle" font-size="14" font-weight="700" fill="#04342c">server.js</text>
+<text x="875.0" y="830.0" text-anchor="middle" font-size="14" font-weight="700" fill="#04342c">server.js · telemetry.js</text>
 <text x="875.0" y="848.0" text-anchor="middle" font-size="12.5" fill="#04342c">うんちく: 単語の候補だけ</text>
-<text x="875.0" y="866.0" text-anchor="middle" font-size="12.5" fill="#04342c">同意したとき・8語まで</text>
+<text x="875.0" y="866.0" text-anchor="middle" font-size="12.5" fill="#04342c">要約: 送り待ち・閉じたあと</text>
 <rect x="1060" y="795" width="230" height="96" rx="6" fill="#fdf3d7" stroke="#b7791f" stroke-width="1.6"/>
 <text x="1175.0" y="830.0" text-anchor="middle" font-size="14" font-weight="700" fill="#4a3410">ai.js</text>
 <text x="1175.0" y="848.0" text-anchor="middle" font-size="12.5" fill="#4a3410">Gemini Nano を呼ぶ</text>
@@ -98,12 +98,17 @@
 <text x="1710.0" y="774.0" text-anchor="middle" font-size="12.5" fill="#04342c">突然クイズ・読了フィナーレ</text>
 <text x="1710.0" y="792.0" text-anchor="middle" font-size="12.5" fill="#04342c">問いのボタン</text>
 <rect x="1985" y="615" width="250" height="110" rx="6" fill="#fdf3d7" stroke="#b7791f" stroke-width="1.6"/>
-<text x="2110.0" y="657.0" text-anchor="middle" font-size="14" font-weight="700" fill="#4a3410">server/main.py(自作)</text>
-<text x="2110.0" y="675.0" text-anchor="middle" font-size="12.5" fill="#4a3410">Vercel・FastAPI /trivia</text>
-<text x="2110.0" y="693.0" text-anchor="middle" font-size="12.5" fill="#4a3410">回数制限・単語は残さない</text>
-<rect x="1985" y="850" width="250" height="100" rx="6" fill="#e8edf4" stroke="#5b6b7f" stroke-width="1.6"/>
-<text x="2110.0" y="896.0" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2a37">Anthropic API</text>
-<text x="2110.0" y="914.0" text-anchor="middle" font-size="12.5" fill="#1f2a37">Claude</text>
+<text x="2110.0" y="648.0" text-anchor="middle" font-size="14" font-weight="700" fill="#4a3410">server/main.py(自作)</text>
+<text x="2110.0" y="666.0" text-anchor="middle" font-size="12.5" fill="#4a3410">Vercel・FastAPI</text>
+<text x="2110.0" y="684.0" text-anchor="middle" font-size="12.5" fill="#4a3410">/trivia・/telemetry</text>
+<text x="2110.0" y="702.0" text-anchor="middle" font-size="12.5" fill="#4a3410">回数制限・単語は残さない</text>
+<rect x="1985" y="850" width="118" height="100" rx="6" fill="#e8edf4" stroke="#5b6b7f" stroke-width="1.6"/>
+<text x="2044.0" y="896.0" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2a37">Anthropic API</text>
+<text x="2044.0" y="914.0" text-anchor="middle" font-size="12.5" fill="#1f2a37">Claude</text>
+<rect x="2117" y="850" width="118" height="100" rx="6" fill="#e8edf4" stroke="#5b6b7f" stroke-width="1.6"/>
+<text x="2176.0" y="887.0" text-anchor="middle" font-size="14" font-weight="700" fill="#1f2a37">Neon</text>
+<text x="2176.0" y="905.0" text-anchor="middle" font-size="12.5" fill="#1f2a37">Postgres</text>
+<text x="2176.0" y="923.0" text-anchor="middle" font-size="12.5" fill="#1f2a37">tm_sessions など</text>
 <path d="M150,500 L190,500 L190,338 L355,338" fill="none" stroke="#a3a29d" stroke-width="1.4" marker-end="url(#arrow-user)"/>
 <rect x="225.0" y="328.0" width="74.0" height="20" rx="4" fill="#ffffff" stroke="#d6d4ce" stroke-width="1"/>
 <text x="262" y="342" text-anchor="middle" font-size="12" fill="#3d3d3a">①「読む」</text>
@@ -154,15 +159,22 @@
 <rect x="1080.96" y="750.0" width="258.08000000000004" height="20" rx="4" fill="#ffffff" stroke="#d6d4ce" stroke-width="1"/>
 <text x="1210" y="764" text-anchor="middle" font-size="12" fill="#3d3d3a">QUIZ・ASK・TRIVIA_REQUEST(ルータ経由)</text>
 <path d="M1175,760 L1175,795" fill="none" stroke="#3d3d3a" stroke-width="1.4" marker-end="url(#arrow-call)"/>
+<path d="M1060,455 L1030,455 L1030,870 L990,870" fill="none" stroke="#3d3d3a" stroke-width="1.4" marker-end="url(#arrow-call)"/>
+<rect x="1011.0" y="810.0" width="38.0" height="20" rx="4" fill="#ffffff" stroke="#d6d4ce" stroke-width="1"/>
+<text x="1030" y="824" text-anchor="middle" font-size="12" fill="#3d3d3a">要約</text>
 <path d="M1290,843 L1525,843 L1525,970 L1575,970" fill="none" stroke="#3d3d3a" stroke-width="1.4" marker-end="url(#arrow-call)"/>
 <rect x="1355.0" y="833.0" width="110.0" height="20" rx="4" fill="#ffffff" stroke="#d6d4ce" stroke-width="1"/>
 <text x="1410" y="847" text-anchor="middle" font-size="12" fill="#3d3d3a">本文は端末内だけ</text>
 <path d="M875,891 L875,1085 L1930,1085 L1930,670 L1985,670" fill="none" stroke="#c2410c" stroke-width="2.4" marker-end="url(#arrow-egress)"/>
-<rect x="1290.56" y="1075.0" width="238.88" height="20" rx="4" fill="#ffffff" stroke="#d6d4ce" stroke-width="1"/>
-<text x="1410" y="1089" text-anchor="middle" font-size="12" fill="#3d3d3a">単語の候補だけ(同意したとき・最大8語)</text>
-<path d="M2110,725 L2110,850" fill="none" stroke="#c2410c" stroke-width="2.4" marker-end="url(#arrow-egress)"/>
-<rect x="2091.0" y="778.0" width="38.0" height="20" rx="4" fill="#ffffff" stroke="#d6d4ce" stroke-width="1"/>
-<text x="2110" y="792" text-anchor="middle" font-size="12" fill="#3d3d3a">単語</text>
+<rect x="1275.0" y="1067.0" width="270.0" height="36" rx="4" fill="#ffffff" stroke="#d6d4ce" stroke-width="1"/>
+<text x="1410" y="1081" text-anchor="middle" font-size="12" fill="#3d3d3a">単語の候補(同意したとき・最大8語)</text>
+<text x="1410" y="1097" text-anchor="middle" font-size="12" fill="#3d3d3a">使われ方の要約(オフでなければ・数だけ)</text>
+<path d="M2044,725 L2044,850" fill="none" stroke="#c2410c" stroke-width="2.4" marker-end="url(#arrow-egress)"/>
+<rect x="2025.0" y="778.0" width="38.0" height="20" rx="4" fill="#ffffff" stroke="#d6d4ce" stroke-width="1"/>
+<text x="2044" y="792" text-anchor="middle" font-size="12" fill="#3d3d3a">単語</text>
+<path d="M2176,725 L2176,850" fill="none" stroke="#c2410c" stroke-width="2.4" marker-end="url(#arrow-egress)"/>
+<rect x="2157.0" y="778.0" width="38.0" height="20" rx="4" fill="#ffffff" stroke="#d6d4ce" stroke-width="1"/>
+<text x="2176" y="792" text-anchor="middle" font-size="12" fill="#3d3d3a">要約</text>
 <rect x="1960" y="120" width="300" height="300" rx="10" fill="#ffffff" stroke="#d6d4ce" stroke-width="1.2"/>
 <text x="1974" y="142" font-size="14" font-weight="600" fill="#2c2c2a">凡例</text>
 <path d="M1980,175 L2040,175" stroke="#534ab7" stroke-width="3.2" marker-end="url(#arrow-main)"/>
@@ -182,5 +194,5 @@
 <text x="1974" y="1030" font-size="12" font-weight="700" fill="#4a3410">黄色の箱の残り</text>
 <text x="1974" y="1050" font-size="11.5" fill="#4a3410">controller.js: S(読書安定度)を制御に接続</text>
 <text x="1974" y="1068" font-size="11.5" fill="#4a3410">ai.js: Nano が使えない端末では出ない</text>
-<text x="1974" y="1086" font-size="11.5" fill="#4a3410">server/main.py: Upstash・利用額の上限</text>
+<text x="1974" y="1086" font-size="11.5" fill="#4a3410">server/main.py: Upstash・利用額の上限・Neon</text>
 </svg>

@@ -31,6 +31,7 @@ import {
   STABILITY,
   RETENTION,
   readDemoFlag,
+  readTelemetryConsent,
   PACE,
   PAGE_EVENTS,
 } from '../shared/config.js';
@@ -60,6 +61,8 @@ import {
 } from './controller.js';
 import { nextStateStaircase } from './staircase.js';
 import { onQuizAnswered } from './memory.js';
+import { sessionRow, sessionCounts } from './telemetry.js';
+import { queueTelemetry } from './server.js';
 
 const CURRENT_KEY = 'currentSession';
 const store = chrome.storage.local;
@@ -68,6 +71,13 @@ const store = chrome.storage.local;
 // book_progress だけが書くので、別キーなら取りこぼさない。
 const BOOK_POS_KEY = 'bookPosition';
 export const WATCHDOG_ALARM = 'rs-watchdog';
+
+// セッションを閉じたあとに走らせる処理(service-worker.js が、使われ方の要約を送る・#28)。
+// 1本の列の外で、待たずに走らせる(送るのを待って次の開始や終了を止めない)
+let afterEnd = () => {};
+export function onSessionEnded(fn) {
+  afterEnd = fn;
+}
 
 export async function getCurrent() {
   const got = await store.get(CURRENT_KEY);
@@ -258,6 +268,7 @@ async function endSessionImpl(reason, { at = Date.now(), notify = true } = {}) {
     // 記録の書き込みが途中で失敗しても、セッションは必ず閉じる(次の開始・全消去を塞がない)
     await setCurrent(null);
     releaseNano(); // 読み終えたら内蔵AIの土台の session を捨てる
+    afterEnd();
   }
 }
 
@@ -293,7 +304,7 @@ async function finishSession(session, reason, { at, notify }) {
     read_ms: session.read_ms,
     completion_pct: session.completion_pct,
   });
-  await putSession({
+  const record = {
     session_id: session.session_id,
     date: dateKey(session.started_at),
     started_at: session.started_at,
@@ -321,7 +332,8 @@ async function finishSession(session, reason, { at, notify }) {
     slow_pages: pace?.slow ?? 0,
     fast_pages: pace?.fast ?? 0,
     backs: session.backs ?? 0,
-  });
+  };
+  await putSession(record);
 
   // 読む速さの持ち越し(v0.24): 次のセッションの最初のページから、速さに合わせた出し方ができるように。
   // 制御には使わない(state.pace は content script が GET_STATUS で読むだけ)
@@ -387,6 +399,7 @@ async function finishSession(session, reason, { at, notify }) {
   // W3: タペリング制御器。セッションの成否で基準θを乗算的に動かす。
   // 本人には通知しない(気づかれない速度で減らす)。変化はtheta_updateとして記録。
   // 再展開中(ホメオスタット)も漸減は通す — 目標は常に0。
+  let control = { theta_after: null, controller_reason: null }; // 使われ方の要約に載せる制御器の結果
   if (CONTROLLER.enabled) {
     try {
       const now = Date.now();
@@ -425,9 +438,28 @@ async function finishSession(session, reason, { at, notify }) {
         });
       }
       await putState(next);
+      control = { theta_after: next.theta, controller_reason: reason };
     } catch {
       /* 制御の失敗は終了処理を妨げない */
     }
+  }
+
+  // 使われ方の要約(#28): 同意があれば、この回の要約を送り待ちに積む。送るのはセッションを閉じたあと(afterEnd)。
+  // 行の項目は telemetry.js の表のとおりで、本・本文・問いの中身は入らない。制御器には何も戻らない
+  try {
+    if (await readTelemetryConsent()) {
+      await queueTelemetry(
+        sessionRow(record, {
+          ext: chrome.runtime.getManifest().version,
+          ...control,
+          ...sessionCounts(await getEventsBySession(session.session_id)),
+          position_read: Boolean(bookPos),
+          reached_end: reachedEnd,
+        }),
+      );
+    }
+  } catch {
+    /* 積めなくても終了処理は続ける */
   }
 
   // 細かい計測(20秒ごとの鼓動・スクロール)は保持期間を過ぎたら消す。セッションの集計は残る

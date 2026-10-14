@@ -29,7 +29,8 @@
 
 1. **Anthropic Console の利用額の上限**(このサーバ専用のキー・workspace に月の上限)。悪用への最後の砦
 2. **Upstash Redis**(Vercel の Storage から繋ぐ)。無いと1日の回数制限はインスタンスのメモリで数えるので目安にしかならない
-3. ストアに出して拡張の ID が決まったら、`RS_ALLOWED_ORIGINS=chrome-extension://<ID>` を入れて出し直す(他のオリジンからの呼び出しを断る。偽装はできるので補助)
+3. **Neon(Postgres)**(Vercel の Marketplace から繋ぐ・#28)。`DATABASE_URL` が Production・Preview に入る。無いと使われ方の要約は受け取って捨てる(拡張は止まらない)。手順は [../server/README.md](../server/README.md)
+4. ストアに出して拡張の ID が決まったら、`RS_ALLOWED_ORIGINS=chrome-extension://<ID>` を入れて出し直す(他のオリジンからの呼び出しを断る。偽装はできるので補助)
 
 環境変数の一覧と悪用への備えは [../server/README.md](../server/README.md)。
 
@@ -41,7 +42,8 @@
 
 | | 開発版(パッケージ化されていない) | ストア版 |
 |---|---|---|
-| うんちくサーバ | `http://127.0.0.1:8787` | `https://reading-scaffold.vercel.app` |
+| うんちくサーバ・使われ方の要約の送り先 | `http://127.0.0.1:8787` | `https://reading-scaffold.vercel.app` |
+| 使われ方の要約の `build` | `dev` | `store`(分析はこちらに絞る) |
 | ダッシュボードの「開発用」(θ の上書き・デモ・デモデータ投入・S の並走) | 出る | 出ない |
 | θ の手動上書き(SET_THETA) | 受ける | 断る |
 | 開始の通知の θ と版 | 出る | 出ない |
@@ -79,14 +81,15 @@ docs・server・.git は入れない(`*.zip` は .gitignore 済み)。
 
 zip を展開して「パッケージ化されていない拡張機能を読み込む」で入れる。そのままだと開発版として動くので、**ストア版の動きを見るときは展開したコピーの manifest に `"update_url": "https://clients2.google.com/service/update2/crx"` を一時的に足す**(本物の zip には入れない)。
 
-1. 新しいプロフィールで入れると、オンボーディングが開く。診断 → 目標 → うんちくの同意(既定オフ)まで進める
+1. 新しいプロフィールで入れると、オンボーディングが開く。診断 → 目標 → うんちくの同意(既定オフ)・使われ方の要約の同意(既定オン)まで進める
 2. Play ブックスで本を開き、「読む」を押す。Play ブックス以外のタブでは開始しない
 3. 1ページめくると、画面の右下の角によみりんの話が出る(余白が狭いと出ない)。めくっても点滅しない。θ が高ければ、くま・突然クイズも出る(出るかどうかは抽選)
 4. 章の始まりまでめくると、話がオチてフィーバーになる
-5. 「終える」で閉じ、ダッシュボードの本棚に読んだ区間が出る
-6. ダッシュボードの「データ」: エクスポート・同意の切り替え・内蔵AIの確認。ストア版で「開発用」が出ないこと
-7. 同意をオンにしてうんちくが出たら、Vercel のログに単語が残っていないこと(`vercel logs --environment production --since 15m --no-branch`)
-8. 全消去で、本棚とインストール ID が消える
+5. 「終える」で閉じ、ダッシュボードの本棚に読んだ区間が出る。使われ方の要約がオンなら、Neon の `tm_sessions` にその回の1行が入り(`build` は `store`)、本・本文・自由な文字列の列が無いこと
+6. ダッシュボードの「データ」: エクスポート・同意の切り替え(2つ)・送ったものを消す・内蔵AIの確認。ストア版で「開発用」が出ないこと
+7. 同意をオンにしてうんちくが出たら、Vercel のログに単語が残っていないこと(`vercel logs --environment production --since 15m --no-branch`)。`/telemetry` のログにも値と ID が無いこと
+8. 全消去で、本棚とインストール ID が消え、Neon からその ID の行(`tm_sessions`・`tm_installs`)が消える
+9. 前の版を入れたプロフィールを更新すると、ダッシュボードの上にお知らせが一度だけ出て、「送る」を選ぶまで要約を送らない
 
 自動テストは `tests/extension/`(依存なし。`node --test "tests/extension/*.test.mjs"`)。PR ごとに GitHub Actions(`.github/workflows/ci.yml`)で回る。上の手順の代わりにはならない: テストが見るのは制御器・権限・外へ送るものだけで、画面と Play ブックスとの繋がりは見ない。manifest の権限は §3「権限の用途」の表と同じでないと落ちる(権限を足すなら、表・PRIVACY.md・申告を先に直す)。
 
@@ -105,7 +108,7 @@ zip を展開して「パッケージ化されていない拡張機能を読み�
 | Single purpose description | 下の「単一目的」 |
 | scripting / storage / alarms / Host permission justification | 下の「権限の用途」 |
 | Are you using remote code? | **No**(すべて拡張の中のファイル。eval・外部スクリプトなし) |
-| Data usage(集めるもの) | 下の「データの扱い」の4つにチェック |
+| Data usage(集めるもの) | 下の「データの扱い」の4つにチェック(v0.27 で User activity の中身が変わった) |
 | 3つの宣誓 | すべてチェック(販売しない・目的外に使わない・信用評価に使わない) |
 | Privacy policy URL | `https://github.com/yukik8/yomirin/blob/main/PRIVACY.md` |
 
@@ -122,7 +125,7 @@ Supports reading in the Google Play Books web reader. Only while the user is rea
 | 権限 | 用途 |
 |---|---|
 | `scripting` | 「読む」を押したとき、開いている Play ブックスのタブに、計測と演出のスクリプトを入れる |
-| `storage` | 進行中のセッション・設定(診断の答え・目標・うんちくのサーバの同意)・インストール ID を端末に保存する |
+| `storage` | 進行中のセッション・設定(診断の答え・目標・うんちくのサーバと使われ方の要約の同意)・インストール ID・使われ方の要約の送り待ちを端末に保存する |
 | `alarms` | 30秒ごとに見回り、無操作や戻らないまま3分たったセッションを閉じる |
 | `https://play.google.com/books/*` | Play ブックスのリーダーのタブであることを確かめ、本の ID と書名を読む |
 | `https://books.googleusercontent.com/books/*` | 本文とページ表示はこのドメインのフレームの中にある。そこで読書時間を測り、演出を描く |
@@ -134,7 +137,7 @@ scripting:
 When the user presses "Read" in the extension popup on an open Google Play Books reader tab, the extension injects its scripts into that tab (including the frame that shows the book) to measure reading time and draw the reading effects. Scripts are injected only after this user action and only into Google Play Books pages.
 
 storage:
-Saves the in-progress reading session (so it survives service worker restarts), the user's settings (onboarding answers, weekly goal, whether the optional word-lookup server is enabled) and a random installation ID on the device. Reading records are stored on the device (IndexedDB) and are not sent to the developer.
+Saves the in-progress reading session (so it survives service worker restarts), the user's settings (onboarding answers, weekly goal, whether the optional word-lookup server and the usage summaries are enabled), random installation IDs, and usage summaries waiting to be sent, on the device. Reading records (books, page ranges, quizzes, the user's questions) are stored on the device (IndexedDB) and are not sent to the developer. Unless the user turns it off, a numeric summary of each finished reading session (reading time, number of times the user left the tab, amount of support shown; no book, title or text) is sent to the developer's server.
 
 alarms:
 While a reading session is active, a check runs every 30 seconds to close sessions that have been idle, or that the user has not returned to for 3 minutes, so reading time is not over-counted. Alarms are used only for this session housekeeping.
@@ -152,13 +155,14 @@ https://books.googleusercontent.com/books/* is where the Google Play Books reade
 |---|---|---|
 | Location | ✓ | IP アドレス。うんちくのサーバをオンにしたときだけ、1日の回数制限のために数える(約25時間で消える) |
 | Web history | ✓ | Play ブックスの本の URL(本の ID まで)・書名・読んだ時刻。端末の中にだけ保存 |
-| User activity | ✓ | 読書時間・めくり・スクロール・離れた回数。端末の中にだけ保存 |
+| User activity | ✓ | 読書時間・めくり・スクロール・離れた回数。端末の中に保存。オフにしていなければ、セッションごとの要約(読書時間・離れた回数・補助の量など、数だけ)を開発者のサーバに送る(新しく入れた人は既定オン・最初の設定で送る前に見せる) |
 | Website content | ✓ | 本文は端末の中で読み取る(クイズ・問い。抜粋は80字まで保存)。うんちくのサーバをオンにしたときだけ、単語を最大8語送る |
 | Personally identifiable information | — | 名前・メールなどは扱わない。インストール ID はランダムで、人やアカウントと結びつかない |
 | Health / Financial / Authentication / Personal communications | — | 扱わない |
 
-- 集めたデータは読書を支える目的にだけ使う(Limited Use・PRIVACY.md §5)。うんちくの単語を Anthropic に渡すのは、この機能のため
+- 集めたデータは読書を支える目的にだけ使う(Limited Use・PRIVACY.md §5)。うんちくの単語を Anthropic に渡すのは、この機能のため。使われ方の要約は、拡張を直すための集計にだけ使う(単一目的の提供・改善)
 - 申告・PRIVACY.md・実際の動きが食い違うと違反になる。送るものを変えたら、3つともそろえる
+- v0.27(#28)で、使われ方の要約を送るようにした。User activity の中身と storage の説明文は v0.27 のもの。審査中の版(#15)の申告とは違うので、v0.27 を出すときにこの表のとおりに直す
 
 ### 掲載情報(Store listing)
 
@@ -192,8 +196,9 @@ Google Play ブックス(ウェブ版)で「読む」を押すと、読んでい
 補助の量は、読めた回数に合わせて、気づかない速さで少しずつ減っていきます。最後は補助なしで読めるようになるのが目標です。
 
 ・本の本文は端末の外へ送りません。クイズと、読書中の問いへの答えは、Chrome に組み込まれた端末内の AI(Gemini Nano)が作ります
-・読書の記録はすべてこの端末の中に保存します。ダッシュボードで、本ごとに読んだ区間・残り時間・自分の問いを見られます
-・くまのうんちくだけは、オンにしたときに限り、単語を数語だけ送って言葉を調べます(既定はオフ)
+・本・問いなどの読書の記録は、この端末の中に保存します。ダッシュボードで、本ごとに読んだ区間・残り時間・自分の問いを見られます
+・よみりんを良くするため、読み終えるたびに、その回の使われ方の要約(読書時間・補助の量など、数だけ)を開発者に送ります。本・書名・本文は送りません。最初の設定とダッシュボードでオフにでき、送ったものも消せます
+・くまのうんちくは、オンにしたときに限り、単語を数語だけ送って言葉を調べます(既定はオフ)
 ・計測と演出は「読む」を押した間だけです。Play ブックス以外のページは読みません
 
 必要なもの: Chrome 138 以降(内蔵 AI を使う場合)。Google Play ブックスのウェブ版で使います。
@@ -203,6 +208,7 @@ Google Play ブックス(ウェブ版)で「読む」を押すと、読んでい
 
 - **Play ブックスの本の扱い:** 本文は端末の中で読み取るだけ。保存するのは、出題に使った箇所の80字までの抜粋、クイズの問題と選択肢、本人が書いた問いと選んだ文字列、内蔵AIの答えだけで、どれも端末の外へは出さない
 - **ページを書き換えるか:** 書き換えない。演出は Shadow DOM の中の層に描き、ページの要素には属性も付けない
+- **使われ方の要約を既定オンにしている理由と開示:** 送る前に、最初の設定の最後で必ず見せる(チェックを入れた状態で、送るもの・送らないものを並べて書く)。外せば送らない。前の版から更新した人は、選ぶまで送らない。ダッシュボードでいつでもオフにでき、送ったものを消せる。値は数・真偽・決まった語だけで、本・書名・本文・問いは送らない(サーバは決まった項目のほかを受け付けない)
 
 ## 4. 公開した後
 

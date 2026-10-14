@@ -4,13 +4,30 @@
 // セッションが無いときは何も読まず何も書かずに戻る — 「計測はセッション中のみ」。
 
 import { Msg, EventType, SessionState } from '../shared/events.js';
-import { GOALS, DIAGNOSIS, SERVER, IS_STORE_BUILD, readServerConsent } from '../shared/config.js';
+import {
+  GOALS,
+  DIAGNOSIS,
+  SERVER,
+  IS_STORE_BUILD,
+  readServerConsent,
+  writeServerConsent,
+  writeTelemetryConsent,
+} from '../shared/config.js';
 import { nanoQuiz, nanoAnswer, nanoTrivia, pickTerms, acceptQuiz, wakeNano } from './ai.js';
-import { serverTrivia, resetInstallId } from './server.js';
+import {
+  serverTrivia,
+  resetInstallId,
+  flushTelemetry,
+  forgetTelemetry,
+  dropTelemetryOutbox,
+  resetTelemetryHello,
+} from './server.js';
+import { helloRow } from './telemetry.js';
 import {
   startSession,
   endSession,
   getCurrent,
+  onSessionEnded,
   onReport,
   onTabActivated,
   onWindowFocusChanged,
@@ -52,6 +69,8 @@ const PAGE_ONLY = new Set([
   Msg.WIPE_ALL,
   Msg.GET_LIBRARY,
   Msg.GET_MIRROR,
+  Msg.SET_TELEMETRY,
+  Msg.FORGET_TELEMETRY,
 ]);
 
 /**
@@ -64,20 +83,48 @@ async function sessionOf(sender) {
   return sender.tab?.id === current.tab_id ? current : null;
 }
 
+/** 環境の行(hello)の中身(#28)。版・ストア版か・Chrome のメジャー版・θ の初期値・目標・うんちくの同意だけ。 */
+async function helloNow() {
+  const state = await getState();
+  return helloRow({
+    ext: chrome.runtime.getManifest().version,
+    store: IS_STORE_BUILD,
+    userAgent: navigator.userAgent,
+    theta0: state.theta0,
+    goal: state.goal,
+    trivia: await readServerConsent(),
+  });
+}
+
+/**
+ * 使われ方の要約を送る(#28・server.js)。読書中は送らない(読書を遅くしない・計測の範囲を広げない)。
+ * 同意が無ければ、消してほしい ID だけを送る。届かなければ送り待ちに残り、次の機会に送り直す。
+ */
+async function sendTelemetry() {
+  if (await getCurrent()) return;
+  await flushTelemetry({ hello: helloNow });
+}
+const sendTelemetryLater = () => {
+  sendTelemetry().catch(() => {});
+};
+
+// セッションを閉じたあと(終える・タブを閉じた・無操作・取り残されていた、のどれでも)
+onSessionEnded(sendTelemetryLater);
+
 // 新規インストール時だけオンボーディング(診断+目標選択)を開く。更新では開かない。
 // 更新のときは、ページに残った古い content script はもう SW と話せないので、進行中の
-// セッションを最後の記録の時点で閉じる。
+// セッションを最後の記録の時点で閉じる。送り待ちがあれば送り直す(版が変わったので hello も)。
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
     chrome.tabs.create({ url: chrome.runtime.getURL('src/onboarding/onboarding.html') });
   } else if (details.reason === 'update') {
-    recoverSession();
+    recoverSession().finally(sendTelemetryLater);
   }
 });
 
-// ブラウザの起動: 前回ブラウザを閉じたときに読んでいたセッションが残っていれば閉じる
+// ブラウザの起動: 前回ブラウザを閉じたときに読んでいたセッションが残っていれば閉じる。送り待ちを送り直す
 chrome.runtime.onStartup.addListener(() => {
-  recoverSession();
+  recoverSession().finally(sendTelemetryLater);
 });
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
@@ -155,11 +202,19 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           const table = DIAGNOSIS.thetaByScore;
           state.theta = table[Math.min(Math.max(score, 0), table.length - 1)];
           state.day_start_theta = state.theta;
+          state.theta0 = state.theta; // 診断で置いた初期値(使われ方の要約の hello に載せる。制御器は読まない)
         }
         state.diag_answers = answers;
         if (typeof msg.goal === 'string' && msg.goal in GOALS) state.goal = msg.goal;
         state.onboarded_at = state.onboarded_at ?? Date.now();
         await putState(state);
+        // 外へ送るかどうかは本人が最後の画面で選んだもの(うんちくのサーバ・使われ方の要約)
+        if (typeof msg.trivia === 'boolean') await writeServerConsent(msg.trivia);
+        if (typeof msg.telemetry === 'boolean') await writeTelemetryConsent(msg.telemetry);
+        if (msg.telemetry === false) await dropTelemetryOutbox();
+        // θ の初期値と目標が決まったので、環境の行(hello)を積み直して送る(同意があれば)
+        await resetTelemetryHello();
+        sendTelemetryLater();
         sendResponse({ ok: true, theta_applied: fresh });
         break;
       }
@@ -312,13 +367,32 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         break;
       }
 
-      case Msg.WIPE_ALL:
-        // 終了処理が失敗しても(記録の書き込みエラー等)、消去はやり切る
-        await endSession('manual').catch(() => {});
-        await wipeAll();
-        await resetInstallId().catch(() => {});
-        sendResponse({ ok: true });
+      case Msg.SET_TELEMETRY: {
+        // 使われ方の要約を送るか(ダッシュボード)。オフにしたら、積んでいたものも送らない
+        const on = msg.on === true;
+        await writeTelemetryConsent(on);
+        if (on) sendTelemetryLater();
+        else await dropTelemetryOutbox();
+        sendResponse({ ok: true, on });
         break;
+      }
+
+      case Msg.FORGET_TELEMETRY:
+        // 送ったものを消す(ダッシュボード)。サーバの行を消し、次からは新しい ID で送る
+        sendResponse({ ok: true, deleted: await forgetTelemetry() });
+        break;
+
+      case Msg.WIPE_ALL: {
+        // 終了処理が失敗しても(記録の書き込みエラー等)、消去はやり切る。サーバに送った使われ方の要約も消す
+        // (届かなければ、消してほしい ID だけを残して、次の起動で送り直す)
+        const deleted = await forgetTelemetry(async () => {
+          await endSession('manual').catch(() => {});
+          await wipeAll();
+          await resetInstallId().catch(() => {});
+        });
+        sendResponse({ ok: true, deleted });
+        break;
+      }
 
       default:
         sendResponse({ ok: false, error: 'unknown message' });

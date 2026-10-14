@@ -1,4 +1,4 @@
-# PR と main への push ごとに、テストを回す(#18)。secrets は使わない。
+# PR と main への push ごとに、テストを回す(#18)。secrets は使わない(server の Postgres は捨てるもの)。
 # paths で絞らない: どれも数十秒で終わり、必須チェックにしたとき飛ばされた job が「待ち」で残らないように。
 name: CI
 
@@ -27,13 +27,26 @@ jobs:
     defaults:
       run:
         working-directory: server
+    # 使われ方の要約(/telemetry)の表を確かめる、捨てる Postgres(本物の Neon は使わない)
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: tm
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 2s --health-timeout 5s --health-retries 15
+    env:
+      RS_TEST_DATABASE_URL: postgresql://postgres:test@localhost:5432/tm
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version-file: server/.python-version
       - run: pip install -r requirements.txt -r requirements-dev.txt
-      - run: python -m pytest # 本物の Anthropic・Upstash は使わない(tests/conftest.py)
+      - run: python -m pytest # 本物の Anthropic・Upstash・Neon は使わない(tests/conftest.py)
 
   # PR で extension/ を変えたら、版を上げて docs/design.md の版の表に行を足す(#19)。変えていなければすぐ緑
   version:

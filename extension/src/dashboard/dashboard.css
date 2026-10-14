@@ -1136,6 +1136,19 @@ details.override summary:hover {
   margin: 0 0 10px;
 }
 
+.danger-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* お知らせ(使われ方の要約・一度だけ)。ふつうの紙のカードに、短い一文 */
+.notice-lead {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
 /* 消す操作だけ、赤茶の線と文字(大きな赤い塊にはしない) */
 .danger button {
   color: var(--danger);

@@ -10,7 +10,7 @@
 <!-- 枠 -->
 <rect x="40" y="200" width="1240" height="1045" rx="12" fill="none" stroke="#0f6e56" stroke-width="2.2"/>
 <text x="56" y="1215" font-size="14" font-weight="700" fill="#2c2c2a">利用者の PC</text>
-<text x="56" y="1232" font-size="12" fill="#5f5e5a">[デプロイノード: macOS・Windows・ChromeOS — 本の本文と読書の記録はここから出ない]</text>
+<text x="56" y="1232" font-size="12" fill="#5f5e5a">[デプロイノード: macOS・Windows・ChromeOS — 本の本文と、本・問いの記録はここから出ない]</text>
 <rect x="70" y="240" width="1180" height="945" rx="12" fill="none" stroke="#8a8984" stroke-width="1.2"/>
 <text x="86" y="1155" font-size="14" font-weight="700" fill="#2c2c2a">Google Chrome 138 以降</text>
 <text x="86" y="1172" font-size="12" fill="#5f5e5a">[ブラウザ・ひとつのプロフィール]</text>
@@ -24,7 +24,7 @@
 <text x="141" y="584" font-size="14" font-weight="700" fill="#2c2c2a">本文のフレーム</text>
 <text x="141" y="601" font-size="12" fill="#5f5e5a">[books.googleusercontent.com]</text>
 <rect x="680" y="280" width="540" height="420" rx="12" fill="none" stroke="#8a8984" stroke-width="1.2"/>
-<text x="696" y="304" font-size="14" font-weight="700" fill="#2c2c2a">拡張「よみりん」v0.26</text>
+<text x="696" y="304" font-size="14" font-weight="700" fill="#2c2c2a">拡張「よみりん」v0.27</text>
 <text x="696" y="321" font-size="12" fill="#5f5e5a">[chrome-extension://&lt;ストアの ID&gt;]</text>
 <rect x="680" y="760" width="540" height="280" rx="12" fill="none" stroke="#8a8984" stroke-width="1.2"/>
 <text x="696" y="784" font-size="14" font-weight="700" fill="#2c2c2a">プロフィールの保存領域</text>
@@ -49,6 +49,7 @@
 <path d="M730,640 L730,740 L650,740 L650,1010 L590,1010" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
 <path d="M1190,570 L1320,570 L1320,485 L1430,485" fill="none" stroke="#c2410c" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#a-egress)"/>
 <path d="M1760,485 L1820,485" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
+<path d="M1700,560 L1700,665 L1820,665" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
 <path d="M1595,560 L1595,820" fill="none" stroke="#c2410c" stroke-width="2.4" stroke-linejoin="round" marker-end="url(#a-egress)"/>
 <path d="M1380,175 L950,175 L950,280" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
 <path d="M1960,1030 L1960,740" fill="none" stroke="#3d3d3a" stroke-width="1.4" stroke-linejoin="round" marker-end="url(#a-call)"/>
@@ -85,24 +86,30 @@
 <path d="M970,827 a110,12 0 0 0 220,0" fill="none" stroke="#0f6e56" stroke-width="1.6"/>
 <text x="1080" y="901.45" text-anchor="middle" font-size="15" font-weight="700" fill="#04342c">chrome.storage.local</text>
 <text x="1080" y="920.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンテナ]</text>
-<text x="1080" y="943.5" text-anchor="middle" font-size="12.5" fill="#04342c">現在値・同意</text>
+<text x="1080" y="943.5" text-anchor="middle" font-size="12.5" fill="#04342c">現在値・同意・送り待ち</text>
 <!-- Gemini Nano -->
 <rect x="130" y="940" width="460" height="140" rx="8" fill="#e8edf4" stroke="#5b6b7f" stroke-width="1.6"/>
 <text x="360" y="996.45" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2a37">Gemini Nano</text>
 <text x="360" y="1015.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[外部システム]</text>
 <text x="360" y="1038.5" text-anchor="middle" font-size="12.5" fill="#1f2a37">Prompt API</text>
-<!-- うんちくサーバ -->
+<!-- よみりんのサーバ -->
 <rect x="1430" y="410" width="330" height="150" rx="8" fill="#fdf3d7" stroke="#b7791f" stroke-width="1.6"/>
-<text x="1595" y="462.2" text-anchor="middle" font-size="15" font-weight="700" fill="#4a3410">うんちくサーバ</text>
+<text x="1595" y="462.2" text-anchor="middle" font-size="15" font-weight="700" fill="#4a3410">よみりんのサーバ</text>
 <text x="1595" y="480.77" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[コンテナのインスタンス]</text>
 <text x="1595" y="504.25" text-anchor="middle" font-size="12.5" fill="#4a3410">server/main.py(FastAPI)</text>
-<text x="1595" y="522.75" text-anchor="middle" font-size="12.5" fill="#4a3410">POST /trivia・GET /healthz</text>
+<text x="1595" y="522.75" text-anchor="middle" font-size="12.5" fill="#4a3410">/trivia・/telemetry・/healthz</text>
 <!-- Upstash Redis -->
 <path d="M1820,422 a110,12 0 0 1 220,0 v126 a110,12 0 0 1 -220,0 z" fill="#fdf3d7" stroke="#b7791f" stroke-width="1.6"/>
 <path d="M1820,422 a110,12 0 0 0 220,0" fill="none" stroke="#b7791f" stroke-width="1.6"/>
 <text x="1930" y="481.45" text-anchor="middle" font-size="15" font-weight="700" fill="#4a3410">Upstash Redis</text>
 <text x="1930" y="500.02" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[Marketplace・任意]</text>
 <text x="1930" y="523.5" text-anchor="middle" font-size="12.5" fill="#4a3410">1日の回数</text>
+<!-- Neon -->
+<path d="M1820,617 a110,12 0 0 1 220,0 v96 a110,12 0 0 1 -220,0 z" fill="#fdf3d7" stroke="#b7791f" stroke-width="1.6"/>
+<path d="M1820,617 a110,12 0 0 0 220,0" fill="none" stroke="#b7791f" stroke-width="1.6"/>
+<text x="1930" y="658" text-anchor="middle" font-size="15" font-weight="700" fill="#4a3410">Neon(Postgres)</text>
+<text x="1930" y="676.5" text-anchor="middle" font-size="11.5" fill="#5f5e5a">[Marketplace]</text>
+<text x="1930" y="698" text-anchor="middle" font-size="12.5" fill="#4a3410">使われ方の要約</text>
 <!-- Anthropic API -->
 <rect x="1420" y="820" width="360" height="130" rx="8" fill="#e8edf4" stroke="#5b6b7f" stroke-width="1.6"/>
 <text x="1600" y="871.45" text-anchor="middle" font-size="15" font-weight="700" fill="#1f2a37">Anthropic API</text>
@@ -120,7 +127,7 @@
 <text x="1570" y="218.5" text-anchor="middle" font-size="12.5" fill="#1f2a37">申請の準備中(#15)・zip は手で上げる</text>
 <!-- 札・見出し・凡例 -->
 <text x="40" y="50" font-size="24" font-weight="700" fill="#2c2c2a">よみりん — 配置図(C4 補足)</text>
-<text x="40" y="78" font-size="13" fill="#5f5e5a">それぞれのコンテナが、どの機械・どのサービスの上で動くか。本番(ストア版)の配置。v0.26 の構成(2026-10-12)</text>
+<text x="40" y="78" font-size="13" fill="#5f5e5a">それぞれのコンテナが、どの機械・どのサービスの上で動くか。本番(ストア版)の配置。v0.27 の構成(2026-10-14)</text>
 <rect x="40" y="94" width="117.04" height="22" rx="11" fill="#ffffff" stroke="#c9c7bf" stroke-width="1"/>
 <text x="98.52" y="109.5" text-anchor="middle" font-size="12" fill="#5f5e5a">1 システムの文脈</text>
 <text x="165.04" y="109.5" font-size="13" fill="#a3a29d">›</text>
@@ -147,9 +154,11 @@
 <text x="1080" y="732.5" text-anchor="middle" font-size="11" fill="#5f5e5a">[chrome.storage]</text>
 <rect x="605.7" y="837.5" width="88.6" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
 <text x="650" y="854.5" text-anchor="middle" font-size="11" fill="#5f5e5a">[Prompt API]</text>
-<rect x="1245.8" y="506" width="148.4" height="42" rx="4" fill="#ffffff" stroke="#e6b8a2" stroke-width="1"/>
-<text x="1320" y="523" text-anchor="middle" font-size="12.5" font-weight="600" fill="#9a3412">POST /trivia</text>
-<text x="1320" y="540" text-anchor="middle" font-size="11" fill="#5f5e5a">[HTTPS・単語の候補だけ]</text>
+<rect x="1228" y="506" width="184" height="42" rx="4" fill="#ffffff" stroke="#e6b8a2" stroke-width="1"/>
+<text x="1320" y="523" text-anchor="middle" font-size="12.5" font-weight="600" fill="#9a3412">/trivia・/telemetry</text>
+<text x="1320" y="540" text-anchor="middle" font-size="11" fill="#5f5e5a">[HTTPS・単語の候補と要約だけ]</text>
+<rect x="1730" y="652.5" width="50" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
+<text x="1755" y="669.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">SQL</text>
 <rect x="1765" y="472.5" width="50" height="25" rx="4" fill="#ffffff" stroke="#d3d1c7" stroke-width="1"/>
 <text x="1790" y="489.5" text-anchor="middle" font-size="12.5" fill="#2c2c2a">REST</text>
 <rect x="1543.5" y="659" width="103" height="42" rx="4" fill="#ffffff" stroke="#e6b8a2" stroke-width="1"/>
