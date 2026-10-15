@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>よみりん · めくりの試写室</title>
+  <style>
+    :root{--bg:#f6f0e6;--paper:#fdfaf3;--ink:#4f3a2c;--muted:#8a7666;--line:#4f3a2c1c;--accent:#94623f;--soft:#ecd7c3;color-scheme:light;font-family:'Hiragino Maru Gothic ProN','Zen Maru Gothic',system-ui,sans-serif;color:var(--ink)}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink)}button,select,input{font:inherit}button,a,select,input{touch-action:manipulation}button,select{color:var(--ink);border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:9px 10px}button{cursor:pointer}button:hover{background:var(--soft)}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #6b8fba;outline-offset:3px}a{color:var(--accent)}
+    header{position:relative;z-index:30;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 30px;border-bottom:1px solid var(--line);background:var(--bg)}.brand{font-size:13px;letter-spacing:.1em}h1{font-size:19px;font-weight:600;letter-spacing:.06em;margin:7px 0 0}.header-actions{display:flex;align-items:center;gap:15px;font-size:12px}.header-actions button{border-radius:999px;padding:8px 16px}
+    .layout{display:grid;grid-template-columns:276px 1fr;gap:28px;padding:24px 30px 40px;align-items:start}.controls{position:sticky;top:20px;z-index:30;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 6px 18px #4f3a2c08}.eyebrow{font-size:11px;letter-spacing:.12em;color:var(--muted);margin:0 0 12px}h2{font-size:13px;font-weight:600;margin:0 0 12px}.modes{display:grid;gap:7px}.modes button{text-align:left;display:flex;align-items:center;justify-content:space-between;font-size:13px}.modes button[aria-pressed=true]{background:var(--soft);border-color:#c58a5c66}.mode-mark{font-size:10px;color:var(--accent)}.field{display:block;margin-top:15px;font-size:12px;color:var(--muted)}.field select{display:block;width:100%;margin-top:6px;font-size:13px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}.range{display:flex;gap:9px;align-items:center;margin-top:6px}input[type=range]{width:100%;accent-color:#c58a5c;min-width:0}output{font-size:12px;font-variant-numeric:tabular-nums;min-width:28px;text-align:right;color:var(--ink)}.check{display:flex;align-items:center;gap:7px;font-size:12px;margin-top:14px;color:var(--muted)}input[type=checkbox]{accent-color:#c58a5c}.rule{height:1px;background:var(--line);margin:18px 0}.play{display:block;width:100%;border-radius:999px;padding:13px;background:var(--soft);border-color:transparent;font-weight:600;font-size:14px}.status{min-height:36px;font-size:11px;line-height:1.7;color:var(--muted);margin:10px 0 0}.freeze-panel{margin-top:10px}.freeze-panel[hidden]{display:none}.swatches{display:flex;gap:5px;margin-top:10px}.swatches i{width:24px;height:6px;border-radius:99px}.hint{font-size:11px;color:var(--muted);line-height:1.8;margin:0}
+    .reading{min-width:0;padding:12px 24px 0}.book{max-width:620px;margin:0 auto;min-height:720px;padding:64px 56px 60px;background:var(--paper);box-shadow:0 6px 30px #4f3a2c09;border:1px solid var(--line);border-radius:4px 14px 14px 4px}.chapter{font-size:11px;letter-spacing:.15em;color:var(--muted);margin:0 0 16px}.book h2{font-size:25px;font-weight:500;letter-spacing:.13em;margin-bottom:30px}.prose{font-family:'Hiragino Mincho ProN','Yu Mincho',serif;font-size:17px;line-height:2.35;letter-spacing:.06em}.prose p{margin:0 0 1.3em;text-indent:1em}.folio{display:flex;align-items:center;justify-content:space-between;margin-top:34px;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.reading-note{max-width:620px;margin:16px auto;font-size:11px;line-height:1.8;color:var(--muted)}canvas{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:20}.bear{position:fixed;right:26px;bottom:18px;width:86px;pointer-events:none;z-index:10;opacity:.95}
+    body.dark{--bg:#20242b;--paper:#2a2e35;--ink:#e7ddd0;--muted:#b3a79a;--line:#e7ddd01b;--accent:#dbb38e;--soft:#4c4037;color-scheme:dark}
+    @media(max-width:900px){.layout{grid-template-columns:240px 1fr;padding:20px 18px;gap:16px}.controls{padding:16px}.reading{padding:0}.book{padding:44px 28px}.prose{font-size:16px}.bear{display:none}}
+    @media(max-width:650px){header{padding:20px;align-items:start}.header-actions{flex-direction:column;gap:9px;align-items:end}.layout{display:flex;flex-direction:column;padding:16px}.controls{position:relative;top:0;width:100%}.modes{grid-template-columns:1fr 1fr}.reading{width:100%}.book{min-height:640px;padding:38px 26px}.prose{font-size:16px}.controls .pair{gap:12px}.header-actions a{font-size:10px}}
+  </style>
+</head>
+<body>
+  <header><div><div class="brand">よみりん / PREVIEW</div><h1>めくる瞬間、世界がひらく。</h1></div><div class="header-actions"><a href="../">いつもの試写室</a><button id="theme" type="button" aria-pressed="false">暗い背景</button></div></header>
+  <main class="layout">
+    <aside class="controls" aria-label="演出の設定">
+      <p class="eyebrow">めくりの試写室</p><h2>2つの出し方を見比べる</h2>
+      <div class="modes" role="group" aria-label="出し方"><button type="button" data-mode="edge" aria-pressed="true">余白に広げる <span class="mode-mark">A</span></button><button type="button" data-mode="full" aria-pressed="false">短い全画面 <span class="mode-mark">B</span></button></div>
+      <label class="field">雰囲気<select id="mood"></select></label><div id="swatches" class="swatches" aria-hidden="true"></div>
+      <div class="pair"><label class="field">粒の形<select id="motif"></select></label><label class="field">大きさ<select id="size"><option value="small">小</option><option value="medium">中</option><option value="large" selected>大</option></select></label></div>
+      <div class="pair"><label class="field">勢い<select id="energy"><option value="0">静か</option><option value="1" selected>ふつう</option><option value="2">にぎやか</option></select></label><label class="field">検知のタイミング<select id="timing"><option value="early">めくり始め</option><option value="late">本文の表示後</option></select></label></div>
+      <label class="field" for="theta">補助の量 θ</label><div class="range"><input id="theta" type="range" min="0" max="8" step=".5" value="8"><output id="theta-out" for="theta">8.0</output></div>
+      <label class="check"><input type="checkbox" id="reduced">動きを減らす</label><label class="check"><input type="checkbox" id="freeze">コマ止めで見る</label>
+      <div id="freeze-panel" class="freeze-panel" hidden><div class="range"><input id="time" type="range" min="0" max="1800" step="10" value="180" aria-label="演出の時刻"><output id="time-out">180 ms</output></div></div>
+      <div class="rule"></div><button id="play" class="play" type="button">めくる</button><p id="status" class="status" role="status">本文のまわりに、大きく広がります。</p>
+      <p class="hint">雰囲気を変えると、次のめくりから色がなじみます。同じ粒の配置で比較できます。<br>Space / → でもめくれます。</p>
+    </aside>
+    <div class="reading">
+      <article class="book" id="book"><p class="chapter" id="chapter">ある夜のこと</p><h2 id="title">雨の向こう</h2><div class="prose" id="prose"></div><footer class="folio"><span>よみりんの試写用の短いお話</span><span id="page">01</span></footer></article>
+      <p class="reading-note">演出の比較用ページです。雰囲気は手動で選びます。実際の本への自動適用は、見た目を確かめた後に進めます。</p>
+    </div>
+  </main>
+  <img class="bear" src="../../../extension/assets/bear/read.webp" alt="" draggable="false">
+  <canvas id="turn-canvas" aria-hidden="true" data-phase="clear"></canvas>
+  <script type="module" src="./preview.js"></script>
+</body>
+</html>
