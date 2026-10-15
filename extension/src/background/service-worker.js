@@ -2,8 +2,10 @@
 // リスナー登録はすべてこのファイルのトップレベルで同期的に行う(MV3の再起動要件)。
 // tabs系のハンドラはsession.jsの中で必ずセッションの存在を確認し、
 // セッションが無いときは何も読まず何も書かずに戻る — 「計測はセッション中のみ」。
+// セッションが無いときにするのは、Play ブックスの本を開いたタブに「計測しますか?」を出すこと
+// (prompt.js の offerStart・#32)だけ。そこでも計測はしない。
 
-import { Msg, EventType, SessionState } from '../shared/events.js';
+import { Msg, EventType, SessionState, EndReason } from '../shared/events.js';
 import {
   GOALS,
   DIAGNOSIS,
@@ -29,6 +31,7 @@ import {
 import { helloRow } from './telemetry.js';
 import {
   startSession,
+  startSessionIfIdle,
   endSession,
   getCurrent,
   onSessionEnded,
@@ -43,6 +46,7 @@ import {
   getBookPosition,
   WATCHDOG_ALARM,
 } from './session.js';
+import { offerStart, markAsked, forgetAsked, isPromptSender } from './prompt.js';
 import { buildMirror } from './mirror.js';
 import { buildLibrary } from './library.js';
 import {
@@ -112,8 +116,12 @@ const sendTelemetryLater = () => {
   sendTelemetry().catch(() => {});
 };
 
-// セッションを閉じたあと(終える・タブを閉じた・無操作・取り残されていた、のどれでも)
-onSessionEnded(sendTelemetryLater);
+// セッションを閉じたあと(終える・タブを閉じた・無操作・取り残されていた、のどれでも)。
+// 無操作で閉じたときは「計測しますか?」の印を外す — 席を外して戻り、めくったときにまたたずねる(#32)
+onSessionEnded((session, reason) => {
+  if (reason === EndReason.IDLE) forgetAsked(session.tab_id).catch(() => {});
+  sendTelemetryLater();
+});
 
 // 新規インストール時だけオンボーディング(診断+目標選択)を開く。更新では開かない。
 // 更新のときは、ページに残った古い content script はもう SW と話せないので、進行中の
@@ -141,10 +149,13 @@ chrome.windows.onFocusChanged.addListener((windowId) => {
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   onTabRemoved(tabId);
+  forgetAsked(tabId).catch(() => {});
 });
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-  onTabUpdated(tabId, changeInfo);
+// セッションのハンドラのあとで「計測しますか?」を考える: 同じタブで別の本へ移ってセッションが
+// 閉じたときも、新しい本でたずねられるように
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  onTabUpdated(tabId, changeInfo).finally(() => offerStart(tabId, changeInfo, tab).catch(() => {}));
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
@@ -160,7 +171,26 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     switch (msg?.type) {
       case Msg.START_SESSION: {
         const session = await startSession(msg.tabId ?? sender.tab?.id);
+        // popup から始めた本は、終えたあとにめくっても「計測しますか?」とたずねない
+        await markAsked(session.tab_id, session.page_url).catch(() => {});
         sendResponse({ ok: true, session });
+        break;
+      }
+      case Msg.START_PROMPTED: {
+        // 本を開いたときの「計測しますか?」の「はい」(content/prompt.js・#32)。拡張のページ以外から
+        // 受ける開始は、これだけ。送り元が Play ブックスのリーダーの最上位のフレームの自分の content script で、
+        // 最初の設定が済んでいるときだけ。セッションがあれば何もしない(ページ側からほかのセッションを終わらせない)
+        if (!isPromptSender(sender, chrome.runtime.id) || !(await getState()).onboarded_at) {
+          sendResponse({ ok: false, error: 'forbidden' });
+          break;
+        }
+        const session = await startSessionIfIdle(sender.tab.id);
+        if (!session) {
+          sendResponse({ ok: false, error: 'ほかのタブで計測しています' });
+          break;
+        }
+        await markAsked(session.tab_id, session.page_url).catch(() => {});
+        sendResponse({ ok: true });
         break;
       }
       case Msg.END_SESSION: {

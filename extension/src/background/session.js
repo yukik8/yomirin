@@ -1,6 +1,6 @@
 // セッション状態機械。
 //
-//   IDLE   --[読むボタン押下]--> ACTIVE
+//   IDLE   --[読むボタン押下 / 本を開いたときの「計測しますか?」の「はい」]--> ACTIVE
 //   ACTIVE --[タブ切替/ウィンドウ非フォーカス]--> ESCAPED
 //   ESCAPED--[復帰]--> ACTIVE
 //   ACTIVE --[終了ボタン / タブclose]--> ENDED
@@ -74,9 +74,10 @@ const store = chrome.storage.local;
 const BOOK_POS_KEY = 'bookPosition';
 export const WATCHDOG_ALARM = 'rs-watchdog';
 
-// セッションを閉じたあとに走らせる処理(service-worker.js が、使われ方の要約を送る・#28)。
+// セッションを閉じたあとに走らせる処理(service-worker.js が、使われ方の要約を送る・#28。
+// 無操作で閉じたら「計測しますか?」の印を外す・#32)。閉じたセッションと終了理由を渡す。
 // 1本の列の外で、待たずに走らせる(送るのを待って次の開始や終了を止めない)
-let afterEnd = () => {};
+let afterEnd = (_session, _reason) => {};
 export function onSessionEnded(fn) {
   afterEnd = fn;
 }
@@ -159,7 +160,8 @@ function bookTitle(tabTitle) {
 }
 
 /**
- * ユーザージェスチャー起点(popup)でのみ呼ばれる。Play ブックス専用 — host 権限が
+ * ユーザージェスチャー起点(popup の「読む」か、本を開いたときの「計測しますか?」の「はい」)でのみ
+ * 呼ばれる。Play ブックス専用 — host 権限が
  * Play ブックスにしか無いので、他のタブでは URL も読めない(tab.url が undefined)。
  */
 async function startSessionImpl(tabId) {
@@ -302,7 +304,7 @@ async function endSessionImpl(reason, { at = Date.now(), notify = true } = {}) {
     await setCurrent(null);
     // 1ページの長さ(#33)を元の倍率に戻す(本人が途中で変えていたら触らない)。お祝いは出し終えてから
     await restoreZoomLater(session.tab_id, session.zoom, celebrated ? PAGE_ZOOM.afterCelebrateMs : 0);
-    afterEnd();
+    afterEnd(session, reason);
   }
 }
 
@@ -913,6 +915,11 @@ function serial(fn) {
 }
 
 export const startSession = serial(startSessionImpl);
+// 「計測しますか?」の「はい」(#32)。セッションが無いときだけ始める(ページ側から、ほかのタブの
+// セッションを終わらせない)。あれば null。確かめてから始めるまでを列の中で1つにする
+export const startSessionIfIdle = serial(async (tabId) =>
+  (await getCurrent()) ? null : startSessionImpl(tabId),
+);
 export const endSession = serial(endSessionImpl);
 export const onReport = serial(onReportImpl);
 export const onTabActivated = serial(onTabActivatedImpl);
