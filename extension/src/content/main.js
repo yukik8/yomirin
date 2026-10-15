@@ -1644,7 +1644,9 @@ if (!stopped) {
       dev = ` · θ=${Number(theta).toFixed(1)} · v${ver}`;
     }
     // 語数は出さない: Play ブックスではその瞬間に描画されているページ分しか数えられず、毎回ぶれる
-    overlay.showNotice(`計測をはじめました${dev}`, 4_000);
+    // ページを再読み込みしたあとの入れ直し(#38)は、同じセッションの続き
+    const verb = sessionInfo?.resumed_at ? '計測を続けています' : '計測をはじめました';
+    overlay.showNotice(`${verb}${dev}`, 4_000);
   } else {
     // 設計どおり: 本文検出に失敗したページは補助なしで計測のみ。
     overlay.showNotice('本文を検出できないため、このページでは計測のみ行います', 4_500);
