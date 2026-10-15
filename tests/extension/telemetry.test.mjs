@@ -9,7 +9,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { fakeChrome, fakeFetch, install } from './lib/fake-chrome.mjs';
-import { TELEMETRY } from '../../extension/src/shared/config.js';
+import { TELEMETRY, SERVER } from '../../extension/src/shared/config.js';
 import { sessionCounts } from '../../extension/src/background/telemetry.js';
 import { EventType } from '../../extension/src/shared/events.js';
 import {
@@ -118,6 +118,8 @@ test('送ったものを消す: いまの ID で DELETE し、ID・送り待ち�
   assert.equal(await forgetTelemetry(), true);
   assert.equal(deletes(net).length, 1);
   assert.equal(deletes(net)[0].init.headers['x-rs-telemetry'], before);
+  assert.equal(deletes(net)[0].url, posts(net)[0].url, '消すのは、送ったのと同じ所(SERVER.telemetryBase)');
+  assert.equal(deletes(net)[0].url, `${SERVER.telemetryBase}/telemetry`);
   assert.equal(deletes(net)[0].body, undefined);
   for (const key of ['telemetry_id', 'telemetry_outbox', 'telemetry_hello', 'telemetry_forget']) {
     assert.equal(chrome.data.has(key), false, key);

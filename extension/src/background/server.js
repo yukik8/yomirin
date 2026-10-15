@@ -115,7 +115,7 @@ async function tmFetch(method, id, body) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TELEMETRY.timeoutMs);
   try {
-    const r = await fetch(`${SERVER.base}/telemetry`, {
+    const r = await fetch(`${SERVER.telemetryBase}/telemetry`, {
       method,
       headers: body ? { 'content-type': 'application/json', 'x-rs-telemetry': id } : { 'x-rs-telemetry': id },
       body: body ? JSON.stringify(body) : undefined,

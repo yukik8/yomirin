@@ -43,7 +43,7 @@ docs/                 設計ドキュメント(古い版は docs/archive/)
 
 ビルド工程は意図的に置いていない。`chrome://extensions` → デベロッパーモード → 「パッケージ化されていない拡張機能を読み込む」で `extension/` を選べばそのまま動く。
 
-- 開発中の拡張はローカルのサーバ(`http://127.0.0.1:8787`)を呼ぶ。起動は [server/README.md](server/README.md)。
+- 開発中の拡張は、うんちくではローカルのサーバ(`http://127.0.0.1:8787`)を呼ぶ。起動は [server/README.md](server/README.md)。使われ方の要約は開発版も本番に送る(`build = 'dev'` で分かる)。
 - ストア版(manifest に `update_url` が付く)は本番のサーバを呼び、開発用の機能(θの手動上書き・デモ・デモデータ投入・開始通知のθ表示)を出さない。切り替えは `extension/src/shared/config.js` の `IS_STORE_BUILD`。
 - クイズと問いには Chrome の内蔵AI(Gemini Nano・Chrome 138 以降)が要る。ダッシュボードの「内蔵AIを確認・準備」でダウンロードを始められる。
 

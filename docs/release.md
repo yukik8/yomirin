@@ -30,7 +30,7 @@
 
 1. **Anthropic Console の利用額の上限**(このサーバ専用のキー・workspace に月の上限)。悪用への最後の砦
 2. **Upstash Redis**(Vercel の Storage から繋ぐ)。無いと1日の回数制限はインスタンスのメモリで数えるので目安にしかならない
-3. ストアに出して拡張の ID が決まったら、`RS_ALLOWED_ORIGINS=chrome-extension://<ID>` を入れて出し直す(他のオリジンからの呼び出しを断る。偽装はできるので補助)
+3. ストアに出して拡張の ID が決まったら、`RS_ALLOWED_ORIGINS=chrome-extension://<ID>` を入れて出し直す(他のオリジンからの呼び出しを断る。偽装はできるので補助)。開発版も使われ方の要約を本番に送るので、開発版の ID もカンマで並べる
 
 環境変数の一覧と悪用への備えは [../server/README.md](../server/README.md)。
 
@@ -42,7 +42,8 @@
 
 | | 開発版(パッケージ化されていない) | ストア版 |
 |---|---|---|
-| うんちくサーバ・使われ方の要約の送り先 | `http://127.0.0.1:8787` | `https://reading-scaffold.vercel.app` |
+| うんちくサーバ | `http://127.0.0.1:8787` | `https://reading-scaffold.vercel.app` |
+| 使われ方の要約の送り先 | `https://reading-scaffold.vercel.app`(本番。v0.27.1 から) | `https://reading-scaffold.vercel.app` |
 | 使われ方の要約の `build` | `dev` | `store`(分析はこちらに絞る) |
 | ダッシュボードの「開発用」(θ の上書き・デモ・デモデータ投入・S の並走) | 出る | 出ない |
 | θ の手動上書き(SET_THETA) | 受ける | 断る |
@@ -212,6 +213,6 @@ Google Play ブックス(ウェブ版)で「読む」を押すと、読んでい
 
 ## 4. 公開した後
 
-1. ストアの拡張 ID で `RS_ALLOWED_ORIGINS` を入れ、出し直す(リポジトリの一番上で `vercel deploy --prod`)
+1. ストアの拡張 ID(と開発版の ID)で `RS_ALLOWED_ORIGINS` を入れ、出し直す(リポジトリの一番上で `vercel deploy --prod`)
 2. Vercel のログと Anthropic の利用額を、最初の数週はときどき見る
 3. 直すときは版を上げた PR を入れ、タグを push して、Release の下書きから zip を落としてストアにアップロードする(審査がある)
