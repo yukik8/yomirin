@@ -34,6 +34,7 @@ import {
   readTelemetryConsent,
   PACE,
   PAGE_EVENTS,
+  PAGE_ZOOM,
 } from '../shared/config.js';
 import { dateKey } from '../shared/time.js';
 import {
@@ -63,6 +64,8 @@ import { nextStateStaircase } from './staircase.js';
 import { onQuizAnswered } from './memory.js';
 import { sessionRow, sessionCounts } from './telemetry.js';
 import { queueTelemetry } from './server.js';
+import { applyZoom, retuneZoom, restoreZoom, restoreZoomLater, flushZoomRestore } from './zoom.js';
+import { scaleRange } from './book-scale.js';
 
 const CURRENT_KEY = 'currentSession';
 const store = chrome.storage.local;
@@ -87,6 +90,23 @@ export async function getCurrent() {
 function setCurrent(session) {
   if (session === null) return store.remove(CURRENT_KEY);
   return store.set({ [CURRENT_KEY]: session });
+}
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * 1ページの長さ(#33・zoom.js)を、この回で初めて掛けたら演出を1回数える(掛けた回は補助なしに数えない)。
+ * session.zoom に、戻すための元の倍率と掛けた倍率を置く(currentSession に入るので、取り残されても戻せる)。
+ */
+async function noteZoom(session, zoom) {
+  if (zoom && !session.zoom) {
+    session.effects_shown += 1;
+    await appendEvent(session.session_id, EventType.EFFECT_SHOWN, {
+      effect_id: 'page_zoom',
+      factor: zoom.applied,
+    });
+  }
+  session.zoom = zoom;
 }
 
 /** このセッションの本の中の位置 { from, page, furthest, total }。無ければ null。 */
@@ -146,6 +166,7 @@ function bookTitle(tabTitle) {
 async function startSessionImpl(tabId) {
   const existing = await getCurrent();
   if (existing) await endSessionImpl(EndReason.MANUAL);
+  await flushZoomRestore(); // 前の回の倍率を戻すのを待っていたら、いま戻してから始める
 
   const tab = await chrome.tabs.get(tabId);
   if (!tab.url || !isPlayBooksReader(tab.url)) {
@@ -195,6 +216,7 @@ async function startSessionImpl(tabId) {
     // 読む速さの素材: ページごとの { words, ms }(content の page_read)。戻った回数は book_progress で数える
     pace_samples: [],
     backs: 0,
+    zoom: null, // 1ページの長さ(#33): 掛けた倍率と、戻すための元の倍率・設定
   };
   await setCurrent(session);
   await appendEvent(session.session_id, EventType.SESSION_START, {
@@ -223,6 +245,14 @@ async function startSessionImpl(tabId) {
   page.last_read_at = now;
   await putPage(page);
 
+  // 1ページの長さ(#33): 補助の多いうちは、このタブを大きく映して1ページに入る字数を減らす(実効θで決める)。
+  // 掛けたら、Play ブックスがページを組み直すのを待ってから注入する(本文と位置は組み直した後のものを読む)
+  await noteZoom(session, await applyZoom(tabId, session.theta));
+  if (session.zoom) {
+    await setCurrent(session);
+    await sleep(PAGE_ZOOM.settleMs);
+  }
+
   // content script注入はセッション保存の後。注入されたスクリプトは起動直後に
   // GET_STATUSでθを取りに来るため、先に注入するとセッション未保存の瞬間に
   // 問い合わせが届いて θ=0 になる(ヒントが一枚も出なくなる)。
@@ -236,6 +266,7 @@ async function startSessionImpl(tabId) {
     });
   } catch (err) {
     await setCurrent(null); // 注入できなかった。セッションを残さない
+    await restoreZoom(tabId, session.zoom);
     throw err;
   }
 
@@ -262,12 +293,17 @@ async function endSessionImpl(reason, { at = Date.now(), notify = true } = {}) {
   // 終了処理の途中に届いた報告でセッションが生き返らない
   session.state = SessionState.ENDED;
   await setCurrent(session);
+  let celebrated = false;
   try {
-    return await finishSession(session, reason, { at, notify });
+    const ended = await finishSession(session, reason, { at, notify });
+    celebrated = ended.celebrate;
+    return ended;
   } finally {
     // 記録の書き込みが途中で失敗しても、セッションは必ず閉じる(次の開始・全消去を塞がない)
     await setCurrent(null);
     releaseNano(); // 読み終えたら内蔵AIの土台の session を捨てる
+    // 1ページの長さ(#33)を元の倍率に戻す(本人が途中で変えていたら触らない)。お祝いは出し終えてから
+    await restoreZoomLater(session.tab_id, session.zoom, celebrated ? PAGE_ZOOM.afterCelebrateMs : 0);
     afterEnd();
   }
 }
@@ -483,7 +519,7 @@ async function finishSession(session, reason, { at, notify }) {
     }
   }
 
-  return { ...session, state: SessionState.ENDED, success, reason };
+  return { ...session, state: SessionState.ENDED, success, reason, celebrate };
 }
 
 /** content scriptからの計測報告。送信元がセッションのタブであることを必ず確認する。 */
@@ -539,9 +575,16 @@ async function onReportImpl(event, payload, sender) {
       if (session.site !== 'play_books' || !valid) return;
       const pct = Math.round((page / total) * 100);
       // 記録層: 読んだ区間の素材(開始位置・最も先まで)。別キーに置く(BOOK_POS_KEY の注)
-      const pos = await readBookPos(session.session_id);
+      let pos = await readBookPos(session.session_id);
+      // 総ページ数が変わった(倍率を掛けた・戻した・窓の大きさを変えた・#33): それまでの位置を今の尺度に換算する。
+      // 換算で動いたページは読み返しに数えない
+      const rescaled = Boolean(pos) && pos.total !== total;
+      if (rescaled) {
+        const r = scaleRange({ from: pos.from, to: pos.page, furthest: pos.furthest, total: pos.total }, total);
+        pos = { ...pos, from: r.from, page: r.to, furthest: r.furthest, total };
+      }
       // 読み返し: 前のページより手前へ戻った回数(読む速さの素材と並ぶ行動シグナル)
-      if (pos && page < pos.page) session.backs = (session.backs ?? 0) + 1;
+      if (pos && !rescaled && page < pos.page) session.backs = (session.backs ?? 0) + 1;
       await store.set({
         [BOOK_POS_KEY]: {
           session_id: session.session_id,
@@ -787,6 +830,7 @@ async function recoverImpl() {
   if (!session) return;
   if (session.state === SessionState.ENDED) {
     await setCurrent(null); // 終了処理の途中で止まっていた
+    await restoreZoom(session.tab_id, session.zoom);
     return;
   }
   await endSessionImpl(EndReason.CLOSE, { at: session.last_event_at ?? Date.now(), notify: false });
@@ -795,6 +839,7 @@ async function recoverImpl() {
 /**
  * θ手動ダイヤル(ドッグフーディング用、W3で自動化)。連続値[0, THETA_MAX]。
  * 進行中のセッションがあれば即時反映する — 「θを変えると読書体験が変わる」の確認用。
+ * 1ページの長さ(倍率・#33)もその場で掛け直す。
  */
 async function setThetaImpl(value) {
   const clamped = Math.min(Math.max(Number(value) || 0, 0), THETA_MAX);
@@ -807,6 +852,7 @@ async function setThetaImpl(value) {
   if (session) {
     session.theta_base = clamped;
     session.theta = clamped; // 手動時はノイズなしの直値(ダイヤルの体感確認用)
+    await noteZoom(session, await retuneZoom(session.tab_id, session.zoom ?? null, clamped));
     await setCurrent(session);
     try {
       await chrome.tabs.sendMessage(session.tab_id, { type: 'rs_theta', theta: clamped });

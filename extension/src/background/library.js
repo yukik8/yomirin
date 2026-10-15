@@ -2,6 +2,7 @@
 // これは「記録」カテゴリの表示: 事実の蓄積のみで、可変報酬・比較・警告は載せない。
 
 import { STABILITY } from '../shared/config.js';
+import { scalePage, scaleRange, markTotal, remainingMinutes } from './book-scale.js';
 import {
   getAllPages,
   getAllQuestions,
@@ -13,7 +14,7 @@ import {
 } from './store.js';
 
 const BOOK_READER = 'https://play.google.com/books/reader';
-// 残り時間を出すのに要る、ペースの素材(前へ進んだページ数の合計)の最小値
+// 残り時間を出すのに要る、ペースの素材(前へ進んだページ数の合計・今の尺度で)の最小値
 const MIN_PACE_PAGES = 3;
 
 /** pages の1行が Play ブックスの本か(本は id= 単位で1行。docs/design.md §8)。 */
@@ -29,12 +30,12 @@ function isFinished(page, hasReadings) {
   return Boolean(page.finished_at) || (!hasReadings && (page.best_completion_pct ?? 0) >= 100);
 }
 
-/** ページごとの読んだ回数を、同じ回数が続く区間にまとめる(帯の塗り)。 */
-function coverageRuns(readings, total) {
+/** ページごとの読んだ回数を、同じ回数が続く区間にまとめる(帯の塗り)。ranges は今の尺度に換算したもの。 */
+function coverageRuns(ranges, total) {
   const counts = new Array(total).fill(0);
-  for (const r of readings) {
-    const from = Math.max(1, r.range.from);
-    const to = Math.min(total, r.range.furthest);
+  for (const range of ranges) {
+    const from = Math.max(1, range.from);
+    const to = Math.min(total, range.furthest);
     for (let p = from; p <= to; p += 1) counts[p - 1] += 1;
   }
   const runs = [];
@@ -50,6 +51,7 @@ function coverageRuns(readings, total) {
 /**
  * 本棚(ダッシュボード用)。本ごとに位置・残り時間・読んだ区間・余白(問いとクイズ)をまとめる。
  * 記録カテゴリの表示: 事実だけ。残り時間はその本での自分のペースから出す(他人と比べない)。
+ * 総ページ数は倍率や窓の大きさで変わる(#33)ので、読んだ区間と印のページは今の総ページ数に比で換算して描く。
  *
  * @returns {Promise<Array<{
  *   page_id, url, title, last_read_at, total_read_min,
@@ -84,32 +86,28 @@ export async function buildBookshelf() {
     const total = p.book_position?.total ?? latest?.range.total ?? null;
     const position = p.book_position?.page ?? latest?.range.to ?? null;
     const finished = isFinished(p, rs.length > 0);
+    // 読んだ区間を今の尺度に
+    const ranges = rs.map((r) => (total ? scaleRange(r.range, total) : r.range));
+    // 印のページを今の尺度に(印を付けたときの総ページ数が分からなければそのまま)
+    const markPage = (mark) => {
+      const page = mark.book_page ?? null;
+      const from = page && total ? markTotal(mark, rs) : null;
+      return from ? scalePage(page, from, total, 'mid') : page;
+    };
 
-    // その本での自分のペース(前へ進んだページあたりの読書時間)
-    let pacePages = 0;
-    let paceMs = 0;
-    for (const r of rs) {
-      const advanced = r.range.furthest - r.range.from;
-      if (advanced > 0) {
-        pacePages += advanced;
-        paceMs += r.read_ms ?? 0;
-      }
-    }
-    const remainingMin =
-      !finished && total && position !== null && pacePages >= MIN_PACE_PAGES
-        ? Math.ceil(((total - position) * (paceMs / pacePages)) / 60_000)
-        : null;
+    // その本での自分のペース(進んだ割合あたりの読書時間)
+    const remainingMin = finished ? null : remainingMinutes(rs, position, total, MIN_PACE_PAGES);
 
     const marks = [
       // 本人が残した主張(本人起点の痕跡。問いと同じく上に置く)
       ...allMarks
         .filter((m) => m.page_id === p.page_id && m.kind === 'claim')
-        .map((m) => ({ kind: 'claim', page: m.book_page ?? null, t: m.created_at, text: m.text })),
+        .map((m) => ({ kind: 'claim', page: markPage(m), t: m.created_at, text: m.text })),
       ...questions
         .filter((q) => q.page_id === p.page_id)
         .map((q) => ({
           kind: 'question',
-          page: q.book_page ?? null,
+          page: markPage(q),
           t: q.created_at,
           text: q.question,
           selection: q.selection ?? null,
@@ -119,7 +117,7 @@ export async function buildBookshelf() {
         .filter((q) => q.page_id === p.page_id)
         .map((q) => ({
           kind: 'quiz',
-          page: q.book_page ?? null,
+          page: markPage(q),
           t: q.created_at,
           text: q.question,
           answer: q.choices?.[q.answer_index] ?? null,
@@ -140,12 +138,12 @@ export async function buildBookshelf() {
       position,
       total,
       remaining_min: remainingMin,
-      runs: total ? coverageRuns(rs, total) : [],
+      runs: total ? coverageRuns(ranges, total) : [],
       readings: rs
-        .map((r) => ({
+        .map((r, i) => ({
           started_at: r.started_at,
-          from: r.range.from,
-          to: r.range.furthest,
+          from: ranges[i].from,
+          to: ranges[i].furthest,
           read_min: Math.round((r.read_ms ?? 0) / 60_000),
         }))
         .reverse(),
