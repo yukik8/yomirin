@@ -66,7 +66,8 @@ group by 1, 2 order by 2 desc;
 4. **最後の砦: Anthropic Console の利用額の上限。** このサーバ専用の workspace と API キーを作り、
    月の上限額を設定しておく。
 5. ストア公開後、拡張の ID が決まったら `RS_ALLOWED_ORIGINS=chrome-extension://<id>` を入れると、
-   他のオリジンからの呼び出しを断る(偽装できるので補助)。
+   他のオリジンからの呼び出しを断る(偽装できるので補助)。開発版も使われ方の要約を本番に送るので、
+   開発版の ID もカンマで並べて入れる(入れないと開発版の要約は 403 で断られ、拡張は捨てる)。
 
 ## ローカルで起動
 
@@ -77,10 +78,11 @@ echo 'ANTHROPIC_API_KEY=sk-ant-...' > .env                             # 鍵は�
 ./.venv/bin/python -m uvicorn main:app --port 8787   # フォルダを移しても動く書き方(.venv/bin/uvicorn は作った場所の絶対パスを覚えている)
 ```
 
-開発中の拡張(パッケージ化されていないもの)は `http://127.0.0.1:8787` を呼ぶ。
-ストア版(manifest に `update_url` が付く)は本番の URL を呼ぶ(`extension/src/shared/config.js` の `SERVER`)。
+開発中の拡張(パッケージ化されていないもの)は、うんちくでは `http://127.0.0.1:8787` を呼ぶ。
+ストア版(manifest に `update_url` が付く)は本番の URL を呼ぶ(`extension/src/shared/config.js` の `SERVER.base`)。
+使われ方の要約は、開発版も本番に送る(`SERVER.telemetryBase`。行は hello の `build = 'dev'` で分かる)。
 
-使われ方の要約を手元で貯めて見るときは、捨ててよい Postgres を立てて `DATABASE_URL` を渡す(無ければ受け取って捨てる):
+使われ方の要約を手元で受けて見るときは、`SERVER.telemetryBase` を `http://127.0.0.1:8787` にして(戻す前に、本番に送った分はダッシュボードの「送ったものを消す」で消しておく。消すのも、いまの送り先にだけ届く)、捨ててよい Postgres を立てて `DATABASE_URL` を渡す(無ければ受け取って捨てる):
 
 ```bash
 docker run -d --rm --name yomirin-tm-pg -e POSTGRES_PASSWORD=test -e POSTGRES_DB=tm -p 127.0.0.1:54329:5432 postgres:17-alpine

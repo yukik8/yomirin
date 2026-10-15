@@ -84,8 +84,13 @@ export const IS_STORE_BUILD = (() => {
 // (Google Play の規約: 購入した本の送信・再配布は禁止。本文の処理は端末内の Nano だけ)。
 // 本番は Vercel。開発中はローカルの uvicorn(server/README.md)。
 // 拡張にこのオリジンの host 権限は付けない — サーバ側が chrome-extension:// に CORS を返す。
+const PRODUCTION_BASE = 'https://reading-scaffold.vercel.app';
 export const SERVER = {
-  base: IS_STORE_BUILD ? 'https://reading-scaffold.vercel.app' : 'http://127.0.0.1:8787',
+  base: IS_STORE_BUILD ? PRODUCTION_BASE : 'http://127.0.0.1:8787',
+  // 使われ方の要約(#28)は、開発版も本番に送る(2026-10-15。開発中の自分の記録も同じ表に貯める)。
+  // 開発版の行は hello の build が 'dev' なので分けられる。送り先を手元に戻す前に「送ったものを消す」を押す
+  // (消すのも、いまの送り先にだけ届く)。手元のサーバで試すときは、ここを 'http://127.0.0.1:8787' にする
+  telemetryBase: PRODUCTION_BASE,
   timeoutMs: 15_000,
   maxTerms: 8, // 1回に送る単語の候補の上限
   maxTermChars: 16, // 1語の長さの上限

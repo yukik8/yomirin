@@ -73,11 +73,13 @@ describe('不変条件 §11-7・§11-8: 端末の外へ出る経路は、よみ�
     assert.deepEqual(hits(ofType('.js').filter((s) => s.path !== SERVER_JS), NETWORK), []);
   });
 
-  test('server.js の fetch は SERVER.base にだけ向く', () => {
+  test('server.js の fetch は SERVER.base(うんちく)と SERVER.telemetryBase(使われ方の要約)にだけ向く', () => {
     const text = sources.find((s) => s.path === SERVER_JS).text;
     const targets = [...text.matchAll(/\bfetch\s*\(\s*([^,)]+)/g)].map((m) => m[1].trim());
     assert.ok(targets.length > 0);
-    for (const t of targets) assert.ok(t.startsWith('`${SERVER.base}/'), `fetch の行き先: ${t}`);
+    for (const t of targets) {
+      assert.ok(t.startsWith('`${SERVER.base}/') || t.startsWith('`${SERVER.telemetryBase}/'), `fetch の行き先: ${t}`);
+    }
   });
 });
 
@@ -101,12 +103,14 @@ describe('うんちくのサーバへ送るもの(§11-7)', () => {
     const dev = await import('../../extension/src/shared/config.js?dev');
     assert.equal(dev.IS_STORE_BUILD, false);
     assert.equal(dev.SERVER.base, 'http://127.0.0.1:8787');
+    assert.equal(dev.SERVER.telemetryBase, 'https://reading-scaffold.vercel.app', '使われ方の要約は開発版も本番へ(build=dev で分かる)');
 
     // ストアから入れた拡張の manifest には update_url が付く
     globalThis.chrome = { runtime: { getManifest: () => ({ ...manifest, update_url: 'https://clients2.google.com/service/update2/crx' }) } };
     const store = await import('../../extension/src/shared/config.js?store');
     assert.equal(store.IS_STORE_BUILD, true);
     assert.equal(store.SERVER.base, 'https://reading-scaffold.vercel.app');
+    assert.equal(store.SERVER.telemetryBase, 'https://reading-scaffold.vercel.app');
   });
 
   test('送るのは、上限で切った単語の候補とインストール ID だけ', async (t) => {
@@ -295,7 +299,7 @@ describe('使われ方の要約で送るもの(§11-7・§11-8・#28)', () => {
     assert.equal(net.calls.length, 0);
   });
 
-  test('送るのは SERVER.base/telemetry への POST だけ。ヘッダは content-type と X-RS-Telemetry(うんちくの ID とは別)・本文は rows だけ', async (t) => {
+  test('送るのは SERVER.telemetryBase/telemetry への POST だけ。ヘッダは content-type と X-RS-Telemetry(うんちくの ID とは別)・本文は rows だけ', async (t) => {
     const { SERVER } = await import('../../extension/src/shared/config.js');
     const { sessionRow } = await import('../../extension/src/background/telemetry.js');
     const { queueTelemetry, flushTelemetry } = await import('../../extension/src/background/server.js');
@@ -309,7 +313,7 @@ describe('使われ方の要約で送るもの(§11-7・§11-8・#28)', () => {
 
     assert.equal(net.calls.length, 1);
     const { url, init, body } = net.calls[0];
-    assert.equal(url, `${SERVER.base}/telemetry`);
+    assert.equal(url, `${SERVER.telemetryBase}/telemetry`);
     assert.equal(init.method, 'POST');
     assert.deepEqual(Object.keys(init.headers).sort(), ['content-type', 'x-rs-telemetry']);
     assert.match(init.headers['x-rs-telemetry'], UUID);
