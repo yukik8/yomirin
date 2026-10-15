@@ -20,9 +20,11 @@ for (const key of ['size', 'timing', 'energy']) if ([...$(key).options].some(o =
 if (params.has('theta')) $('theta').value = params.get('theta');
 if (params.has('at')) { $('freeze').checked = true; $('time').value = params.get('at'); }
 $('reduced').checked = params.get('reduced') === '1';
+$('blend').checked = params.get('blend') === '1';
 let mode = params.get('mode') === 'full' ? 'full' : 'edge';
 let palette = [...MOODS[$('mood').value].colors];
 let page = 1;
+let tourTimer = 0, touring = false;
 const fx = createTurnFx($('turn-canvas'), () => $('book').getBoundingClientRect());
 
 function swatches() { $('swatches').replaceChildren(...palette.map(color => { const el = document.createElement('i'); el.style.background = color; return el; })); }
@@ -36,13 +38,14 @@ function status() {
   $('theta-out').value = (+$('theta').value).toFixed(1);
   $('time-out').value = $('time').value + ' ms';
   $('freeze-panel').hidden = !$('freeze').checked;
+  $('motion-note').textContent = MOODS[$('mood').value].note;
   for (const button of document.querySelectorAll('[data-mode]')) button.setAttribute('aria-pressed', String(button.dataset.mode === mode));
   $('status').textContent = +$('theta').value === 0 ? 'θ=0：演出は出ません。' : ($('reduced').checked || matchMedia('(prefers-reduced-motion: reduce)').matches) ? '余白に静かな色だけを置きます。' : mode === 'full' ? ($('timing').value === 'late' ? '本文が表示済みなので、余白だけに切り替わります。' : '本文の上は0.36秒まで。粒は0.72秒で消えます。') : '本文のまわりに、大きく広がります。';
 }
 function update() { status(); if ($('freeze').checked) fx.preview(options(), +$('time').value); else fx.clear(); }
 function play() {
   const oldPalette = palette;
-  palette = mixPalette(palette, MOODS[$('mood').value].colors);
+  palette = $('blend').checked ? mixPalette(palette, MOODS[$('mood').value].colors) : [...MOODS[$('mood').value].colors];
   let accepted = true;
   if ($('freeze').checked) fx.preview(options(), +$('time').value);
   else { accepted = fx.play(options()); if (!accepted) palette = oldPalette; }
@@ -52,13 +55,38 @@ function play() {
   status(); swatches();
   if (!accepted && +$('theta').value > 0) $('status').textContent = '続けてめくっている間は重ねません。';
 }
-$('mood').addEventListener('change', () => { $('motif').value = defaultMotif[$('mood').value]; fx.clear(); scene(); update(); });
-for (const id of ['motif', 'size', 'energy', 'timing', 'theta', 'reduced', 'freeze', 'time']) $(id).addEventListener('input', update);
-for (const button of document.querySelectorAll('[data-mode]')) button.addEventListener('click', () => { mode = button.dataset.mode; update(); });
-$('play').addEventListener('click', play);
-$('theme').addEventListener('click', () => { const dark = document.body.classList.toggle('dark'); $('theme').setAttribute('aria-pressed', String(dark)); $('theme').textContent = dark ? '明るい背景' : '暗い背景'; update(); });
+function stopTour() { clearTimeout(tourTimer); tourTimer = 0; touring = false; $('tour').textContent = '7つの場面を順に見る'; $('tour').setAttribute('aria-pressed', 'false'); }
+function changeMood() {
+  $('motif').value = defaultMotif[$('mood').value];
+  if (!$('blend').checked) palette = [...MOODS[$('mood').value].colors];
+  fx.clear(); scene(); swatches(); update();
+}
+$('mood').addEventListener('change', () => { stopTour(); changeMood(); });
+for (const id of ['motif', 'size', 'energy', 'timing', 'theta', 'reduced', 'freeze', 'time', 'blend']) $(id).addEventListener('input', () => {
+  stopTour();
+  if (!$('blend').checked) { palette = [...MOODS[$('mood').value].colors]; swatches(); }
+  update();
+});
+for (const button of document.querySelectorAll('[data-mode]')) button.addEventListener('click', () => { stopTour(); mode = button.dataset.mode; update(); });
+$('play').addEventListener('click', () => { stopTour(); play(); });
+$('tour').addEventListener('click', () => {
+  if (touring) { stopTour(); fx.clear(); return; }
+  touring = true; $('tour').setAttribute('aria-pressed', 'true'); $('freeze').checked = false;
+  const moods = Object.keys(MOODS); let i = 0;
+  function next() {
+    if (!touring) return;
+    if (i >= moods.length) { stopTour(); return; }
+    $('mood').value = moods[i]; changeMood(); play(); i += 1;
+    $('tour').textContent = `${i} / ${moods.length} · 停止する`;
+    tourTimer = setTimeout(next, 2100);
+  }
+  // 直前の手動再生と重ならないよう、最初の1秒も間を空ける。
+  $('tour').textContent = 'まもなく再生 · 停止する'; tourTimer = setTimeout(next, 1000);
+});
+$('theme').addEventListener('click', () => { stopTour(); const dark = document.body.classList.toggle('dark'); $('theme').setAttribute('aria-pressed', String(dark)); $('theme').textContent = dark ? '明るい背景' : '暗い背景'; update(); });
 if (params.get('theme') === 'dark') $('theme').click();
-addEventListener('keydown', e => { if (e.target !== document.body || e.repeat || ![' ', 'ArrowRight'].includes(e.key)) return; e.preventDefault(); play(); });
-addEventListener('pagehide', () => fx.destroy(), { once: true });
-matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', update);
+addEventListener('keydown', e => { if (e.target !== document.body || e.repeat || ![' ', 'ArrowRight'].includes(e.key)) return; e.preventDefault(); stopTour(); play(); });
+addEventListener('pagehide', () => { stopTour(); fx.destroy(); }, { once: true });
+document.addEventListener('visibilitychange', () => { if (document.hidden) stopTour(); });
+matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', () => { stopTour(); update(); });
 scene(); swatches(); update();

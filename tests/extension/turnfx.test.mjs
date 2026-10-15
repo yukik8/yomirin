@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { planTurn, frameAt, mixPalette, MOODS, MOTIFS, BODY_MS, PARTICLE_MS, END_MS } from '../../tools/preview/turn/turnfx.js';
+import { planTurn, particleAt, frameAt, mixPalette, MOODS, MOTIFS, BODY_MS, PARTICLE_MS, END_MS } from '../../tools/preview/turn/turnfx.js';
 
 test('どの雰囲気・粒でも本文上は360ms未満、粒は720ms未満、1800msで何も残らない', () => {
   for (const mood of Object.keys(MOODS)) for (const motif of Object.keys(MOTIFS)) {
@@ -33,7 +33,32 @@ test('θ=0は残光も粒もなし。低いθでは粒も小さく少なくな�
   const high = planTurn({ theta: 8 });
   assert.ok(low.particles.length < high.particles.length);
   assert.ok(low.particles[0].size < high.particles[0].size);
-  assert.ok(Math.abs(low.particles[0].dx) < Math.abs(high.particles[0].dx));
+  const distance = (plan) => {
+    const p = plan.particles[0], a = particleAt(plan, p, p.delay), b = particleAt(plan, p, 350);
+    return Math.hypot(b.x - a.x, b.y - a.y);
+  };
+  assert.ok(distance(low) < distance(high));
+});
+
+test('色と粒を同じにしても7場面の出発点・軌道は異なる。雨は下へ、発見は上へ進む', () => {
+  const signatures = new Set();
+  for (const mood of Object.keys(MOODS)) {
+    const plan = planTurn({ mood, motif: 'none', colors: MOODS.calm.colors });
+    const p = plan.particles[10];
+    const a = particleAt(plan, p, 150), b = particleAt(plan, p, 480);
+    signatures.add([a.x, a.y, b.x, b.y].map(n => Math.round(n)).join(','));
+    assert.ok([a.x, a.y, b.x, b.y].every(Number.isFinite));
+    if (mood === 'sad') assert.ok(b.y > a.y);
+    if (mood === 'wonder') assert.ok(b.y < a.y);
+    assert.equal(particleAt(plan, p, PARTICLE_MS).active, false);
+  }
+  assert.equal(signatures.size, 7);
+});
+
+test('全画面案は紙面の中から始まる構図、余白案は周囲から始まる構図', () => {
+  const edge = planTurn({ mood: 'warm', mode: 'edge' });
+  const full = planTurn({ mood: 'warm', mode: 'full' });
+  assert.notEqual(particleAt(edge, edge.particles[0], 180).x, particleAt(full, full.particles[0], 180).x);
 });
 
 test('同じ条件の比較は同じ配置。未知の語は静かな基本形に戻す', () => {
