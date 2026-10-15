@@ -45,17 +45,17 @@
         <p class="note">あとでダッシュボードからいつでも変えられます。目標は補助の量に影響しません。</p>
         <ul id="goals" class="choices"></ul>
         <!-- 外部送信の同意。Chrome Web Store の開示・同意の要件(送る前に必ず一度見せる)。
-             うんちくのサーバは既定オフ、使われ方の要約は既定オン(新しく入れた人だけ。onboarding.js) -->
+             どちらも新しく入れた人だけ既定オン(onboarding.js)。うんちくの単語だけを送る同意はダッシュボードにある -->
         <div class="sub">
           <label class="consent-row">
-            <input id="consent" type="checkbox" />
-            <span>くまのうんちくに、言葉を調べるサーバを使う(任意)</span>
+            <input id="text" type="checkbox" />
+            <span>本文を AI のサーバに送る(突然クイズ・問いへの答え・くまのうんちく)</span>
           </label>
           <p class="note">
-            オンにすると、読み終えたページからこの端末で選んだ単語を数語(最大8語)だけ、
-            よみりんのサーバ経由で Anthropic の AI に送り、言葉の意味や由来を調べます。
-            本の本文・書名・URL は送りません。オフのままでも使えます(この端末の内蔵AIが使えれば、それで話します)。
-            あとでダッシュボードから変えられます。
+            クイズと、読書中の問いへの答えを作るために、読み終えたページの本文の一部(1回2,000字まで)と、
+            書いた問い・選んだ箇所を、よみりんのサーバ経由で Anthropic の AI に送ります。まだ読んでいないページは送りません。
+            サーバには保存しません。書名・URL・読書の記録は送りません。
+            外すと、クイズと問いへの答えは出ません(読書の補助の演出と計測は動きます)。あとでダッシュボードから変えられます。
           </p>
           <label class="consent-row">
             <input id="telemetry" type="checkbox" />
@@ -78,32 +78,8 @@
         <span class="eyebrow">準備ができました</span>
         <p class="lead">Play ブックスで本を開いて、ツールバーの拡張アイコンから「読む」を押すと始まります。</p>
         <p class="note">
-          本・問い・クイズなどの記録は、この端末の中だけに残ります。本の本文が端末の外へ送られることはありません。
+          本・問い・クイズなどの記録は、この端末の中だけに残ります。
         </p>
-
-        <!-- 内蔵AI(Gemini Nano)。クイズと問いへの答えはこれが端末の中で作る。
-             無くても演出と計測は動くので、ここで止めない(確認は任意) -->
-        <div class="sub nano">
-          <span class="pill">内蔵AI</span>
-          <h2>Gemini Nano について</h2>
-          <p class="note">
-            突然クイズと、問いへの答えは、Chrome に内蔵された AI がこの端末の中で作ります。
-            本の本文はどこにも送られません。使うには次が要ります。
-          </p>
-          <ul class="note-list">
-            <li>Chrome 138 以降</li>
-            <li>空きディスク 22GB 以上(モデル本体は約 4GB。初回だけダウンロードに数分かかります)</li>
-            <li>対応する GPU、またはメモリ 16GB 以上</li>
-          </ul>
-          <p class="note">
-            下のボタンで確認できます。初回はこのクリックでダウンロードが始まります。
-            足りないものがあっても、補助の演出と計測は動きます。あとからダッシュボードでも確認できます。
-          </p>
-          <div class="actions">
-            <button id="ai-check" type="button">内蔵AIを確認・準備</button>
-          </div>
-          <p id="ai-status" class="note" hidden></p>
-        </div>
 
         <div class="actions">
           <button id="close" type="button">閉じる</button>

@@ -2,12 +2,14 @@
 //
 // 1. うんちく: 送るのは pickTerms で選んだ単語の候補と、インストールごとのランダムな ID(回数制限のため)だけ。
 //    本の本文・書名・URL は送らない。本人の同意が無ければ呼ばない。
-// 2. 使われ方の要約(#28): セッションを閉じたあとの要約(telemetry.js の行。値は数・真偽・決まった語だけ)を
+// 2. クイズと問いへの答え(#13): 読み終えた本文・問い・選んだ文字列を送る。本人が「本文を AI のサーバに送る」を
+//    オンにしたときだけ(readTextConsent)。
+// 3. 使われ方の要約(#28): セッションを閉じたあとの要約(telemetry.js の行。値は数・真偽・決まった語だけ)を
 //    送り待ちに積み、まとめて送る。届かなければ残して、次の機会に送り直す。同意が無ければ積まない・送らない。
 //    ID はうんちくの install_id とは別(あちらは「回数制限にだけ使う」と約束している)。
 
-import { SERVER, TELEMETRY, readTelemetryConsent } from '../shared/config.js';
-import { acceptTrivia } from './ai.js';
+import { SERVER, TELEMETRY, readTelemetryConsent, readTextConsent } from '../shared/config.js';
+import { acceptQuiz, acceptTrivia } from './ai.js';
 
 const INSTALL_KEY = 'install_id';
 
@@ -26,6 +28,29 @@ export async function resetInstallId() {
 }
 
 /**
+ * 生成の受け口(/trivia・/quiz・/ask)へ POST して、返ってきた JSON を返す。
+ * 届かない・タイムアウト・2xx でなければ null(呼び手は何も出さない)。
+ */
+async function postJson(path, body) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), SERVER.timeoutMs);
+  try {
+    const r = await fetch(`${SERVER.base}/${path}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-rs-install': await installId() },
+      body: JSON.stringify(body),
+      signal: ctrl.signal,
+    });
+    if (!r.ok) return null;
+    return await r.json(); // 本文の受信もタイムアウトの内側で待つ
+  } catch {
+    return null; // 届かない・タイムアウト
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
  * 単語の候補からうんちくを1つ。話せることが無い・サーバに届かないときは null。
  * サーバが選んだ言葉が候補に無い・擬音らしい・言い切れないものは捨てる。
  */
@@ -35,25 +60,44 @@ export async function serverTrivia(terms) {
     .filter((t) => t && t.length <= SERVER.maxTermChars)
     .slice(0, SERVER.maxTerms);
   if (list.length === 0) return null;
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), SERVER.timeoutMs);
-  try {
-    const r = await fetch(`${SERVER.base}/trivia`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-rs-install': await installId() },
-      body: JSON.stringify({ terms: list }),
-      signal: ctrl.signal,
-    });
-    if (!r.ok) return null;
-    const data = await r.json(); // 本文の受信もタイムアウトの内側で待つ
-    if (!data?.ok) return null;
-    const trivia = acceptTrivia(data.trivia);
-    return trivia && list.includes(trivia.term) ? trivia : null;
-  } catch {
-    return null; // 届かない・タイムアウト。うんちくは出さないだけ
-  } finally {
-    clearTimeout(timer);
-  }
+  const data = await postJson('trivia', { terms: list });
+  if (!data?.ok) return null;
+  const trivia = acceptTrivia(data.trivia);
+  return trivia && list.includes(trivia.term) ? trivia : null;
+}
+
+/**
+ * 読み終えたページの本文から3択クイズを1問(focus はその中で最も難しい段落)。
+ * 本文を送らない設定(オフ・まだ選んでいない)なら呼ばずに null。作れなければ null。
+ */
+export async function serverQuiz(text, focus = '') {
+  if (!(await readTextConsent())) return null;
+  const data = await postJson('quiz', {
+    text: String(text ?? '').trim().slice(0, 2000),
+    focus: String(focus ?? '').trim().slice(0, 600),
+  });
+  return data?.ok ? acceptQuiz(data.quiz) : null;
+}
+
+/**
+ * 読書中の問いへの答え。context = [{ i, text }](読み終えた段落だけ。未読は呼び手が渡さない)。
+ * judge なら、本と関係のない頼みごとかもサーバに決めさせる(関係なければ { off_topic: true })。
+ * 本文を送らない設定なら呼ばずに null。答えられなければ null。
+ */
+export async function serverAnswer({ question, selection = '', context = [], judge }) {
+  if (!(await readTextConsent())) return null;
+  const data = await postJson('ask', {
+    question: String(question ?? '').trim().slice(0, 300),
+    selection: String(selection ?? '').trim().slice(0, 500),
+    context: context.slice(0, 8).map((c) => ({ i: Math.max(0, Number(c?.i) || 0), text: String(c?.text ?? '').slice(0, 800) })),
+    judge: judge === true,
+  });
+  if (data?.ok === false && data.error === 'off_topic') return { off_topic: true };
+  if (!data?.ok || typeof data.answer !== 'string' || !data.answer.trim()) return null;
+  return {
+    answer: data.answer.trim(),
+    source_index: Number.isInteger(data.source_index) ? data.source_index : -1,
+  };
 }
 
 // ---- 使われ方の要約(#28) -----------------------------------------------------

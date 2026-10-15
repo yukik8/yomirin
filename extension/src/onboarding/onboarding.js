@@ -3,8 +3,7 @@
 // θの計算と保存、外へ送るかどうかの保存はSW側(COMPLETE_ONBOARDING)。このページはUIだけを持つ。
 
 import { Msg } from '../shared/events.js';
-import { GOALS, DIAGNOSIS, readServerConsent, readTelemetryChoice } from '../shared/config.js';
-import { nanoDiagnostics, describeNano, nanoReady } from '../background/ai.js';
+import { GOALS, DIAGNOSIS, readTextChoice, readTelemetryChoice } from '../shared/config.js';
 import { getState } from '../background/store.js';
 import { showBear } from '../content/bear.js';
 
@@ -37,7 +36,6 @@ const STEP_BEAR = { 'step-intro': 'front', 'step-quiz': 'think-read', 'step-goal
 const answers = [];
 let currentQ = 0;
 let selectedGoal = null;
-let nanoIsReady = false; // 内蔵AIの確認が通ったら、最後のボタンはダッシュボードへ
 
 /** 選択肢をキーボードでも選べるようにする(Tab で移動、Enter / Space で選ぶ)。 */
 function pressable(li, onPress) {
@@ -146,7 +144,7 @@ $('finish').addEventListener('click', async () => {
       type: Msg.COMPLETE_ONBOARDING,
       answers,
       goal: selectedGoal,
-      trivia: $('consent').checked,
+      text: $('text').checked,
       telemetry: $('telemetry').checked,
     });
   } catch {
@@ -163,36 +161,14 @@ $('finish').addEventListener('click', async () => {
   }
 });
 
-// 内蔵AIの確認・準備(ダッシュボードと同じ診断)。ページ文脈のクリックで実行するので、
-// 初回のモデルのダウンロードがこのジェスチャーで始まる
-$('ai-check').addEventListener('click', async () => {
-  $('ai-check').disabled = true;
-  $('ai-status').hidden = false;
-  $('ai-status').textContent = '確認中…(初回はモデルのダウンロードに数分かかることがあります)';
-  const d = await nanoDiagnostics();
-  $('ai-status').textContent = describeNano(d);
-  if (nanoReady(d)) {
-    // 準備ができたら、もう試し直すことはない。最後のボタンを「はじめる」にしてダッシュボードへ
-    $('ai-check').closest('.actions').hidden = true;
-    $('close').textContent = 'はじめる';
-    nanoIsReady = true;
-  } else {
-    $('ai-check').disabled = false;
-  }
-});
+$('close').addEventListener('click', () => window.close());
 
-$('close').addEventListener('click', () => {
-  if (nanoIsReady) location.replace(chrome.runtime.getURL('src/dashboard/dashboard.html'));
-  else window.close();
-});
-
-// 同意の初期値。うんちくのサーバは既定オフ、使われ方の要約は新しく入れた人だけ既定オン。
+// 同意の初期値。本文を AI のサーバに送る・使われ方の要約は、新しく入れた人だけ既定オン。
 // 診断のやり直しでは、いま選んでいるものを出す(この版より前から使っていて、まだ選んでいない人はオフ)
 (async () => {
-  $('consent').checked = await readServerConsent();
-  const choice = await readTelemetryChoice();
   const returning = Boolean((await getState().catch(() => null))?.onboarded_at);
-  $('telemetry').checked = choice ?? !returning;
+  $('text').checked = (await readTextChoice()) ?? !returning;
+  $('telemetry').checked = (await readTelemetryChoice()) ?? !returning;
 })();
 
 show('step-intro');

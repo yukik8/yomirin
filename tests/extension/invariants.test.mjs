@@ -77,7 +77,7 @@ describe('不変条件 §11-1・§11-2: 1ページの長さ(#33)は、ブラウ�
   });
 });
 
-describe('不変条件 §11-7・§11-8: 端末の外へ出る経路は、よみりんのサーバへの1本だけ(うんちく・使われ方の要約)', () => {
+describe('不変条件 §11-7・§11-8: 端末の外へ出る経路は、よみりんのサーバへの1本だけ(うんちく・クイズと問い・使われ方の要約)', () => {
   const NETWORK = /\bfetch\s*\(|\bXMLHttpRequest\b|\bsendBeacon\b|\bWebSocket\b|\bEventSource\b|\bconnectNative\b|\bsendNativeMessage\b/;
   const SERVER_JS = join('src', 'background', 'server.js');
 
@@ -85,7 +85,7 @@ describe('不変条件 §11-7・§11-8: 端末の外へ出る経路は、よみ�
     assert.deepEqual(hits(ofType('.js').filter((s) => s.path !== SERVER_JS), NETWORK), []);
   });
 
-  test('server.js の fetch は SERVER.base(うんちく)と SERVER.telemetryBase(使われ方の要約)にだけ向く', () => {
+  test('server.js の fetch は SERVER.base(うんちく・クイズと問い)と SERVER.telemetryBase(使われ方の要約)にだけ向く', () => {
     const text = sources.find((s) => s.path === SERVER_JS).text;
     const targets = [...text.matchAll(/\bfetch\s*\(\s*([^,)]+)/g)].map((m) => m[1].trim());
     assert.ok(targets.length > 0);
@@ -109,12 +109,12 @@ describe('ストアの申告「remote code: No」: 外のコードを読まな�
 });
 
 describe('うんちくのサーバへ送るもの(§11-7)', () => {
-  test('ストア版は本番の https、開発版は手元のサーバを呼ぶ(§11-10)', async (t) => {
+  test('ストア版も開発版も本番の https を呼ぶ(§11-10。開発版の要約の行は build=dev)', async (t) => {
     t.after(() => delete globalThis.chrome);
     delete globalThis.chrome;
     const dev = await import('../../extension/src/shared/config.js?dev');
     assert.equal(dev.IS_STORE_BUILD, false);
-    assert.equal(dev.SERVER.base, 'http://127.0.0.1:8787');
+    assert.equal(dev.SERVER.base, 'https://reading-scaffold.vercel.app', 'うんちく・クイズ・問いは開発版も本番へ(v0.30)');
     assert.equal(dev.SERVER.telemetryBase, 'https://reading-scaffold.vercel.app', '使われ方の要約は開発版も本番へ(build=dev で分かる)');
 
     // ストアから入れた拡張の manifest には update_url が付く
@@ -173,6 +173,68 @@ describe('うんちくのサーバへ送るもの(§11-7)', () => {
     assert.equal(await serverTrivia([]), null);
     assert.equal(called, 0);
     assert.equal(await serverTrivia(['活動写真館']), null);
+  });
+});
+
+describe('本文をサーバへ送るのは、本人が「本文を AI のサーバに送る」をオンにしたときだけ(§11-7・#13)', () => {
+  const STORE_MANIFEST = { version: '0.30', update_url: 'https://clients2.google.com/service/update2/crx' };
+  const PARA = 'ゴーシュは町の活動写真館でセロを弾く係りでした。'.repeat(4);
+  const ASK = { question: '係りは?', selection: '活動写真館', context: [{ i: 2, text: PARA }], judge: false };
+
+  async function load() {
+    const server = await import('../../extension/src/background/server.js');
+    const config = await import('../../extension/src/shared/config.js');
+    return { ...server, ...config };
+  }
+
+  for (const [label, manifest] of [
+    ['ストア版', STORE_MANIFEST],
+    ['開発版', undefined],
+  ]) {
+    test(`${label}: まだ選んでいない(前の版から使っている人)・オフなら送らない`, async (t) => {
+      const chrome = fakeChrome({}, manifest);
+      const { fetch, calls } = fakeFetch(() => 200);
+      install(t, chrome, fetch);
+      const { serverQuiz, serverAnswer, readTextChoice, writeTextConsent } = await load();
+      assert.equal(await readTextChoice(), null);
+      assert.equal(await serverQuiz(PARA), null);
+      await writeTextConsent(false);
+      assert.equal(await readTextChoice(), false);
+      assert.equal(await serverAnswer(ASK), null);
+      assert.equal(calls.length, 0);
+    });
+  }
+
+  test('オンなら(ストア版も)、/quiz へは本文と焦点だけ・/ask へは問い・選んだ文字列・段落・judge だけを、上限で切って送る', async (t) => {
+    const chrome = fakeChrome({ text_server_consent: true }, STORE_MANIFEST);
+    const { fetch, calls } = fakeFetch(() => 200);
+    install(t, chrome, fetch);
+    const { serverQuiz, serverAnswer, SERVER } = await load();
+    await serverQuiz('あ'.repeat(2500), 'い'.repeat(700));
+    await serverAnswer({
+      question: 'う'.repeat(400),
+      selection: 'え'.repeat(600),
+      context: Array.from({ length: 10 }, (_, i) => ({ i, text: 'お'.repeat(900), page: 3 })),
+      judge: true,
+    });
+    assert.deepEqual(
+      calls.map((c) => c.url),
+      [`${SERVER.base}/quiz`, `${SERVER.base}/ask`],
+    );
+    for (const { init } of calls) {
+      assert.equal(init.method, 'POST');
+      assert.deepEqual(Object.keys(init.headers).sort(), ['content-type', 'x-rs-install']);
+    }
+    const [quiz, ask] = calls.map((c) => c.body);
+    assert.deepEqual(Object.keys(quiz).sort(), ['focus', 'text']);
+    assert.equal(quiz.text.length, 2000);
+    assert.equal(quiz.focus.length, 600);
+    assert.deepEqual(Object.keys(ask).sort(), ['context', 'judge', 'question', 'selection']);
+    assert.equal(ask.question.length, 300);
+    assert.equal(ask.selection.length, 500);
+    assert.equal(ask.context.length, 8);
+    assert.ok(ask.context.every((c) => Object.keys(c).sort().join() === 'i,text' && c.text.length === 800));
+    assert.equal(ask.judge, true);
   });
 });
 
