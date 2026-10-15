@@ -24,13 +24,13 @@
 - プロジェクト `reading-scaffold`(yukik8s-projects)。本番は `https://reading-scaffold.vercel.app`。拡張の `SERVER.base` と同じ
 - `ANTHROPIC_API_KEY`(Production)を登録してある。本番でうんちくが返り、ログに単語が残らない
 - GitHub の `yukik8/yomirin` と繋いである。**main に merge すると本番に出る**(main へは PR からだけ入る。Root Directory は `server`、`server/` が前回のデプロイから変わっていない push は飛ばす)。手で出すときはリポジトリの一番上で `vercel deploy --prod`(詳しくは [../server/README.md](../server/README.md))
+- Neon(Postgres)を Marketplace から繋いである(#28・Washington, D.C. の iad1。関数と同じ)。`DATABASE_URL`(pooled)が Production・Preview に入っている。Preview と本番は同じデータベース(デプロイごとのブランチは作らない)
 
 残り:
 
 1. **Anthropic Console の利用額の上限**(このサーバ専用のキー・workspace に月の上限)。悪用への最後の砦
 2. **Upstash Redis**(Vercel の Storage から繋ぐ)。無いと1日の回数制限はインスタンスのメモリで数えるので目安にしかならない
-3. **Neon(Postgres)**(Vercel の Marketplace から繋ぐ・#28)。`DATABASE_URL` が Production・Preview に入る。無いと使われ方の要約は受け取って捨てる(拡張は止まらない)。手順は [../server/README.md](../server/README.md)
-4. ストアに出して拡張の ID が決まったら、`RS_ALLOWED_ORIGINS=chrome-extension://<ID>` を入れて出し直す(他のオリジンからの呼び出しを断る。偽装はできるので補助)
+3. ストアに出して拡張の ID が決まったら、`RS_ALLOWED_ORIGINS=chrome-extension://<ID>` を入れて出し直す(他のオリジンからの呼び出しを断る。偽装はできるので補助)
 
 環境変数の一覧と悪用への備えは [../server/README.md](../server/README.md)。
 
