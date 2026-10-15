@@ -83,7 +83,7 @@ docs・server・.git は入れない(`*.zip` は .gitignore 済み)。
 zip を展開して「パッケージ化されていない拡張機能を読み込む」で入れる。そのままだと開発版として動くので、**ストア版の動きを見るときは展開したコピーの manifest に `"update_url": "https://clients2.google.com/service/update2/crx"` を一時的に足す**(本物の zip には入れない)。
 
 1. 新しいプロフィールで入れると、オンボーディングが開く。診断 → 目標 → 本文を AI のサーバに送る同意(既定オン)・使われ方の要約の同意(既定オン)まで進める
-2. Play ブックスで本を開き、「読む」を押す。Play ブックス以外のタブでは開始しない。θ が高ければ、そのタブだけが大きく映る(1ページが短くなる・同じ本を開いた別のタブは変わらない)
+2. Play ブックスで本を開くと、画面の右下に「計測しますか?」が出る。「はい」で始まりカードが消える(「いいえ」で消え、めくっても出ない)。popup の「読む」でも始められ、そのときもカードが消える。Play ブックス以外のタブでは開始しない。θ が高ければ、そのタブだけが大きく映る(1ページが短くなる・同じ本を開いた別のタブは変わらない)
 3. 1ページめくると、画面の右下の角によみりんの話が出る(余白が狭いと出ない)。めくっても点滅しない。θ が高ければ、くま・突然クイズも出る(出るかどうかは抽選。クイズは本文を送る同意がオンのときだけ)。問いのボタンから問うと、数秒で答えが返る
 4. 章の始まりまでめくると、話がオチてフィーバーになる
 5. 「終える」で閉じると、元の倍率に戻る(途中で ⌘+/⌘− していたらそのまま)。ダッシュボードの本棚に読んだ区間が出る。使われ方の要約がオンなら、Neon の `tm_sessions` にその回の1行が入り(`build` は `store`)、本・本文・自由な文字列の列が無いこと
@@ -118,14 +118,14 @@ zip を展開して「パッケージ化されていない拡張機能を読み�
 Google Play ブックス(ウェブ版)で本を読む時間を支える。読んでいる間だけ補助の演出を出し、その量を本人が気づかない速さで自動的に減らしていく。
 
 ```text
-Supports reading in the Google Play Books web reader. Only while the user is reading a book they started with the extension's "Read" button, it shows small reading-related effects (a bear character in a corner of the screen, short quizzes about the page just read, a celebration when a chapter ends) and automatically reduces the amount of this support over time, so the user can eventually read without it. It works only on Google Play Books.
+Supports reading in the Google Play Books web reader. Only while the user is reading a book they started with the extension's "Read" button (or by answering "Yes" to the small "Measure this reading?" prompt shown when a book is opened), it shows small reading-related effects (a bear character in a corner of the screen, short quizzes about the page just read, a celebration when a chapter ends) and automatically reduces the amount of this support over time, so the user can eventually read without it. It works only on Google Play Books.
 ```
 
 #### 権限の用途
 
 | 権限 | 用途 |
 |---|---|
-| `scripting` | 「読む」を押したとき、開いている Play ブックスのタブに、計測と演出のスクリプトを入れる |
+| `scripting` | 「読む」(か、本を開いたときの「計測しますか?」の「はい」)を押したとき、開いている Play ブックスのタブに、計測と演出のスクリプトを入れる。計測していないときに Play ブックスで本を開いたら、そのタブに「計測しますか?」のカードを入れる |
 | `storage` | 進行中のセッション・設定(診断の答え・目標・うんちくのサーバと使われ方の要約の同意)・インストール ID・使われ方の要約の送り待ちを端末に保存する |
 | `alarms` | 30秒ごとに見回り、無操作や戻らないまま3分たったセッションを閉じる |
 | `https://play.google.com/books/*` | Play ブックスのリーダーのタブであることを確かめ、本の ID と書名を読む |
@@ -135,7 +135,7 @@ Supports reading in the Google Play Books web reader. Only while the user is rea
 
 ```text
 scripting:
-When the user presses "Read" in the extension popup on an open Google Play Books reader tab, the extension injects its scripts into that tab (including the frame that shows the book) to measure reading time and draw the reading effects. Scripts are injected only after this user action and only into Google Play Books pages.
+When the user presses "Read" in the extension popup on an open Google Play Books reader tab, or answers "Yes" to the extension's "Measure this reading?" prompt in that tab, the extension injects its scripts into that tab (including the frame that shows the book) to measure reading time and draw the reading effects. Measurement scripts are injected only after this user action and only into Google Play Books pages. When a book is opened in the Google Play Books reader and no reading session is running, the extension injects a small prompt into that tab's top frame asking whether to start measuring; the prompt measures nothing, reads nothing from the page, and the user can turn it off in the dashboard.
 
 storage:
 Saves the in-progress reading session (so it survives service worker restarts), the user's settings (onboarding answers, weekly goal, whether book text may be sent to the AI server, whether the optional word-lookup server and the usage summaries are enabled), random installation IDs, and usage summaries waiting to be sent, on the device. Reading records (books, page ranges, quizzes, the user's questions) are stored on the device (IndexedDB) and are not stored by the developer. Unless the user turns it off, a numeric summary of each finished reading session (reading time, number of times the user left the tab, amount of support shown; no book, title or text) is sent to the developer's server. Only while "Send book text to the AI server" is on (shown checked during onboarding for new users; off for existing users until they turn it on), excerpts of pages the user has already read (up to 2,000 characters at a time) and the user's own questions are sent through the developer's server to Anthropic's API to generate quizzes and answers. They are not stored on the server.
@@ -144,7 +144,7 @@ alarms:
 While a reading session is active, a check runs every 30 seconds to close sessions that have been idle, or that the user has not returned to for 3 minutes, so reading time is not over-counted. Alarms are used only for this session housekeeping.
 
 Host permission:
-https://play.google.com/books/* is used to confirm that the tab is the Google Play Books reader and to read the book ID and title, so reading records are kept per book.
+https://play.google.com/books/* is used to confirm that the tab is the Google Play Books reader and to read the book ID and title, so reading records are kept per book, and to show the "Measure this reading?" prompt when a book is opened there.
 https://books.googleusercontent.com/books/* is where the Google Play Books reader renders the book text and the page indicator (inside a frame). The extension's script runs in that frame to measure reading time, detect page turns and chapter starts, and draw the effects outside the text. The extension has no access to any other site.
 ```
 
@@ -190,7 +190,7 @@ https://books.googleusercontent.com/books/* is where the Google Play Books reade
 ```text
 本を開いても、気づくと別のタブを見ている。そんなときのための読書の補助輪です。
 
-Google Play ブックス(ウェブ版)で「読む」を押すと、読んでいる間だけ、小さな演出が読書を支えます。
+Google Play ブックス(ウェブ版)で本を開くと「計測しますか?」とたずねます。「はい」(か、拡張の「読む」)を押すと、読んでいる間だけ、小さな演出が読書を支えます。
 ・画面の隅で、くまが何かを少しずつ作り進めます。めくるたびに少しずつ変わり、章を読み終えると、作っていたものが弾けたり崩れたりして、フィーバーになります
 ・ときどき、くまが画面の端から顔を出します
 ・さっき読んだページから、突然クイズが出ます
@@ -201,7 +201,7 @@ Google Play ブックス(ウェブ版)で「読む」を押すと、読んでい
 ・本・問いなどの読書の記録は、この端末の中に保存します。ダッシュボードで、本ごとに読んだ区間・残り時間・自分の問いを見られます
 ・よみりんを良くするため、読み終えるたびに、その回の使われ方の要約(読書時間・補助の量など、数だけ)を開発者に送ります。本・書名・本文は送りません。最初の設定とダッシュボードでオフにでき、送ったものも消せます
 ・くまのうんちくは、単語を数語だけ送って言葉を調べます
-・計測と演出は「読む」を押した間だけです。Play ブックス以外のページは読みません
+・計測と演出は「読む」か「計測しますか?」の「はい」を押した間だけです。Play ブックス以外のページは読みません
 
 必要なもの: Chrome。Google Play ブックスのウェブ版で使います。
 ```

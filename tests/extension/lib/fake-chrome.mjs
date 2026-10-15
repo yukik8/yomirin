@@ -1,25 +1,30 @@
-// テスト用の chrome(storage.local と runtime、タブの倍率)と fetch。拡張のコードは呼ぶたびに globalThis の
+// テスト用の chrome(storage.local・storage.session と runtime、タブの倍率)と fetch。拡張のコードは呼ぶたびに globalThis の
 // chrome・fetch を読むので、テストごとに置き換えられる。
 
-/** storage.local を Map で持つ chrome。data で中身を見られる。 */
-export function fakeChrome(initial = {}, manifest = { version: '0.27' }) {
-  const data = new Map(Object.entries(structuredClone(initial)));
+/** Map で持つ storage の1つの場所(local・session)。 */
+function fakeArea(data) {
   const keysOf = (k) => (k == null ? [...data.keys()] : Array.isArray(k) ? k : [k]);
   return {
-    data,
-    runtime: { getManifest: () => manifest },
-    storage: {
-      local: {
-        get: async (k) => Object.fromEntries(keysOf(k).filter((x) => data.has(x)).map((x) => [x, structuredClone(data.get(x))])),
-        set: async (obj) => {
-          for (const [k, v] of Object.entries(obj)) data.set(k, structuredClone(v));
-        },
-        remove: async (k) => {
-          for (const x of keysOf(k)) data.delete(x);
-        },
-        clear: async () => data.clear(),
-      },
+    get: async (k) => Object.fromEntries(keysOf(k).filter((x) => data.has(x)).map((x) => [x, structuredClone(data.get(x))])),
+    set: async (obj) => {
+      for (const [k, v] of Object.entries(obj)) data.set(k, structuredClone(v));
     },
+    remove: async (k) => {
+      for (const x of keysOf(k)) data.delete(x);
+    },
+    clear: async () => data.clear(),
+  };
+}
+
+/** storage.local と storage.session を Map で持つ chrome。data(local)・sessionData で中身を見られる。 */
+export function fakeChrome(initial = {}, manifest = { version: '0.27' }) {
+  const data = new Map(Object.entries(structuredClone(initial)));
+  const sessionData = new Map();
+  return {
+    data,
+    sessionData,
+    runtime: { getManifest: () => manifest },
+    storage: { local: fakeArea(data), session: fakeArea(sessionData) },
   };
 }
 

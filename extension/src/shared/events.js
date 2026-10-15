@@ -44,6 +44,7 @@ export const EndReason = {
 // content script ⇄ service worker のメッセージ種別。
 export const Msg = {
   START_SESSION: 'start_session',
+  START_PROMPTED: 'start_prompted', // content(カード)→SW: 本を開いたときの「計測しますか?」の「はい」(#32)。拡張のページ以外から受ける開始はこれだけ
   END_SESSION: 'end_session',
   REPORT: 'report', // content scriptからの計測報告(EventTypeを載せる)
   GET_STATUS: 'get_status',

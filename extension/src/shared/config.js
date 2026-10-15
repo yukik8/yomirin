@@ -181,6 +181,27 @@ export async function writeTelemetryConsent(value) {
   }
 }
 
+// 本を開いたら「計測しますか?」とたずねるか(#32・docs/design.md §3)。ダッシュボードで切り替える。
+// キーが無い=たずねる(押し忘れ対策なので既定オン。外へ送るものではないので同意は要らない)
+const START_PROMPT_KEY = 'start_prompt';
+
+export async function readStartPrompt() {
+  try {
+    const r = await chrome.storage.local.get(START_PROMPT_KEY);
+    return r[START_PROMPT_KEY] !== false;
+  } catch {
+    return false;
+  }
+}
+
+export async function writeStartPrompt(value) {
+  try {
+    await chrome.storage.local.set({ [START_PROMPT_KEY]: value === true });
+  } catch {
+    /* 失敗は無視(次回の読みで今の値のまま) */
+  }
+}
+
 /** デモモードの現在値(プロフィールごと)。既定OFF。読めなければOFF扱い。 */
 export async function readDemoFlag() {
   try {

@@ -47,7 +47,8 @@ describe('manifest: 権限は release.md の申告どおり', () => {
   });
 
   test('後から足せる権限・自動で入る content script・外からの接続を持たない', () => {
-    // 計測は「読む」を押した間だけ(§11-2)。注入は scripting で、押したタブにだけ行う
+    // 計測は「読む」(か、本を開いたときの「計測しますか?」の「はい」)を押した間だけ(§11-2)。
+    // 注入は scripting で、Play ブックスのタブにだけ行う(カードも、押したタブへの計測のスクリプトも)
     for (const key of ['optional_permissions', 'optional_host_permissions', 'content_scripts', 'externally_connectable']) {
       assert.equal(manifest[key], undefined, `manifest に ${key} がある`);
     }

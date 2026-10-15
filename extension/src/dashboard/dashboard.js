@@ -15,6 +15,8 @@ import {
   readTelemetryChoice,
   readTextConsent,
   writeTextConsent,
+  readStartPrompt,
+  writeStartPrompt,
 } from '../shared/config.js';
 import { bearImg, showBear } from '../content/bear.js';
 import { buildMirror } from '../background/mirror.js';
@@ -666,6 +668,12 @@ $('export').addEventListener('click', async () => {
   a.click();
   URL.revokeObjectURL(a.href);
 });
+
+// 本を開いたら「計測しますか?」とたずねるか(#32・既定オン)。次に本を開いたときから効く
+readStartPrompt().then((on) => {
+  $('start-prompt').checked = on;
+});
+$('start-prompt').addEventListener('change', () => writeStartPrompt($('start-prompt').checked));
 
 // うんちくのサーバ利用(本人の同意・既定オフ)。切り替えると次のうんちくから効く。
 readServerConsent().then((on) => {
