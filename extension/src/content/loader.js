@@ -82,3 +82,6 @@
     giveUp,
   );
 })();
+
+// executeScript の結果(どのフレームに入ったか)。SW はこれを見て、本文のフレームに入っていなければ入れ直す(#38)
+location.hostname;

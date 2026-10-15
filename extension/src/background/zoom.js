@@ -71,6 +71,29 @@ export async function retuneZoom(tabId, zoom, theta) {
 }
 
 /**
+ * 計測中にページを再読み込みした(#38)。per-tab の倍率は別の文書へ移ると Chrome が戻すので、開始のときに
+ * 掛けた倍率を掛け直す。戻すための記録(元の倍率・設定)は開始のときのものをそのまま使う。掛けたままなら触らない。
+ * 再読み込みの前に本人が倍率を変えていたかは分からない(Chrome が戻している)ので、掛け直す。
+ * @returns {Promise<boolean>} 掛け直したら true
+ */
+export async function reapplyZoom(tabId, zoom) {
+  if (!zoom) return false;
+  try {
+    if (await stillApplied(tabId, zoom)) return false;
+    await chrome.tabs.setZoomSettings(tabId, { mode: 'automatic', scope: 'per-tab' });
+    try {
+      await chrome.tabs.setZoom(tabId, zoom.applied);
+    } catch {
+      await chrome.tabs.setZoomSettings(tabId, { mode: zoom.mode, scope: zoom.scope }).catch(() => {});
+      return false;
+    }
+    return true;
+  } catch {
+    return false; // タブが無い・倍率を変えられない。掛けずに読む
+  }
+}
+
+/**
  * セッションの終わり(どの終わり方でも)に元の倍率へ戻す。戻したら true。
  * 戻すのは、このタブが今も per-tab で、倍率が掛けたままのときだけ: 本人が途中で変えていた・
  * タブが別の文書へ移って Chrome が戻した・タブが無い、なら触らない。ブラウザを起動し直したあとは
