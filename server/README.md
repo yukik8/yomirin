@@ -133,15 +133,4 @@ vercel deploy                             # 確認用の Preview
 - 出したら `https://reading-scaffold.vercel.app/healthz` が `{"ok": true}` を返すことを確かめる。
   拡張は Preview の URL ではなく、この本番ドメインを呼ぶ(`extension/src/shared/config.js` の `SERVER.base`)。
 
-### Neon(Postgres)を繋ぐ(#28・一度だけ)
-
-1. Vercel のダッシュボード → プロジェクト `reading-scaffold` → Storage → Marketplace の **Neon** を作る(Free プランでよい)。
-   繋ぐ環境は Production と Preview(Development は要らない。手元は Docker の Postgres を使う)
-2. 環境変数に `DATABASE_URL`(pooled の URL)が入ったことを確かめる(`vercel env ls`)。ほかに `POSTGRES_*` なども入るが使わない
-3. 出し直す(`vercel deploy --prod`。環境変数は出し直すまで効かない)
-4. 表は最初の要約が届いたときに作られる。確かめるときは、開発版ではなく本番を呼ぶ形で1回送る:
-   `curl -X POST https://reading-scaffold.vercel.app/telemetry -H 'content-type: application/json' -H "X-RS-Telemetry: $(uuidgen)" -d '{"rows":[{"kind":"hello","v":1,"ext":"0.0","build":"dev","chrome":null,"theta0":null,"goal":null,"trivia":false}]}'` が 204 を返し、
-   Neon の SQL Editor で `select * from tm_installs` にその行が入る(確かめたら `delete from tm_installs where ext = '0.0'`)
-5. Vercel のログ(`vercel logs --environment production --since 15m --no-branch`)に `"event": "telemetry"` の行が出て、`status` が `stored` であること(値と ID が出ていないこと)
-
 `.env`・`.venv` は `.vercelignore` でアップロードしない。Python は 3.12(`.python-version`)。
