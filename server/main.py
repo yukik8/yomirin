@@ -1,11 +1,13 @@
 # reading-scaffold のうんちくサーバ(Vercel / ローカルの uvicorn)。
 #
-# 役目は2つ:
+# 役目は3つ:
 #   1. /trivia: 拡張が端末で選んだ「単語の候補」(最大8語)から、くまのうんちくを1つ返す。
-#      本の本文・書名・URL は受け取らない(Google Play の規約で、購入した本の送信・再配布は禁止。
-#      本文を扱うクイズと問いは、端末内の Gemini Nano だけで作る)。
+#      本の本文・書名・URL は受け取らない(Google Play の規約で、購入した本の送信・再配布は禁止)。
 #      受け取った単語も生成結果も保存しない。ログには状態とトークン数だけを出し、単語は出さない。
-#   2. /telemetry: 使われ方の要約(セッションごとの読書時間・θ など。#28)を Postgres に貯める。
+#   2. /quiz・/ask: 読み終えた本文から、突然クイズと問いへの答えを作る(#13・#14)。
+#      拡張で本人が「本文を AI のサーバに送る」をオンにしたときだけ呼ばれる(PRIVACY.md §2-2)。
+#      本文・問い・生成結果は保存せず、ログにも出さない。
+#   3. /telemetry: 使われ方の要約(セッションごとの読書時間・θ など。#28)を Postgres に貯める。
 #      項目は数・真偽・決まった語だけで、本・本文・問いは受け取らない。IP は保存しない。
 #
 # 公開サーバなので、誰でも叩ける前提で守る:
@@ -149,9 +151,9 @@ def _client_ip(request: Request) -> str:
 
 # ---- うんちく -------------------------------------------------------------------
 
-# 拡張の ai.js の TRIVIA_SYSTEM(端末内の Nano 用・本文から話す)と禁止事項を揃える。片方を変えたらもう片方も。
 # 2026-10-07: 楽長の口ずさみ「トォテテ テテテイ」に意味をでっち上げたので、擬音・口ずさみ・名前・造語を禁止し、
 # 辞書・事典で確かめられることだけに絞った。同日、本文を受け取らず単語の候補だけから話す形にした。
+# 擬音らしい語のはじき方は、拡張の ai.js の looksLikeSound と揃える(../tests/fixtures/terms.json)。
 TRIVIA_SYSTEM = (
     "あなたは読書アプリのマスコット「くま」。読者が読んでいる本のページから拾った単語の候補が渡される(本文は渡されない)。"
     "候補の中から、国語辞典・百科事典に載っていて「へぇ」となる話ができる言葉を1つだけ選び、うんちくを1つ話す。"
@@ -223,9 +225,67 @@ def _cache_put(key: str, value: dict) -> None:
             _cache.popitem(last=False)
 
 
-def _log(**fields) -> None:
-    """1行の JSON ログ。単語・生成文は出さない。"""
-    print(json.dumps({"event": "trivia", **fields}, ensure_ascii=False))
+def _log(event: str = "trivia", **fields) -> None:
+    """1行の JSON ログ。単語・本文・問い・生成文は出さない。"""
+    print(json.dumps({"event": event, **fields}, ensure_ascii=False))
+
+
+def _install_guard(request: Request, value: str | None) -> tuple[str | None, JSONResponse | None]:
+    """インストール ID(拡張が作るランダムな UUID)とオリジンを確かめる。通さないときは応答を返す。"""
+    try:
+        install = str(uuid.UUID(value or ""))
+    except ValueError:
+        return None, JSONResponse({"ok": False, "error": "no_install_id"}, status_code=401)
+    if ALLOWED_ORIGINS and request.headers.get("origin") not in ALLOWED_ORIGINS:
+        return None, JSONResponse({"ok": False, "error": "forbidden"}, status_code=403)
+    return install, None
+
+
+def _generate(event: str, system: str, user: str, schema: dict, effort: str) -> tuple[dict | None, str | None]:
+    """Anthropic に1回だけ頼み、出力の JSON を読む。(data, None) か (None, 断った理由)。
+    ログには状態・所要時間・トークン数だけを出す(渡したものも返ってきたものも出さない)。"""
+    started = time.monotonic()
+    try:
+        resp = client.beta.messages.create(
+            model=MODEL,
+            max_tokens=2048,
+            system=system,
+            # 分類器がまれに拒否した場合もサーバ側で自動フォールバックさせる
+            betas=["server-side-fallback-2026-07-01"],
+            extra_body={"fallbacks": "default"},
+            output_config={"effort": effort, "format": {"type": "json_schema", "schema": schema}},
+            messages=[{"role": "user", "content": user}],
+        )
+    except anthropic.APIStatusError as e:
+        _log(event, status="api_error", http=e.status_code, request_id=getattr(e, "request_id", None))
+        return None, "unavailable"
+    except Exception as e:  # タイムアウト・接続失敗・鍵の未設定など。中身は外へ返さない
+        _log(event, status="error", error=type(e).__name__)
+        return None, "unavailable"
+
+    usage = getattr(resp, "usage", None)
+    _log(
+        event,
+        status=resp.stop_reason,
+        ms=round((time.monotonic() - started) * 1000),
+        input_tokens=getattr(usage, "input_tokens", None),
+        output_tokens=getattr(usage, "output_tokens", None),
+        request_id=getattr(resp, "_request_id", None),
+    )
+    if resp.stop_reason == "refusal":
+        return None, "refusal"
+    if resp.stop_reason == "max_tokens":
+        return None, "truncated"  # 途中で切れた JSON は読まない
+    block = next((b for b in resp.content if b.type == "text"), None)
+    if block is None:
+        return None, "empty"
+    try:
+        data = json.loads(block.text)
+    except json.JSONDecodeError:
+        return None, "bad_json"
+    if not isinstance(data, dict):
+        return None, "bad_json"
+    return data, None
 
 
 @app.get("/healthz")
@@ -239,13 +299,9 @@ def trivia(
     request: Request,
     x_rs_install: str | None = Header(default=None),
 ):
-    # インストール ID は拡張が作るランダムな UUID。無い・形が違うものは受けない
-    try:
-        install = str(uuid.UUID(x_rs_install or ""))
-    except ValueError:
-        return JSONResponse({"ok": False, "error": "no_install_id"}, status_code=401)
-    if ALLOWED_ORIGINS and request.headers.get("origin") not in ALLOWED_ORIGINS:
-        return JSONResponse({"ok": False, "error": "forbidden"}, status_code=403)
+    install, denied = _install_guard(request, x_rs_install)
+    if denied is not None:
+        return denied
 
     terms: list[str] = []
     for t in req.terms:
@@ -263,49 +319,10 @@ def trivia(
     if cached is not None:
         return cached
 
-    started = time.monotonic()
-    try:
-        resp = client.beta.messages.create(
-            model=MODEL,
-            max_tokens=2048,
-            system=TRIVIA_SYSTEM,
-            # 分類器がまれに拒否した場合もサーバ側で自動フォールバックさせる
-            betas=["server-side-fallback-2026-07-01"],
-            extra_body={"fallbacks": "default"},
-            output_config={
-                "effort": "medium",
-                "format": {"type": "json_schema", "schema": TRIVIA_SCHEMA},
-            },
-            messages=[{"role": "user", "content": "単語の候補:\n" + "\n".join(f"- {t}" for t in terms)}],
-        )
-    except anthropic.APIStatusError as e:
-        _log(status="api_error", http=e.status_code, request_id=getattr(e, "request_id", None))
-        return {"ok": False, "error": "unavailable"}
-    except Exception as e:  # タイムアウト・接続失敗・鍵の未設定など。中身は外へ返さない
-        _log(status="error", error=type(e).__name__)
-        return {"ok": False, "error": "unavailable"}
-
-    usage = getattr(resp, "usage", None)
-    _log(
-        status=resp.stop_reason,
-        ms=round((time.monotonic() - started) * 1000),
-        input_tokens=getattr(usage, "input_tokens", None),
-        output_tokens=getattr(usage, "output_tokens", None),
-        request_id=getattr(resp, "_request_id", None),
-    )
-    if resp.stop_reason == "refusal":
-        return {"ok": False, "error": "refusal"}
-    if resp.stop_reason == "max_tokens":
-        return {"ok": False, "error": "truncated"}  # 途中で切れた JSON は読まない
-
-    block = next((b for b in resp.content if b.type == "text"), None)
-    if block is None:
-        return {"ok": False, "error": "empty"}
-    try:
-        data = json.loads(block.text)
-    except json.JSONDecodeError:
-        return {"ok": False, "error": "bad_json"}
-
+    user = "単語の候補:\n" + "\n".join(f"- {t}" for t in terms)
+    data, error = _generate("trivia", TRIVIA_SYSTEM, user, TRIVIA_SCHEMA, "medium")
+    if error is not None:
+        return {"ok": False, "error": error}
     out = _check(data, terms)
     _cache_put(key, out)
     return out
@@ -324,6 +341,167 @@ def _check(data: dict, terms: list[str]) -> dict:
     if len(said) > 90 or _URLISH.search(said):
         return {"ok": False, "error": "rejected_text"}
     return {"ok": True, "trivia": {"text": said, "term": term}}
+
+
+# ---- クイズと問い(本文を受け取る・#13・#14) ---------------------------------------------
+#
+# 拡張で本人が「本文を AI のサーバに送る」をオンにしたときだけ呼ばれる(拡張の config.js の readTextConsent。
+# 新しく入れた人は最初の設定で既定オン・前の版から使っている人は選ぶまでオフ)。
+# 受け取るのは読み終えた段落だけ(未読の段落は拡張が渡さない=ネタバレ禁止)。本文・問い・生成結果は
+# 保存しない・覚えない・ログにも出さない。回数はうんちくと同じ1日の上限で数える。
+# 指示の言葉の原則は docs/design.md §6: 解説・褒め・アドバイス・先の展開の紹介は書かせない。
+
+QUIZ_SYSTEM = (
+    "あなたは読解クイズの出題者。渡された段落の内容だけから、理解を確かめる3択クイズを1問作る。"
+    "本文と同じ言語で出題する。選択肢はちょうど3つ、answer_index は正解の選択肢の番号(0〜2)。"
+    "解説・褒め言葉・アドバイスは一切書かない。"
+)
+
+# 構造化出力の JSON Schema は、配列の個数や数の範囲を縛れないので、返ってきたものを _check_quiz で検める
+QUIZ_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "question": {"type": "string"},
+        "choices": {"type": "array", "items": {"type": "string"}},
+        "answer_index": {"type": "integer"},
+    },
+    "required": ["question", "choices", "answer_index"],
+    "additionalProperties": False,
+}
+
+_ANSWER_RULES = (
+    "必ず2〜3文で短く答える。本文の要約や先の内容の紹介はしない。"
+    "根拠が渡された段落にあれば、その番号をsource_indexで返す(なければ-1)。本文と同じ言語で答える。"
+)
+
+# 本についての問いだと分かっているとき(拡張が、本文を選んで問うた・問いの言葉が本文と重なる、と見たとき)
+ANSWER_SYSTEM = "読書中の質問に答えるアシスタント。" + _ANSWER_RULES
+
+# 本についての問いか分からないとき(judge)。2026-10-09:「Pythonで累積和を出すコード」にも答えていたので、
+# 本と関係のない頼みごとは unrelated=true で断らせる。判定は答えと同じ1回の呼び出しの中で先に決めさせる。
+# 「本についてか」と聞くより「関係のない頼みごとか」と聞くほうが、また質問を本文より後ろに置くほうが、よく断れた。
+# ただし「『槌』の読み方は?」のような言葉の問いまで断るので、そうした問いは拡張の sharesTermWith が先に拾う。
+JUDGED_ANSWER_SYSTEM = (
+    "読書中の問いに答えるアシスタント。"
+    "まず unrelated を決める。問いが、いま読んでいる本の内容と関係のない頼みごとなら true: "
+    "プログラミングやコード、計算、翻訳、作文、レポートの書き方、相談、雑談、天気や店などのほかの調べもの(本文にその題材が出てこないとき)。"
+    "本文の言葉の意味や読み、出てくる人物・物・場所・出来事・考え、時代や背景、書き手の意図についての問いなら false。"
+    "unrelated が true のときは answer を空文字、source_index を -1 にする。"
+    "false のときは" + _ANSWER_RULES
+)
+
+_ANSWER_PROPS = {"answer": {"type": "string"}, "source_index": {"type": "integer"}}
+ANSWER_SCHEMA = {
+    "type": "object",
+    "properties": _ANSWER_PROPS,
+    "required": ["answer", "source_index"],
+    "additionalProperties": False,
+}
+JUDGED_ANSWER_SCHEMA = {
+    "type": "object",
+    "properties": {"unrelated": {"type": "boolean"}, **_ANSWER_PROPS},
+    "required": ["unrelated", "answer", "source_index"],
+    "additionalProperties": False,
+}
+
+# 拡張(service-worker.js)が切り詰める長さと同じ。超えたら 422
+QuizText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=60, max_length=2000)]
+Focus = Annotated[str, StringConstraints(strip_whitespace=True, max_length=600)]
+Question = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=300)]
+Selection = Annotated[str, StringConstraints(strip_whitespace=True, max_length=500)]
+ParagraphText = Annotated[str, StringConstraints(max_length=800)]
+
+
+class QuizRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    text: QuizText  # 読み終えたページの段落
+    focus: Focus = ""  # その中で最も難しい段落(拡張の difficulty.js)
+
+
+class AskParagraph(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    i: Annotated[int, Field(ge=0, le=100_000)]  # ページの中の段落の番号(根拠を光で指すため)
+    text: ParagraphText
+
+
+class AskRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    question: Question
+    selection: Selection = ""
+    context: list[AskParagraph] = Field(default_factory=list, max_length=8)  # 読み終えた直近の段落
+    judge: bool  # 本についての問いか、答えと一緒に決めさせるか
+
+
+def _check_quiz(data: dict) -> dict:
+    """生成されたクイズを検める(問題文・選択肢ちょうど3つ・正解の番号 0〜2)。"""
+    question = str(data.get("question", "")).strip()
+    choices = data.get("choices")
+    idx = data.get("answer_index")
+    if not question or not isinstance(choices, list) or len(choices) != 3:
+        return {"ok": False, "error": "rejected_quiz"}
+    choices = [str(c or "").strip() for c in choices]
+    if any(not c for c in choices) or isinstance(idx, bool) or not isinstance(idx, int) or not 0 <= idx <= 2:
+        return {"ok": False, "error": "rejected_quiz"}
+    return {
+        "ok": True,
+        "quiz": {"question": question[:300], "choices": [c[:120] for c in choices], "answer_index": idx},
+    }
+
+
+@app.post("/quiz")
+def quiz(
+    req: QuizRequest,
+    request: Request,
+    x_rs_install: str | None = Header(default=None),
+):
+    install, denied = _install_guard(request, x_rs_install)
+    if denied is not None:
+        return denied
+    if _over_limit(install, _client_ip(request)):
+        _log("quiz", status="rate_limited")
+        return JSONResponse({"ok": False, "error": "rate_limited"}, status_code=429)
+
+    # 焦点(ページで最も難しい段落)があれば、そこの理解を確かめる問いにする
+    focus = f"\n特に次の箇所の理解を確かめる問いにする:\n{req.focus}\n" if req.focus and req.focus in req.text else ""
+    user = f"次の段落から3択クイズを1問。正解は段落を読んでいれば分かるものにする。{focus}\n---\n{req.text}"
+    data, error = _generate("quiz", QUIZ_SYSTEM, user, QUIZ_SCHEMA, "medium")
+    if error is not None:
+        return {"ok": False, "error": error}
+    return _check_quiz(data)
+
+
+@app.post("/ask")
+def ask(
+    req: AskRequest,
+    request: Request,
+    x_rs_install: str | None = Header(default=None),
+):
+    install, denied = _install_guard(request, x_rs_install)
+    if denied is not None:
+        return denied
+    if _over_limit(install, _client_ip(request)):
+        _log("ask", status="rate_limited")
+        return JSONResponse({"ok": False, "error": "rate_limited"}, status_code=429)
+
+    ctx = "\n\n".join(f"[{c.i}] {c.text}" for c in req.context)
+    selection = f"読者が選択している本文: {req.selection}\n\n" if req.selection else ""
+    # 本文を先・質問を後に置く(関係のない頼みごとを、よく断れた並び)
+    user = f"読了済みの段落:\n{ctx}\n\n{selection}質問: {req.question}"
+    if req.judge:
+        data, error = _generate("ask", JUDGED_ANSWER_SYSTEM, user, JUDGED_ANSWER_SCHEMA, "low")
+    else:
+        data, error = _generate("ask", ANSWER_SYSTEM, user, ANSWER_SCHEMA, "low")
+    if error is not None:
+        return {"ok": False, "error": error}
+    if req.judge and data.get("unrelated") is True:
+        return {"ok": False, "error": "off_topic"}  # 本と関係のない頼みごとには答えない
+    answer = str(data.get("answer", "")).strip()
+    if not answer or len(answer) > 600 or _URLISH.search(answer):
+        return {"ok": False, "error": "rejected_answer"}
+    src = data.get("source_index")
+    known = {c.i for c in req.context}
+    source_index = src if isinstance(src, int) and not isinstance(src, bool) and src in known else -1
+    return {"ok": True, "answer": answer, "source_index": source_index}
 
 
 # ---- 使われ方の要約(#28) -----------------------------------------------------------

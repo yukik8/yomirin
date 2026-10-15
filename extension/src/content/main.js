@@ -4,7 +4,8 @@
 //   - ページDOMを変更しない。追加してよいのはShadow DOMに閉じたオーバーレイだけ。
 //   - 本文は読み取りのみ。再構成・広告除去はしない。
 //   - service worker へ送るのは計測値と、クイズ・問い・うんちくの素材(読み終えた本文)。
-//     本文は SW の中で端末内の Nano にだけ渡り、端末の外へは出ない(うんちくのサーバへ送るのは単語の候補だけ)。
+//     本文がサーバへ出るのは、本人が「本文を AI のサーバに送る」をオンにしたときのクイズと問いだけ。
+//     うんちくのサーバへ送るのは、SW が本文から選んだ単語の候補だけ。
 
 // loader.jsが付けたキャッシュ割りクエリ(?t=...)を配下のモジュールにも伝播させる。
 // これがないと、拡張をリロードしても開きっぱなしのページでは古いモジュールが
@@ -503,8 +504,7 @@ if (mode === 'full') {
   overlay.mountAsk(async (question) => {
     markInteraction(); // 問うことは読書中の活動。セッションを放置終了させない
     const selection = String(getSelection() ?? '').slice(0, 500);
-    // いま読んでいるところから遡って、合わせて ASK_CONTEXT_CHARS 字まで。Nano は読ませる量で遅くなる
-    // (2026-10-09 の実測: 約1000字で約2.7秒、約4800字で約6.5秒)
+    // いま読んでいるところから遡って、合わせて ASK_CONTEXT_CHARS 字まで(サーバへ送る量を抑える)
     const end = Math.min(maxDepthIdx, paragraphs.length - 1);
     const context = [];
     let budget = ASK_CONTEXT_CHARS;
@@ -521,7 +521,8 @@ if (mode === 'full') {
     }
     if (!res?.ok) {
       const known = {
-        unavailable: 'この端末では内蔵AI(Gemini Nano)が使えないため、答えられませんでした',
+        unavailable: 'サーバに届かなかったため、答えられませんでした',
+        'text-off': '「本文を AI のサーバに送る」がオフのため、答えられません(ダッシュボードの「データ」で切り替えられます)',
         'no-session': '計測セッションが見つかりませんでした',
         empty: '質問が空です',
         'off-topic': 'この本についての問いに答えます',
@@ -534,14 +535,7 @@ if (mode === 'full') {
       Number.isInteger(src) && src >= 0 && paragraphs[src]?.isConnected ? paragraphs[src] : null;
     overlay.showAnswer(res.answer, { sourceEl });
     return res;
-  }, markInteraction, () => {
-    // 欄を開いたら、打っている間に内蔵AIを起こしておく(冷えていると読み込みに20秒前後かかる)
-    try {
-      chrome.runtime.sendMessage({ type: Msg.ASK_OPEN }).catch(() => {});
-    } catch {
-      /* 拡張のリロード等でコンテキストが消えた場合 */
-    }
-  });
+  }, markInteraction);
 }
 const HINT_GRACE_MS = 8_000; // 開いた瞬間に光らせない+開始通知と重ねない
 // ヒントどうしの最小間隔(Play ブックスのみ)。ページ送りの本では1ページ分の段落が一度に
@@ -903,7 +897,7 @@ const EVENTS_ON = PLAY_BOOKS && PAGE_EVENTS.enabled;
 const stage = createStage({ Paint, bearImg });
 const stock = { quiz: null, trivia: null };
 const inFlight = { quiz: false, trivia: false };
-// 作れなかった後は数ページ空けてから作りに行く(Nano 不在・話せることが無いのに毎ページ頼まない)
+// 作れなかった後は数ページ空けてから作りに行く(本文を送らない設定・話せることが無いのに毎ページ頼まない)
 const retryAt = { quiz: 0, trivia: 0 };
 // ストックはこのページ送りの回数を過ぎたら古いとみなして捨てる(「さっきのページ」でなくなる)
 const STALE_TURNS = { quiz: 6, trivia: 4 };

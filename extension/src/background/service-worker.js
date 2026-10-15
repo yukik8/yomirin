@@ -12,10 +12,14 @@ import {
   readServerConsent,
   writeServerConsent,
   writeTelemetryConsent,
+  readTextConsent,
+  writeTextConsent,
 } from '../shared/config.js';
-import { nanoQuiz, nanoAnswer, nanoTrivia, pickTerms, acceptQuiz, wakeNano } from './ai.js';
+import { pickTerms, acceptQuiz, sharesTermWith } from './ai.js';
 import {
   serverTrivia,
+  serverQuiz,
+  serverAnswer,
   resetInstallId,
   flushTelemetry,
   forgetTelemetry,
@@ -208,7 +212,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         if (typeof msg.goal === 'string' && msg.goal in GOALS) state.goal = msg.goal;
         state.onboarded_at = state.onboarded_at ?? Date.now();
         await putState(state);
-        // 外へ送るかどうかは本人が最後の画面で選んだもの(うんちくのサーバ・使われ方の要約)
+        // 外へ送るかどうかは本人が最後の画面で選んだもの(本文を AI のサーバに送る・使われ方の要約)
+        if (typeof msg.text === 'boolean') await writeTextConsent(msg.text);
         if (typeof msg.trivia === 'boolean') await writeServerConsent(msg.trivia);
         if (typeof msg.telemetry === 'boolean') await writeTelemetryConsent(msg.telemetry);
         if (msg.telemetry === false) await dropTelemetryOutbox();
@@ -235,9 +240,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         break;
 
       case Msg.QUIZ_REQUEST: {
-        // クイズ生成。端末内の Gemini Nano だけで作る — 本の本文は端末の外に出さない
-        // (Google Play の規約で、購入した本の送信・再配布は禁止)。作れなければ静かに諦め、
-        // content 側は何も出さない — クイズの都合で読書を壊さない。
+        // クイズ生成。読み終えたページの本文からサーバで作る — 本人が「本文を AI のサーバに送る」を
+        // オンにしたときだけ。作れなければ静かに諦め、content 側は何も出さない — クイズの都合で読書を壊さない。
         const current = await sessionOf(sender);
         const text = (msg.paragraph_text ?? '').trim().slice(0, 2000);
         if (!current || text.length < 60) {
@@ -248,13 +252,17 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         const hash = await sha256Hex(text);
         const existing = await getQuizByHash(hash).catch(() => null);
         const focus = String(msg.focus_text ?? '').trim().slice(0, 600);
-        const quiz = existing ? acceptQuiz(existing) : await nanoQuiz(text, focus);
+        if (!existing && !(await readTextConsent())) {
+          sendResponse({ ok: false, error: 'text-off' });
+          break;
+        }
+        const quiz = existing ? acceptQuiz(existing) : await serverQuiz(text, focus);
         if (!quiz) {
           sendResponse({ ok: false, error: 'unavailable' });
           break;
         }
         // 記録はまだしない: 先に作っておくだけで、出さずに終わることがある。出したときに QUIZ_SHOWN で残す
-        sendResponse({ ok: true, quiz, source: existing ? 'saved' : 'nano' });
+        sendResponse({ ok: true, quiz, source: existing ? 'saved' : 'server' });
         break;
       }
 
@@ -291,16 +299,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         break;
       }
 
-      case Msg.ASK_OPEN: {
-        // 問いの欄が開いた。打っている間にモデルを読み込ませる(待たずに返す)
-        if (await sessionOf(sender)) wakeNano().catch(() => {});
-        sendResponse({ ok: true });
-        break;
-      }
-
       case Msg.ASK_REQUEST: {
-        // 自分からの問い(道具カテゴリ・1問1答)。Nanoのみ — 本文と質問を外に出さない。
-        // 回答に演出はつけない(質問をレバーにしない)。制御器にも一切入れない。
+        // 自分からの問い(道具カテゴリ・1問1答)。答えはサーバで作る — 本人が「本文を AI のサーバに送る」を
+        // オンにしたときだけ。回答に演出はつけない(質問をレバーにしない)。制御器にも一切入れない。
         const current = await sessionOf(sender);
         if (!current) {
           sendResponse({ ok: false, error: 'no-session' });
@@ -317,7 +318,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           sendResponse({ ok: false, error: 'empty' });
           break;
         }
-        const res = await nanoAnswer({ question, selection, context });
+        if (!(await readTextConsent())) {
+          sendResponse({ ok: false, error: 'text-off' });
+          break;
+        }
+        // 本文を選んで問うた・問いの言葉が本文と重なるなら、本についての問い。そうでなければ、
+        // 本と関係のない頼みごとか(コードを書いて等)を、答えと同じ1回の呼び出しでサーバに決めさせる
+        const known = Boolean(selection.trim()) || sharesTermWith(question, context.map((c) => c.text).join('\n'));
+        const res = await serverAnswer({ question, selection, context, judge: !known });
         if (!res) {
           sendResponse({ ok: false, error: 'unavailable' });
           break;
@@ -353,9 +361,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
       case Msg.TRIVIA_REQUEST: {
         // くまのうんちく(読み終えたページから・道具ではなく演出の一部)。
-        // 本人の同意があれば、端末で本文から選んだ「単語の候補」だけをサーバへ送り、辞書・事典の
-        // 知識が確かなモデルに話させる(本文・書名・URL は送らない)。同意が無い・サーバが黙った・
-        // 届かないときは端末内の Nano が本文から話す。どれも無理なら ok:false で何も出さない。
+        // 本人の同意(うんちくの単語・本文を AI のサーバに送る のどちらか。単語は本文より少ない)があれば、
+        // 端末で本文から選んだ「単語の候補」だけをサーバへ送り、辞書・事典の知識が確かなモデルに話させる
+        // (本文・書名・URL は送らない)。同意が無い・サーバが黙った・届かないときは ok:false で何も出さない。
         // 文面は記録層にも計測層にも残さない(出したことだけを content 側が計測層に報告する)。
         const current = await sessionOf(sender);
         const text = (msg.paragraph_text ?? '').trim().slice(0, 2000);
@@ -363,11 +371,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           sendResponse({ ok: false, error: 'no-material' });
           break;
         }
-        let trivia = null;
-        if (await readServerConsent()) {
-          trivia = await serverTrivia(pickTerms(text, { max: SERVER.maxTerms, maxChars: SERVER.maxTermChars }));
-        }
-        if (!trivia) trivia = await nanoTrivia(text);
+        const trivia = (await readServerConsent()) || (await readTextConsent())
+          ? await serverTrivia(pickTerms(text, { max: SERVER.maxTerms, maxChars: SERVER.maxTermChars }))
+          : null;
         sendResponse(trivia ? { ok: true, trivia } : { ok: false, error: 'unavailable' });
         break;
       }

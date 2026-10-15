@@ -131,15 +131,22 @@
       <section aria-label="データ">
         <span class="eyebrow">データ</span>
         <p class="note">
-          本・問い・クイズなどの記録は、この端末のブラウザ内だけに保存されています。本の本文が端末の外へ送られることはありません。
-          クイズと問いへの答えは、この端末の内蔵AI(Gemini Nano)が作ります。
+          本・問い・クイズなどの記録は、この端末のブラウザ内だけに保存されています。
         </p>
         <label class="consent-toggle">
+          <input id="text-server" type="checkbox" />
+          <span>本文を AI のサーバに送る(突然クイズ・問いへの答え・くまのうんちく)</span>
+        </label>
+        <p class="note">オンの間だけ、読み終えたページの本文の一部(1回2,000字まで)と、書いた問い・選んだ箇所を、
+          よみりんのサーバ経由で Anthropic の AI に送り、クイズと答えを作ります。サーバには保存しません。
+          書名・URL・読書の記録は送りません。オフなら、クイズと問いへの答えは出ません。</p>
+        <label class="consent-toggle">
           <input id="consent" type="checkbox" />
-          <span>くまのうんちくに、言葉を調べるサーバを使う</span>
+          <span>くまのうんちくだけに、言葉を調べるサーバを使う</span>
         </label>
         <p class="note">オンの間だけ、読み終えたページからこの端末で選んだ単語を数語(最大8語)、
-          よみりんのサーバ経由で Anthropic の AI に送ります。本の本文・書名・URL は送りません。</p>
+          よみりんのサーバ経由で Anthropic の AI に送ります。本の本文・書名・URL は送りません。
+          上の「本文を AI のサーバに送る」がオンなら、こちらに関係なくうんちくも出ます。</p>
         <label class="consent-toggle">
           <input id="telemetry" type="checkbox" />
           <span>使われ方の要約を開発者に送る</span>
@@ -149,9 +156,7 @@
         <div class="actions">
           <button id="export" type="button">JSONでエクスポート</button>
           <button id="recalibrate" type="button">診断をやり直す</button>
-          <button id="ai-check" type="button">内蔵AIを確認・準備</button>
         </div>
-        <p id="ai-status" class="note"></p>
         <p class="note">診断のやり直しは目標と回答を更新するだけで、補助の量(θ)は変わりません。
           θを動かすのは読書の実績だけです。</p>
         <!-- 開発用。ストア版(update_url あり)では隠す -->

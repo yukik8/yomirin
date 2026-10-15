@@ -52,11 +52,10 @@ export const Msg = {
   SET_THETA: 'set_theta', // θ手動ダイヤル(連続値。ドッグフーディング用、W3で自動化)
   SET_GOAL: 'set_goal', // 週次目標の選択(評価レイヤーのみ。制御器は読まない)
   COMPLETE_ONBOARDING: 'complete_onboarding', // 初回診断+目標選択の確定(θの初期配置)
-  QUIZ_REQUEST: 'quiz_request', // content→SW: 段落テキストからクイズ生成(端末内の Nano のみ・まだ記録しない)
+  QUIZ_REQUEST: 'quiz_request', // content→SW: 段落テキストからクイズ生成(サーバ。本人が本文を送るのをオンにしたときだけ・まだ記録しない)
   QUIZ_SHOWN: 'quiz_shown', // content→SW: クイズを出した。ここで記録層に残し quiz_id を返す
-  ASK_OPEN: 'ask_open', // content→SW: 問いの欄を開いた(打っている間に内蔵AIを起こしておく)
-  ASK_REQUEST: 'ask_request', // content→SW: 自分からの問い(道具。Nanoのみ・1問1答)
-  TRIVIA_REQUEST: 'trivia_request', // content→SW: くまのうんちく(同意があれば単語の候補だけをサーバへ・なければ Nano)
+  ASK_REQUEST: 'ask_request', // content→SW: 自分からの問い(道具。1問1答。サーバ・本人が本文を送るのをオンにしたときだけ)
+  TRIVIA_REQUEST: 'trivia_request', // content→SW: くまのうんちく(うんちくか本文の同意があれば単語の候補だけをサーバへ・なければ出さない)
   SET_TELEMETRY: 'set_telemetry', // dashboard→SW: 使われ方の要約を送るか(#28)
   FORGET_TELEMETRY: 'forget_telemetry', // dashboard→SW: 送った使われ方の要約をサーバから消す
   WIPE_ALL: 'wipe_all',

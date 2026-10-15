@@ -13,11 +13,12 @@ import {
   readServerConsent,
   writeServerConsent,
   readTelemetryChoice,
+  readTextConsent,
+  writeTextConsent,
 } from '../shared/config.js';
 import { bearImg, showBear } from '../content/bear.js';
 import { buildMirror } from '../background/mirror.js';
 import { buildKpi } from '../background/kpi.js';
-import { nanoDiagnostics, describeNano } from '../background/ai.js';
 import {
   buildBookshelf,
   isBookPage,
@@ -723,6 +724,12 @@ maybeShowTelemetryNotice();
 // 開発用の欄(θの手動上書き・デモ・デモデータ投入)はストア版では出さない
 $('dev-tools').hidden = IS_STORE_BUILD;
 
+// 本文を AI のサーバに送る(#13・PRIVACY.md §2-2)。前から使っていてまだ選んでいない人はオフのまま
+readTextConsent().then((on) => {
+  $('text-server').checked = on;
+});
+$('text-server').addEventListener('change', () => writeTextConsent($('text-server').checked));
+
 // デモモード(このプロフィール限定・storage.local)。切り替えると次のセッションから効く。
 async function refreshDemoUI() {
   const on = await readDemoFlag();
@@ -742,17 +749,6 @@ $('seed-demo').addEventListener('click', async () => {
   await seedDemoData();
   await render();
   $('seed-demo').disabled = false;
-});
-
-// 内蔵AIの状態確認+DL起動。ページ文脈で実行(このクリックのジェスチャーで
-// ダウンロード起動が通る)。結果を人が読める言葉に翻訳して出す。
-$('ai-check').addEventListener('click', async () => {
-  $('ai-check').disabled = true;
-  $('ai-status').textContent = '確認中…(初回はモデルのダウンロードに数分かかることがあります)';
-  const d = await nanoDiagnostics();
-  const msg = describeNano(d);
-  $('ai-status').textContent = msg;
-  $('ai-check').disabled = false;
 });
 
 // 診断のやり直し(Recalibrate)。オンボーディングを再実行するが、SW側の

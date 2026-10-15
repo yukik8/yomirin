@@ -22,7 +22,6 @@
 // 最後の記録の時点で閉じる。
 
 import { EventType, EndReason, SessionState } from '../shared/events.js';
-import { releaseNano } from './ai.js';
 import {
   SESSION,
   SUCCESS,
@@ -190,7 +189,7 @@ async function startSessionImpl(tabId) {
     // タブ内遷移の判定にだけ使う。currentSession 限りで、IndexedDBには書かない。
     page_url: pageKey(tab.url),
     page_id: pageId,
-    // 本文は端末の外へ出さない(Google Play の規約。生成は Nano のみ・うんちくは単語だけ)
+    // 本文が端末の外へ出るのは、本人が「本文を AI のサーバに送る」をオンにしたときのクイズと問いだけ(うんちくは単語だけ)
     site: playBooks ? 'play_books' : 'web',
     state: SessionState.ACTIVE,
     started_at: now,
@@ -301,7 +300,6 @@ async function endSessionImpl(reason, { at = Date.now(), notify = true } = {}) {
   } finally {
     // 記録の書き込みが途中で失敗しても、セッションは必ず閉じる(次の開始・全消去を塞がない)
     await setCurrent(null);
-    releaseNano(); // 読み終えたら内蔵AIの土台の session を捨てる
     // 1ページの長さ(#33)を元の倍率に戻す(本人が途中で変えていたら触らない)。お祝いは出し終えてから
     await restoreZoomLater(session.tab_id, session.zoom, celebrated ? PAGE_ZOOM.afterCelebrateMs : 0);
     afterEnd();

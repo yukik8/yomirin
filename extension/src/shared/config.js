@@ -80,13 +80,14 @@ export const IS_STORE_BUILD = (() => {
   }
 })();
 
-// うんちくサーバ。受け取るのは端末で選んだ「単語の候補」だけで、本の本文は送らない
-// (Google Play の規約: 購入した本の送信・再配布は禁止。本文の処理は端末内の Nano だけ)。
-// 本番は Vercel。開発中はローカルの uvicorn(server/README.md)。
+// よみりんのサーバ。うんちくで受け取るのは端末で選んだ「単語の候補」だけ。本の本文を受け取るのは
+// クイズと問いへの答え(/quiz・/ask)だけで、本人が「本文を AI のサーバに送る」をオンにしたときに限る(下の readTextConsent)。
+// 本番は Vercel。開発版も本番を呼ぶ(2026-10-15・v0.30。手元でサーバと鍵を用意しなくても、クイズ・問い・うんちくを試せる)。
+// 手元の uvicorn(server/README.md)で試すときは、base を 'http://127.0.0.1:8787' にする。
 // 拡張にこのオリジンの host 権限は付けない — サーバ側が chrome-extension:// に CORS を返す。
 const PRODUCTION_BASE = 'https://reading-scaffold.vercel.app';
 export const SERVER = {
-  base: IS_STORE_BUILD ? PRODUCTION_BASE : 'http://127.0.0.1:8787',
+  base: PRODUCTION_BASE,
   // 使われ方の要約(#28)は、開発版も本番に送る(2026-10-15。開発中の自分の記録も同じ表に貯める)。
   // 開発版の行は hello の build が 'dev' なので分けられる。送り先を手元に戻す前に「送ったものを消す」を押す
   // (消すのも、いまの送り先にだけ届く)。手元のサーバで試すときは、ここを 'http://127.0.0.1:8787' にする
@@ -97,7 +98,7 @@ export const SERVER = {
 };
 
 // うんちくのために単語をサーバへ送ってよいか(本人の同意)。既定は送らない。
-// オンボーディングとダッシュボードで本人が選ぶ。同意が無ければ、うんちくは端末内の Nano だけで作る。
+// オンボーディングとダッシュボードで本人が選ぶ。同意が無ければ、うんちくは出ない。
 const CONSENT_KEY = 'trivia_server_consent';
 
 export async function readServerConsent() {
@@ -112,6 +113,35 @@ export async function readServerConsent() {
 export async function writeServerConsent(value) {
   try {
     await chrome.storage.local.set({ [CONSENT_KEY]: value === true });
+  } catch {
+    /* 失敗は無視(次回の読みで「送らない」扱い) */
+  }
+}
+
+// 本文を AI のサーバに送ってよいか(本人の同意・#13・docs/design.md §9・PRIVACY.md §2-2)。オンにすると、
+// 突然クイズと問いへの答えを、読み終えた本文からサーバ(→ Anthropic)で作る。くまのうんちくも出る(送るのは
+// 本文から選んだ単語の候補で、本文より少ない)。新しく入れた人には、最初の設定でチェックを入れた状態で見せる
+// (既定オン・送る前に必ず一度見せる)。この版より前から使っている人は、選ぶまでオフ(キーが無い=まだ選んでいない
+// =送らない。PRIVACY.md §6「送るものを増やすときは、あらためて同意をいただく」)。ダッシュボードの「データ」で切り替える。
+const TEXT_CONSENT_KEY = 'text_server_consent';
+
+/** 本文を送るかの選択。true / false、まだ選んでいなければ null。 */
+export async function readTextChoice() {
+  try {
+    const r = await chrome.storage.local.get(TEXT_CONSENT_KEY);
+    return typeof r[TEXT_CONSENT_KEY] === 'boolean' ? r[TEXT_CONSENT_KEY] : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function readTextConsent() {
+  return (await readTextChoice()) === true;
+}
+
+export async function writeTextConsent(value) {
+  try {
+    await chrome.storage.local.set({ [TEXT_CONSENT_KEY]: value === true });
   } catch {
     /* 失敗は無視(次回の読みで「送らない」扱い) */
   }
@@ -253,9 +283,9 @@ export const EFFECT_TIERS = {
   rare: { p: 0.12 }, // レア: 金の雨。約1/8
 };
 
-// クイズ(理解連動Micro Content)。端末内の Gemini Nano が本文から出題する(本文は端末の外に出さない)。
+// クイズ(理解連動Micro Content)。サーバが読み終えた本文から出題する(本人が本文を送るのをオンにしたときだけ)。
 // ヒント枠の一部がクイズに化ける形なので頻度はθ配下のまま。1セッション1問まで。
-// Nano が使えなければ静かに何も出さない(読書を壊さない)。
+// 作れなければ静かに何も出さない(読書を壊さない)。
 export const QUIZ = {
   enabled: true,
   // ヒント枠がクイズに化ける確率
@@ -285,15 +315,15 @@ export const PAGE_EVENTS = {
   bear: { maxP: 0.35, minGapMs: 45_000, weights: { trivia: 0.65, peek: 0.35 } },
   afterQuizMs: 20_000, // クイズの直後はくまを出さない
   minTextChars: 120, // 出題・うんちくに使う読了済み本文の最低文字数
-  maxTextChars: 1_500, // 端末内の Nano に渡す本文の上限(本文は端末の外に出さない)
-  // 素材が作れなかった(Nano 不在・話せることが無い)あと、次に作りに行くまで空けるページ送りの回数
+  maxTextChars: 1_500, // 生成の素材にする本文の上限(サーバへ送るのは、本人が本文を送るのをオンにしたときだけ)
+  // 素材が作れなかった(本文を送らない設定・サーバに届かない・話せることが無い)あと、次に作りに行くまで空けるページ送りの回数
   retryAfterTurns: 3,
   // 正解・読了で「大当たり!!」「読了!!」の言葉を出す。言葉の原則(言葉で褒めない)を
   // この瞬間に限って緩める設定。false にすると光と動きだけになる。
   words: true,
   // 読む速さに合わせた出し方(v0.24)。本人の速さ(語/分)が分かっていれば、めくった直後ではなく
   // 「いま見えているページの、うんちくの語を確実に読み過ぎた頃」に出す。素材はいま見えている
-  // ページ(端末内の Nano に渡すだけ。本文は端末の外に出さない)。速さが分からない最初の数ページ
+  // ページ(そこから端末で単語の候補を選び、サーバへはその候補だけを送る)。速さが分からない最初の数ページ
   // (持ち越しも無い)は従来どおり、めくった直後に前のページの話をする。
   paced: {
     enabled: true,
