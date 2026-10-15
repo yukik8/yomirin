@@ -1,5 +1,5 @@
 // よみりんの小さなストーリー(ストーリー集 ① の A の話)。読書中、画面の右下の角で、無言のくまが一つのものを作り進める。
-// 絵は docs/style/ref/story-sheet-1.png から tools/story-sprites/cut.py で切り抜いた extension/assets/story/<id>-<コマ>.webp。
+// 絵は透過背景で描き起こした docs/style/sprites/<id>.png から tools/asset-sprites/export.py で書き出す。
 // 動かし方は story.js。説明は一切しない(何を作っているのかも、あと何コマかも)。
 //
 //   frames … コマの数(絵は <id>-1 〜 <id>-<frames>)。最後から2つ目のコマまで進んで待ち、最後のコマはオチ

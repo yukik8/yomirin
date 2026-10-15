@@ -1,0 +1,957 @@
+{
+  "count": 136,
+  "assets": [
+    {
+      "file": "story/books-1.webp",
+      "width": 175,
+      "height": 128,
+      "opaque_core_fraction": 1.0,
+      "bytes": 21482
+    },
+    {
+      "file": "story/books-2.webp",
+      "width": 234,
+      "height": 265,
+      "opaque_core_fraction": 0.99998,
+      "bytes": 63054
+    },
+    {
+      "file": "story/books-3.webp",
+      "width": 231,
+      "height": 224,
+      "opaque_core_fraction": 1.0,
+      "bytes": 59898
+    },
+    {
+      "file": "story/books-4.webp",
+      "width": 230,
+      "height": 330,
+      "opaque_core_fraction": 1.0,
+      "bytes": 71144
+    },
+    {
+      "file": "story/books-5.webp",
+      "width": 256,
+      "height": 392,
+      "opaque_core_fraction": 0.99998,
+      "bytes": 85868
+    },
+    {
+      "file": "story/books-6.webp",
+      "width": 427,
+      "height": 471,
+      "opaque_core_fraction": 0.9992,
+      "bytes": 120406
+    },
+    {
+      "file": "story/castle-1.webp",
+      "width": 226,
+      "height": 176,
+      "opaque_core_fraction": 1.0,
+      "bytes": 32566
+    },
+    {
+      "file": "story/castle-2.webp",
+      "width": 242,
+      "height": 228,
+      "opaque_core_fraction": 0.99997,
+      "bytes": 44784
+    },
+    {
+      "file": "story/castle-3.webp",
+      "width": 279,
+      "height": 330,
+      "opaque_core_fraction": 0.99982,
+      "bytes": 84226
+    },
+    {
+      "file": "story/castle-4.webp",
+      "width": 326,
+      "height": 389,
+      "opaque_core_fraction": 0.99952,
+      "bytes": 84998
+    },
+    {
+      "file": "story/castle-5.webp",
+      "width": 386,
+      "height": 499,
+      "opaque_core_fraction": 0.99989,
+      "bytes": 116010
+    },
+    {
+      "file": "story/pancakes-1.webp",
+      "width": 251,
+      "height": 229,
+      "opaque_core_fraction": 1.0,
+      "bytes": 44358
+    },
+    {
+      "file": "story/pancakes-2.webp",
+      "width": 221,
+      "height": 189,
+      "opaque_core_fraction": 1.0,
+      "bytes": 25024
+    },
+    {
+      "file": "story/pancakes-3.webp",
+      "width": 238,
+      "height": 276,
+      "opaque_core_fraction": 1.0,
+      "bytes": 46686
+    },
+    {
+      "file": "story/pancakes-4.webp",
+      "width": 267,
+      "height": 342,
+      "opaque_core_fraction": 1.0,
+      "bytes": 66586
+    },
+    {
+      "file": "story/pancakes-5.webp",
+      "width": 316,
+      "height": 388,
+      "opaque_core_fraction": 0.99996,
+      "bytes": 104474
+    },
+    {
+      "file": "story/pancakes-6.webp",
+      "width": 362,
+      "height": 460,
+      "opaque_core_fraction": 1.0,
+      "bytes": 96516
+    },
+    {
+      "file": "story/blocks-1.webp",
+      "width": 215,
+      "height": 217,
+      "opaque_core_fraction": 1.0,
+      "bytes": 38016
+    },
+    {
+      "file": "story/blocks-2.webp",
+      "width": 242,
+      "height": 258,
+      "opaque_core_fraction": 1.0,
+      "bytes": 54266
+    },
+    {
+      "file": "story/blocks-3.webp",
+      "width": 252,
+      "height": 354,
+      "opaque_core_fraction": 1.0,
+      "bytes": 40874
+    },
+    {
+      "file": "story/blocks-4.webp",
+      "width": 230,
+      "height": 472,
+      "opaque_core_fraction": 0.9999,
+      "bytes": 71054
+    },
+    {
+      "file": "story/blocks-5.webp",
+      "width": 501,
+      "height": 508,
+      "opaque_core_fraction": 0.99844,
+      "bytes": 112778
+    },
+    {
+      "file": "story/balloons-1.webp",
+      "width": 439,
+      "height": 390,
+      "opaque_core_fraction": 0.99992,
+      "bytes": 69840
+    },
+    {
+      "file": "story/balloons-2.webp",
+      "width": 401,
+      "height": 338,
+      "opaque_core_fraction": 0.99687,
+      "bytes": 64062
+    },
+    {
+      "file": "story/balloons-3.webp",
+      "width": 328,
+      "height": 367,
+      "opaque_core_fraction": 0.99665,
+      "bytes": 73764
+    },
+    {
+      "file": "story/balloons-4.webp",
+      "width": 395,
+      "height": 443,
+      "opaque_core_fraction": 0.99659,
+      "bytes": 103494
+    },
+    {
+      "file": "story/stars-1.webp",
+      "width": 246,
+      "height": 207,
+      "opaque_core_fraction": 1.0,
+      "bytes": 35000
+    },
+    {
+      "file": "story/stars-2.webp",
+      "width": 231,
+      "height": 252,
+      "opaque_core_fraction": 0.99997,
+      "bytes": 61116
+    },
+    {
+      "file": "story/stars-3.webp",
+      "width": 270,
+      "height": 297,
+      "opaque_core_fraction": 1.0,
+      "bytes": 77852
+    },
+    {
+      "file": "story/stars-4.webp",
+      "width": 255,
+      "height": 375,
+      "opaque_core_fraction": 0.99952,
+      "bytes": 75470
+    },
+    {
+      "file": "story/stars-5.webp",
+      "width": 337,
+      "height": 461,
+      "opaque_core_fraction": 0.99945,
+      "bytes": 145020
+    },
+    {
+      "file": "story/clouds-1.webp",
+      "width": 215,
+      "height": 190,
+      "opaque_core_fraction": 1.0,
+      "bytes": 31526
+    },
+    {
+      "file": "story/clouds-2.webp",
+      "width": 230,
+      "height": 179,
+      "opaque_core_fraction": 0.99996,
+      "bytes": 26832
+    },
+    {
+      "file": "story/clouds-3.webp",
+      "width": 278,
+      "height": 316,
+      "opaque_core_fraction": 0.99947,
+      "bytes": 37130
+    },
+    {
+      "file": "story/clouds-4.webp",
+      "width": 255,
+      "height": 201,
+      "opaque_core_fraction": 1.0,
+      "bytes": 37520
+    },
+    {
+      "file": "story/clouds-5.webp",
+      "width": 290,
+      "height": 196,
+      "opaque_core_fraction": 1.0,
+      "bytes": 34806
+    },
+    {
+      "file": "story/bed-1.webp",
+      "width": 224,
+      "height": 194,
+      "opaque_core_fraction": 1.0,
+      "bytes": 29174
+    },
+    {
+      "file": "story/bed-2.webp",
+      "width": 255,
+      "height": 149,
+      "opaque_core_fraction": 1.0,
+      "bytes": 34270
+    },
+    {
+      "file": "story/bed-3.webp",
+      "width": 321,
+      "height": 311,
+      "opaque_core_fraction": 1.0,
+      "bytes": 62894
+    },
+    {
+      "file": "story/bed-4.webp",
+      "width": 438,
+      "height": 364,
+      "opaque_core_fraction": 0.99992,
+      "bytes": 130812
+    },
+    {
+      "file": "story/bed-5.webp",
+      "width": 440,
+      "height": 317,
+      "opaque_core_fraction": 1.0,
+      "bytes": 97986
+    },
+    {
+      "file": "story/boxes-1.webp",
+      "width": 214,
+      "height": 215,
+      "opaque_core_fraction": 1.0,
+      "bytes": 27952
+    },
+    {
+      "file": "story/boxes-2.webp",
+      "width": 278,
+      "height": 258,
+      "opaque_core_fraction": 1.0,
+      "bytes": 40888
+    },
+    {
+      "file": "story/boxes-3.webp",
+      "width": 334,
+      "height": 303,
+      "opaque_core_fraction": 0.99988,
+      "bytes": 77476
+    },
+    {
+      "file": "story/boxes-4.webp",
+      "width": 378,
+      "height": 340,
+      "opaque_core_fraction": 0.99997,
+      "bytes": 87432
+    },
+    {
+      "file": "story/boxes-5.webp",
+      "width": 404,
+      "height": 485,
+      "opaque_core_fraction": 0.99995,
+      "bytes": 125402
+    },
+    {
+      "file": "story/plant-1.webp",
+      "width": 283,
+      "height": 125,
+      "opaque_core_fraction": 1.0,
+      "bytes": 26048
+    },
+    {
+      "file": "story/plant-2.webp",
+      "width": 305,
+      "height": 231,
+      "opaque_core_fraction": 0.99989,
+      "bytes": 46208
+    },
+    {
+      "file": "story/plant-3.webp",
+      "width": 314,
+      "height": 304,
+      "opaque_core_fraction": 0.99987,
+      "bytes": 54344
+    },
+    {
+      "file": "story/plant-4.webp",
+      "width": 317,
+      "height": 463,
+      "opaque_core_fraction": 0.99896,
+      "bytes": 97826
+    },
+    {
+      "file": "story/plant-5.webp",
+      "width": 418,
+      "height": 347,
+      "opaque_core_fraction": 0.9999,
+      "bytes": 123512
+    },
+    {
+      "file": "story/bonsai-1.webp",
+      "width": 422,
+      "height": 319,
+      "opaque_core_fraction": 0.99976,
+      "bytes": 104882
+    },
+    {
+      "file": "story/bonsai-2.webp",
+      "width": 442,
+      "height": 340,
+      "opaque_core_fraction": 0.99951,
+      "bytes": 121114
+    },
+    {
+      "file": "story/bonsai-3.webp",
+      "width": 390,
+      "height": 417,
+      "opaque_core_fraction": 0.99911,
+      "bytes": 129186
+    },
+    {
+      "file": "story/bonsai-4.webp",
+      "width": 396,
+      "height": 471,
+      "opaque_core_fraction": 0.99963,
+      "bytes": 175058
+    },
+    {
+      "file": "story/flag-1.webp",
+      "width": 238,
+      "height": 207,
+      "opaque_core_fraction": 1.0,
+      "bytes": 35908
+    },
+    {
+      "file": "story/flag-2.webp",
+      "width": 227,
+      "height": 346,
+      "opaque_core_fraction": 0.99973,
+      "bytes": 67106
+    },
+    {
+      "file": "story/flag-3.webp",
+      "width": 491,
+      "height": 436,
+      "opaque_core_fraction": 0.99972,
+      "bytes": 146100
+    },
+    {
+      "file": "story/flag-4.webp",
+      "width": 646,
+      "height": 515,
+      "opaque_core_fraction": 0.99897,
+      "bytes": 188646
+    },
+    {
+      "file": "story/rainbow-1.webp",
+      "width": 247,
+      "height": 228,
+      "opaque_core_fraction": 0.99997,
+      "bytes": 47468
+    },
+    {
+      "file": "story/rainbow-2.webp",
+      "width": 403,
+      "height": 265,
+      "opaque_core_fraction": 0.98857,
+      "bytes": 51778
+    },
+    {
+      "file": "story/rainbow-3.webp",
+      "width": 515,
+      "height": 324,
+      "opaque_core_fraction": 0.99772,
+      "bytes": 81364
+    },
+    {
+      "file": "story/rainbow-4.webp",
+      "width": 349,
+      "height": 325,
+      "opaque_core_fraction": 1.0,
+      "bytes": 77996
+    },
+    {
+      "file": "story/snowman-1.webp",
+      "width": 218,
+      "height": 206,
+      "opaque_core_fraction": 1.0,
+      "bytes": 35926
+    },
+    {
+      "file": "story/snowman-2.webp",
+      "width": 308,
+      "height": 319,
+      "opaque_core_fraction": 0.99969,
+      "bytes": 81126
+    },
+    {
+      "file": "story/snowman-3.webp",
+      "width": 255,
+      "height": 321,
+      "opaque_core_fraction": 1.0,
+      "bytes": 49508
+    },
+    {
+      "file": "story/snowman-4.webp",
+      "width": 268,
+      "height": 306,
+      "opaque_core_fraction": 0.99986,
+      "bytes": 63694
+    },
+    {
+      "file": "story/snowman-5.webp",
+      "width": 511,
+      "height": 515,
+      "opaque_core_fraction": 0.99335,
+      "bytes": 161644
+    },
+    {
+      "file": "story/gift-1.webp",
+      "width": 212,
+      "height": 198,
+      "opaque_core_fraction": 0.99992,
+      "bytes": 33964
+    },
+    {
+      "file": "story/gift-2.webp",
+      "width": 269,
+      "height": 249,
+      "opaque_core_fraction": 1.0,
+      "bytes": 54356
+    },
+    {
+      "file": "story/gift-3.webp",
+      "width": 308,
+      "height": 324,
+      "opaque_core_fraction": 1.0,
+      "bytes": 62292
+    },
+    {
+      "file": "story/gift-4.webp",
+      "width": 298,
+      "height": 353,
+      "opaque_core_fraction": 1.0,
+      "bytes": 59102
+    },
+    {
+      "file": "story/gift-5.webp",
+      "width": 558,
+      "height": 523,
+      "opaque_core_fraction": 0.99912,
+      "bytes": 224602
+    },
+    {
+      "file": "story/cookies-1.webp",
+      "width": 216,
+      "height": 199,
+      "opaque_core_fraction": 1.0,
+      "bytes": 34718
+    },
+    {
+      "file": "story/cookies-2.webp",
+      "width": 281,
+      "height": 276,
+      "opaque_core_fraction": 0.99998,
+      "bytes": 65900
+    },
+    {
+      "file": "story/cookies-3.webp",
+      "width": 342,
+      "height": 314,
+      "opaque_core_fraction": 0.99998,
+      "bytes": 83320
+    },
+    {
+      "file": "story/cookies-4.webp",
+      "width": 369,
+      "height": 330,
+      "opaque_core_fraction": 0.99999,
+      "bytes": 97270
+    },
+    {
+      "file": "story/cookies-5.webp",
+      "width": 312,
+      "height": 385,
+      "opaque_core_fraction": 1.0,
+      "bytes": 84754
+    },
+    {
+      "file": "story/cookies-6.webp",
+      "width": 366,
+      "height": 452,
+      "opaque_core_fraction": 0.99996,
+      "bytes": 107620
+    },
+    {
+      "file": "story/yarn-1.webp",
+      "width": 238,
+      "height": 231,
+      "opaque_core_fraction": 0.99996,
+      "bytes": 38060
+    },
+    {
+      "file": "story/yarn-2.webp",
+      "width": 293,
+      "height": 189,
+      "opaque_core_fraction": 1.0,
+      "bytes": 45682
+    },
+    {
+      "file": "story/yarn-3.webp",
+      "width": 453,
+      "height": 293,
+      "opaque_core_fraction": 0.99998,
+      "bytes": 85900
+    },
+    {
+      "file": "story/yarn-4.webp",
+      "width": 323,
+      "height": 300,
+      "opaque_core_fraction": 0.99936,
+      "bytes": 86512
+    },
+    {
+      "file": "story/yarn-5.webp",
+      "width": 436,
+      "height": 393,
+      "opaque_core_fraction": 0.99864,
+      "bytes": 175580
+    },
+    {
+      "file": "story/boat-1.webp",
+      "width": 267,
+      "height": 235,
+      "opaque_core_fraction": 1.0,
+      "bytes": 47740
+    },
+    {
+      "file": "story/boat-2.webp",
+      "width": 389,
+      "height": 265,
+      "opaque_core_fraction": 1.0,
+      "bytes": 70270
+    },
+    {
+      "file": "story/boat-3.webp",
+      "width": 448,
+      "height": 313,
+      "opaque_core_fraction": 0.99982,
+      "bytes": 108276
+    },
+    {
+      "file": "story/boat-4.webp",
+      "width": 464,
+      "height": 302,
+      "opaque_core_fraction": 0.99996,
+      "bytes": 75624
+    },
+    {
+      "file": "bear/front.webp",
+      "width": 543,
+      "height": 473,
+      "opaque_core_fraction": 0.99968,
+      "bytes": 194458
+    },
+    {
+      "file": "bear/back-view.webp",
+      "width": 427,
+      "height": 463,
+      "opaque_core_fraction": 0.99971,
+      "bytes": 174562
+    },
+    {
+      "file": "bear/head.webp",
+      "width": 340,
+      "height": 253,
+      "opaque_core_fraction": 0.99997,
+      "bytes": 78488
+    },
+    {
+      "file": "bear/head-blink.webp",
+      "width": 340,
+      "height": 257,
+      "opaque_core_fraction": 1.0,
+      "bytes": 80486
+    },
+    {
+      "file": "bear/head-smile.webp",
+      "width": 339,
+      "height": 252,
+      "opaque_core_fraction": 1.0,
+      "bytes": 81396
+    },
+    {
+      "file": "bear/nyo.webp",
+      "width": 362,
+      "height": 195,
+      "opaque_core_fraction": 0.99996,
+      "bytes": 56768
+    },
+    {
+      "file": "bear/read.webp",
+      "width": 487,
+      "height": 355,
+      "opaque_core_fraction": 0.99996,
+      "bytes": 117336
+    },
+    {
+      "file": "bear/read-side.webp",
+      "width": 475,
+      "height": 373,
+      "opaque_core_fraction": 1.0,
+      "bytes": 105436
+    },
+    {
+      "file": "bear/read-prone.webp",
+      "width": 558,
+      "height": 327,
+      "opaque_core_fraction": 0.99944,
+      "bytes": 142092
+    },
+    {
+      "file": "bear/chin.webp",
+      "width": 488,
+      "height": 318,
+      "opaque_core_fraction": 0.99963,
+      "bytes": 129072
+    },
+    {
+      "file": "bear/read-lying.webp",
+      "width": 616,
+      "height": 344,
+      "opaque_core_fraction": 0.99947,
+      "bytes": 123878
+    },
+    {
+      "file": "bear/focus.webp",
+      "width": 503,
+      "height": 392,
+      "opaque_core_fraction": 0.99972,
+      "bytes": 141758
+    },
+    {
+      "file": "bear/turn-page.webp",
+      "width": 449,
+      "height": 364,
+      "opaque_core_fraction": 0.99996,
+      "bytes": 130238
+    },
+    {
+      "file": "bear/think-read.webp",
+      "width": 511,
+      "height": 396,
+      "opaque_core_fraction": 0.99996,
+      "bytes": 126954
+    },
+    {
+      "file": "bear/sleep-book.webp",
+      "width": 503,
+      "height": 263,
+      "opaque_core_fraction": 0.99996,
+      "bytes": 96306
+    },
+    {
+      "file": "bear/tower.webp",
+      "width": 464,
+      "height": 411,
+      "opaque_core_fraction": 0.99996,
+      "bytes": 152562
+    },
+    {
+      "file": "bear/turn.webp",
+      "width": 355,
+      "height": 405,
+      "opaque_core_fraction": 0.99998,
+      "bytes": 115690
+    },
+    {
+      "file": "bear/book.webp",
+      "width": 279,
+      "height": 196,
+      "opaque_core_fraction": 1.0,
+      "bytes": 34336
+    },
+    {
+      "file": "bear/hyo.webp",
+      "width": 271,
+      "height": 232,
+      "opaque_core_fraction": 1.0,
+      "bytes": 31372
+    },
+    {
+      "file": "bear/ear.webp",
+      "width": 292,
+      "height": 300,
+      "opaque_core_fraction": 0.99995,
+      "bytes": 53820
+    },
+    {
+      "file": "bear/chira.webp",
+      "width": 363,
+      "height": 259,
+      "opaque_core_fraction": 0.99997,
+      "bytes": 78882
+    },
+    {
+      "file": "bear/idea.webp",
+      "width": 388,
+      "height": 331,
+      "opaque_core_fraction": 1.0,
+      "bytes": 80872
+    },
+    {
+      "file": "bear/hop.webp",
+      "width": 355,
+      "height": 373,
+      "opaque_core_fraction": 0.99996,
+      "bytes": 93092
+    },
+    {
+      "file": "bear/flat.webp",
+      "width": 465,
+      "height": 213,
+      "opaque_core_fraction": 0.99995,
+      "bytes": 77326
+    },
+    {
+      "file": "bear/what.webp",
+      "width": 346,
+      "height": 307,
+      "opaque_core_fraction": 1.0,
+      "bytes": 61846
+    },
+    {
+      "file": "bear/wait.webp",
+      "width": 391,
+      "height": 256,
+      "opaque_core_fraction": 1.0,
+      "bytes": 84314
+    },
+    {
+      "file": "bear/surprise.webp",
+      "width": 377,
+      "height": 272,
+      "opaque_core_fraction": 1.0,
+      "bytes": 48140
+    },
+    {
+      "file": "bear/jump.webp",
+      "width": 360,
+      "height": 386,
+      "opaque_core_fraction": 0.99995,
+      "bytes": 100274
+    },
+    {
+      "file": "bear/launch.webp",
+      "width": 386,
+      "height": 362,
+      "opaque_core_fraction": 1.0,
+      "bytes": 80924
+    },
+    {
+      "file": "bear/tumble.webp",
+      "width": 422,
+      "height": 379,
+      "opaque_core_fraction": 0.99977,
+      "bytes": 121972
+    },
+    {
+      "file": "bear/spin.webp",
+      "width": 385,
+      "height": 438,
+      "opaque_core_fraction": 1.0,
+      "bytes": 100028
+    },
+    {
+      "file": "bear/fall.webp",
+      "width": 323,
+      "height": 319,
+      "opaque_core_fraction": 1.0,
+      "bytes": 71460
+    },
+    {
+      "file": "bear/land.webp",
+      "width": 499,
+      "height": 271,
+      "opaque_core_fraction": 0.99971,
+      "bytes": 108834
+    },
+    {
+      "file": "bear/back.webp",
+      "width": 491,
+      "height": 341,
+      "opaque_core_fraction": 0.99999,
+      "bytes": 100926
+    },
+    {
+      "file": "bear/flag.webp",
+      "width": 403,
+      "height": 449,
+      "opaque_core_fraction": 0.99974,
+      "bytes": 120870
+    },
+    {
+      "file": "bear/mug.webp",
+      "width": 278,
+      "height": 277,
+      "opaque_core_fraction": 1.0,
+      "bytes": 62740
+    },
+    {
+      "file": "bear/stack.webp",
+      "width": 383,
+      "height": 377,
+      "opaque_core_fraction": 0.99989,
+      "bytes": 143256
+    },
+    {
+      "file": "bear/box.webp",
+      "width": 426,
+      "height": 427,
+      "opaque_core_fraction": 0.99974,
+      "bytes": 128266
+    },
+    {
+      "file": "bear/nozoku.webp",
+      "width": 277,
+      "height": 433,
+      "opaque_core_fraction": 0.9998,
+      "bytes": 96118
+    },
+    {
+      "file": "bear/fx-leaf.webp",
+      "width": 101,
+      "height": 152,
+      "opaque_core_fraction": 1.0,
+      "bytes": 8682
+    },
+    {
+      "file": "bear/fx-tulip.webp",
+      "width": 128,
+      "height": 148,
+      "opaque_core_fraction": 0.9992,
+      "bytes": 13938
+    },
+    {
+      "file": "bear/fx-flower.webp",
+      "width": 148,
+      "height": 136,
+      "opaque_core_fraction": 1.0,
+      "bytes": 18078
+    },
+    {
+      "file": "bear/fx-orange.webp",
+      "width": 99,
+      "height": 85,
+      "opaque_core_fraction": 0.99973,
+      "bytes": 8276
+    },
+    {
+      "file": "bear/fx-sprig.webp",
+      "width": 108,
+      "height": 104,
+      "opaque_core_fraction": 0.98997,
+      "bytes": 8634
+    },
+    {
+      "file": "bear/fx-blossom.webp",
+      "width": 196,
+      "height": 128,
+      "opaque_core_fraction": 0.99931,
+      "bytes": 14710
+    },
+    {
+      "file": "bear/fx-petals.webp",
+      "width": 252,
+      "height": 176,
+      "opaque_core_fraction": 0.99659,
+      "bytes": 23216
+    },
+    {
+      "file": "bear/fx-star.webp",
+      "width": 108,
+      "height": 132,
+      "opaque_core_fraction": 1.0,
+      "bytes": 9998
+    },
+    {
+      "file": "bear/fx-sparkles.webp",
+      "width": 192,
+      "height": 184,
+      "opaque_core_fraction": 0.98693,
+      "bytes": 19384
+    }
+  ]
+}

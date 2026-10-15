@@ -275,7 +275,7 @@ const PEEKS = {
   epic: [{ edge: 'bottom', frames: [[0, 'tower']] }],
 };
 // 隅のくまの倍率(絵の元の大きさに掛ける)。画面が小さいほど小さく
-// 切り抜いた絵は元の絵の4倍(v0.26。前は2倍)なので、表示の倍率は前の半分
+// 透過素材の出力寸法は v0.26 と同じなので、表示の倍率も維持する
 const cornerScale = () => Math.min(0.31, Math.max(0.21, Math.min(innerWidth, innerHeight) / 2200));
 // フィーバーで使うポーズ(層を作るときに全部読み込んでおき、切り替えで絵が消えないようにする)
 const FEVER_POSES = ['wait', 'surprise', 'jump', 'launch', 'tumble', 'spin', 'hop', 'fall', 'land', 'back', 'flag', 'read-lying'];
