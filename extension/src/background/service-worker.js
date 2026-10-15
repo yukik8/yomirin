@@ -274,11 +274,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           sendResponse({ ok: true, quiz_id: existing.quiz_id });
           break;
         }
+        const pos = await getBookPosition();
         const quizId = await addQuiz({
           page_id: current.page_id ?? null,
           paragraph_hash: hash,
           paragraph_excerpt: text.slice(0, 80),
-          book_page: (await getBookPosition())?.page ?? null,
+          // 出したときのページと総ページ数(総ページ数は倍率で変わる。本棚で今の尺度に換算する・#33)
+          book_page: pos?.page ?? null,
+          book_total: pos?.total ?? null,
           question: quiz.question,
           choices: quiz.choices,
           answer_index: quiz.answer_index,
@@ -329,11 +332,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           await appendEvent(current.session_id, EventType.QUESTION_ASKED, {
             chars: question.length,
           });
+          const pos = await getBookPosition();
           await addQuestion({
             page_id: current.page_id ?? null,
             session_id: current.session_id,
-            // 問いを投げた時点の本のページと、選んでいた箇所(本人が指したところ)
-            book_page: (await getBookPosition())?.page ?? null,
+            // 問いを投げた時点の本のページ(と総ページ数)と、選んでいた箇所(本人が指したところ)
+            book_page: pos?.page ?? null,
+            book_total: pos?.total ?? null,
             selection: selection.trim() || null,
             question,
             answer: res.answer,

@@ -1,4 +1,4 @@
-// テスト用の chrome(storage.local と runtime だけ)と fetch。拡張のコードは呼ぶたびに globalThis の
+// テスト用の chrome(storage.local と runtime、タブの倍率)と fetch。拡張のコードは呼ぶたびに globalThis の
 // chrome・fetch を読むので、テストごとに置き換えられる。
 
 /** storage.local を Map で持つ chrome。data で中身を見られる。 */
@@ -20,6 +20,48 @@ export function fakeChrome(initial = {}, manifest = { version: '0.27' }) {
         clear: async () => data.clear(),
       },
     },
+  };
+}
+
+/**
+ * タブの倍率だけを持つ chrome.tabs(#33・background/zoom.js)。tabs は { [tabId]: { zoom, mode?, scope? } }。
+ * Chrome と同じく、per-origin のまま setZoom すると origin の倍率(origin.zoom)として残り、per-tab から per-origin に
+ * 戻すとタブは origin の倍率になる。無いタブは Error。calls に呼ばれた順に残す。fail にメソッド名を入れると、それが落ちる。
+ */
+export function fakeTabs(tabs = {}, { originZoom = 1, fail = [] } = {}) {
+  const origin = { zoom: originZoom };
+  const calls = [];
+  const tabOf = (id) => {
+    const tab = tabs[id];
+    if (!tab) throw new Error(`No tab with id: ${id}`);
+    tab.mode ??= 'automatic';
+    tab.scope ??= 'per-origin';
+    return tab;
+  };
+  const method = (name, fn) => async (...args) => {
+    calls.push([name, ...args]);
+    if (fail.includes(name)) throw new Error(`${name} failed`);
+    return fn(...args);
+  };
+  return {
+    tabs,
+    origin,
+    calls,
+    getZoom: method('getZoom', (id) => tabOf(id).zoom),
+    getZoomSettings: method('getZoomSettings', (id) => {
+      const { mode, scope } = tabOf(id);
+      return { mode, scope, defaultZoomFactor: 1 };
+    }),
+    setZoomSettings: method('setZoomSettings', (id, { mode, scope }) => {
+      const tab = tabOf(id);
+      if (tab.scope === 'per-tab' && scope === 'per-origin') tab.zoom = origin.zoom;
+      Object.assign(tab, { mode, scope });
+    }),
+    setZoom: method('setZoom', (id, factor) => {
+      const tab = tabOf(id);
+      tab.zoom = factor;
+      if (tab.scope === 'per-origin') origin.zoom = factor;
+    }),
   };
 }
 

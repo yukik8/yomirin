@@ -45,6 +45,7 @@ export async function addClaim({ page_id, session_id, text, now = Date.now() }) 
     session_id: session_id ?? null,
     kind: 'claim',
     book_page: reading?.range?.to ?? null,
+    book_total: reading?.range?.total ?? null,
     text: clean,
     created_at: now,
   });

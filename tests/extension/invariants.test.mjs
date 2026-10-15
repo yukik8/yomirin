@@ -65,6 +65,18 @@ describe('manifest: 権限は release.md の申告どおり', () => {
   });
 });
 
+describe('不変条件 §11-1・§11-2: 1ページの長さ(#33)は、ブラウザの倍率で・常設リスナーを足さずに', () => {
+  const ZOOM_JS = join('src', 'background', 'zoom.js');
+
+  test('倍率を変えるのは background/zoom.js だけ', () => {
+    assert.deepEqual(hits(ofType('.js').filter((s) => s.path !== ZOOM_JS), /\bsetZoom(?:Settings)?\s*\(/), []);
+  });
+
+  test('倍率の変化を見張るリスナー(onZoomChange)を持たない。本人が変えたかは終わるときに比べるだけ', () => {
+    assert.deepEqual(hits(ofType('.js'), /\.onZoomChange\b/), []);
+  });
+});
+
 describe('不変条件 §11-7・§11-8: 端末の外へ出る経路は、よみりんのサーバへの1本だけ(うんちく・使われ方の要約)', () => {
   const NETWORK = /\bfetch\s*\(|\bXMLHttpRequest\b|\bsendBeacon\b|\bWebSocket\b|\bEventSource\b|\bconnectNative\b|\bsendNativeMessage\b/;
   const SERVER_JS = join('src', 'background', 'server.js');
