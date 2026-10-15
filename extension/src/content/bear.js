@@ -1,5 +1,5 @@
-// くま(よみりん)の絵。ポーズ集(docs/style/ref/pose-sheet.png)から1体ずつ切り抜いた画像を使う。
-// 切り抜きは tools/bear-sprites/cut.py。ポーズの名前もそこの POSES と同じ。
+// くま(よみりん)の絵。docs/style/sprites/master.png を基準に透過背景で描き起こした画像を使う。
+// 元の透過素材と出力寸法は tools/asset-sprites/manifest.json、書き出しは同じ場所の export.py。
 // 絵は動かない1枚ずつで、動き(跳ねる・飛ぶ・潰れる・回る)は stage.js が付ける。
 //
 //   ふだん      … front(正面)/ back-view(後ろ)/ read(読む)/ read-side(読む・横)/ read-lying(ねそべって読む)

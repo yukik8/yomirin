@@ -1,0 +1,871 @@
+{
+  "version": 1,
+  "alpha_snap": {
+    "transparent_max": 8,
+    "opaque_min": 245
+  },
+  "sheets": [
+    {
+      "source": "docs/style/sprites/books.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/books-1.webp",
+          "width": 175,
+          "height": 128
+        },
+        {
+          "file": "story/books-2.webp",
+          "width": 234,
+          "height": 265
+        },
+        {
+          "file": "story/books-3.webp",
+          "width": 231,
+          "height": 224
+        },
+        {
+          "file": "story/books-4.webp",
+          "width": 230,
+          "height": 330
+        },
+        {
+          "file": "story/books-5.webp",
+          "width": 256,
+          "height": 392
+        },
+        {
+          "file": "story/books-6.webp",
+          "width": 427,
+          "height": 471
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/castle.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/castle-1.webp",
+          "width": 226,
+          "height": 176
+        },
+        {
+          "file": "story/castle-2.webp",
+          "width": 242,
+          "height": 228
+        },
+        {
+          "file": "story/castle-3.webp",
+          "width": 279,
+          "height": 330
+        },
+        {
+          "file": "story/castle-4.webp",
+          "width": 326,
+          "height": 389
+        },
+        {
+          "file": "story/castle-5.webp",
+          "width": 386,
+          "height": 499
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/pancakes.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/pancakes-1.webp",
+          "width": 251,
+          "height": 229
+        },
+        {
+          "file": "story/pancakes-2.webp",
+          "width": 221,
+          "height": 189
+        },
+        {
+          "file": "story/pancakes-3.webp",
+          "width": 238,
+          "height": 276
+        },
+        {
+          "file": "story/pancakes-4.webp",
+          "width": 267,
+          "height": 342
+        },
+        {
+          "file": "story/pancakes-5.webp",
+          "width": 316,
+          "height": 388
+        },
+        {
+          "file": "story/pancakes-6.webp",
+          "width": 362,
+          "height": 460
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/blocks.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/blocks-1.webp",
+          "width": 215,
+          "height": 217
+        },
+        {
+          "file": "story/blocks-2.webp",
+          "width": 242,
+          "height": 258
+        },
+        {
+          "file": "story/blocks-3.webp",
+          "width": 252,
+          "height": 354
+        },
+        {
+          "file": "story/blocks-4.webp",
+          "width": 230,
+          "height": 472
+        },
+        {
+          "file": "story/blocks-5.webp",
+          "width": 501,
+          "height": 508
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/balloons.png",
+      "columns": 2,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/balloons-1.webp",
+          "width": 439,
+          "height": 390
+        },
+        {
+          "file": "story/balloons-2.webp",
+          "width": 401,
+          "height": 338
+        },
+        {
+          "file": "story/balloons-3.webp",
+          "width": 328,
+          "height": 367
+        },
+        {
+          "file": "story/balloons-4.webp",
+          "width": 395,
+          "height": 443
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/stars.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/stars-1.webp",
+          "width": 246,
+          "height": 207
+        },
+        {
+          "file": "story/stars-2.webp",
+          "width": 231,
+          "height": 252
+        },
+        {
+          "file": "story/stars-3.webp",
+          "width": 270,
+          "height": 297
+        },
+        {
+          "file": "story/stars-4.webp",
+          "width": 255,
+          "height": 375
+        },
+        {
+          "file": "story/stars-5.webp",
+          "width": 337,
+          "height": 461
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/clouds.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/clouds-1.webp",
+          "width": 215,
+          "height": 190
+        },
+        {
+          "file": "story/clouds-2.webp",
+          "width": 230,
+          "height": 179
+        },
+        {
+          "file": "story/clouds-3.webp",
+          "width": 278,
+          "height": 316
+        },
+        {
+          "file": "story/clouds-4.webp",
+          "width": 255,
+          "height": 201
+        },
+        {
+          "file": "story/clouds-5.webp",
+          "width": 290,
+          "height": 196
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/bed.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/bed-1.webp",
+          "width": 224,
+          "height": 194
+        },
+        {
+          "file": "story/bed-2.webp",
+          "width": 255,
+          "height": 149
+        },
+        {
+          "file": "story/bed-3.webp",
+          "width": 321,
+          "height": 311
+        },
+        {
+          "file": "story/bed-4.webp",
+          "width": 438,
+          "height": 364
+        },
+        {
+          "file": "story/bed-5.webp",
+          "width": 440,
+          "height": 317
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/boxes.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/boxes-1.webp",
+          "width": 214,
+          "height": 215
+        },
+        {
+          "file": "story/boxes-2.webp",
+          "width": 278,
+          "height": 258
+        },
+        {
+          "file": "story/boxes-3.webp",
+          "width": 334,
+          "height": 303
+        },
+        {
+          "file": "story/boxes-4.webp",
+          "width": 378,
+          "height": 340
+        },
+        {
+          "file": "story/boxes-5.webp",
+          "width": 404,
+          "height": 485
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/plant.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/plant-1.webp",
+          "width": 283,
+          "height": 125
+        },
+        {
+          "file": "story/plant-2.webp",
+          "width": 305,
+          "height": 231
+        },
+        {
+          "file": "story/plant-3.webp",
+          "width": 314,
+          "height": 304
+        },
+        {
+          "file": "story/plant-4.webp",
+          "width": 317,
+          "height": 463
+        },
+        {
+          "file": "story/plant-5.webp",
+          "width": 418,
+          "height": 347
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/bonsai.png",
+      "columns": 2,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/bonsai-1.webp",
+          "width": 422,
+          "height": 319
+        },
+        {
+          "file": "story/bonsai-2.webp",
+          "width": 442,
+          "height": 340
+        },
+        {
+          "file": "story/bonsai-3.webp",
+          "width": 390,
+          "height": 417
+        },
+        {
+          "file": "story/bonsai-4.webp",
+          "width": 396,
+          "height": 471
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/flag.png",
+      "columns": 2,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/flag-1.webp",
+          "width": 238,
+          "height": 207
+        },
+        {
+          "file": "story/flag-2.webp",
+          "width": 227,
+          "height": 346
+        },
+        {
+          "file": "story/flag-3.webp",
+          "width": 491,
+          "height": 436
+        },
+        {
+          "file": "story/flag-4.webp",
+          "width": 646,
+          "height": 515
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/rainbow.png",
+      "columns": 2,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/rainbow-1.webp",
+          "width": 247,
+          "height": 228
+        },
+        {
+          "file": "story/rainbow-2.webp",
+          "width": 403,
+          "height": 265
+        },
+        {
+          "file": "story/rainbow-3.webp",
+          "width": 515,
+          "height": 324
+        },
+        {
+          "file": "story/rainbow-4.webp",
+          "width": 349,
+          "height": 325
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/snowman.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/snowman-1.webp",
+          "width": 218,
+          "height": 206
+        },
+        {
+          "file": "story/snowman-2.webp",
+          "width": 308,
+          "height": 319
+        },
+        {
+          "file": "story/snowman-3.webp",
+          "width": 255,
+          "height": 321
+        },
+        {
+          "file": "story/snowman-4.webp",
+          "width": 268,
+          "height": 306
+        },
+        {
+          "file": "story/snowman-5.webp",
+          "width": 511,
+          "height": 515
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/gift.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/gift-1.webp",
+          "width": 212,
+          "height": 198
+        },
+        {
+          "file": "story/gift-2.webp",
+          "width": 269,
+          "height": 249
+        },
+        {
+          "file": "story/gift-3.webp",
+          "width": 308,
+          "height": 324
+        },
+        {
+          "file": "story/gift-4.webp",
+          "width": 298,
+          "height": 353
+        },
+        {
+          "file": "story/gift-5.webp",
+          "width": 558,
+          "height": 523
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/cookies.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/cookies-1.webp",
+          "width": 216,
+          "height": 199
+        },
+        {
+          "file": "story/cookies-2.webp",
+          "width": 281,
+          "height": 276
+        },
+        {
+          "file": "story/cookies-3.webp",
+          "width": 342,
+          "height": 314
+        },
+        {
+          "file": "story/cookies-4.webp",
+          "width": 369,
+          "height": 330
+        },
+        {
+          "file": "story/cookies-5.webp",
+          "width": 312,
+          "height": 385
+        },
+        {
+          "file": "story/cookies-6.webp",
+          "width": 366,
+          "height": 452
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/yarn.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/yarn-1.webp",
+          "width": 238,
+          "height": 231
+        },
+        {
+          "file": "story/yarn-2.webp",
+          "width": 293,
+          "height": 189
+        },
+        {
+          "file": "story/yarn-3.webp",
+          "width": 453,
+          "height": 293
+        },
+        {
+          "file": "story/yarn-4.webp",
+          "width": 323,
+          "height": 300
+        },
+        {
+          "file": "story/yarn-5.webp",
+          "width": 436,
+          "height": 393
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/boat.png",
+      "columns": 2,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "story/boat-1.webp",
+          "width": 267,
+          "height": 235
+        },
+        {
+          "file": "story/boat-2.webp",
+          "width": 389,
+          "height": 265
+        },
+        {
+          "file": "story/boat-3.webp",
+          "width": 448,
+          "height": 313
+        },
+        {
+          "file": "story/boat-4.webp",
+          "width": 464,
+          "height": 302
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/poses-basics.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "bear/front.webp",
+          "width": 543,
+          "height": 473
+        },
+        {
+          "file": "bear/back-view.webp",
+          "width": 427,
+          "height": 463
+        },
+        {
+          "file": "bear/head.webp",
+          "width": 340,
+          "height": 253
+        },
+        {
+          "file": "bear/head-blink.webp",
+          "width": 340,
+          "height": 257
+        },
+        {
+          "file": "bear/head-smile.webp",
+          "width": 339,
+          "height": 252
+        },
+        {
+          "file": "bear/nyo.webp",
+          "width": 362,
+          "height": 195
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/poses-reading-a.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "bear/read.webp",
+          "width": 487,
+          "height": 355
+        },
+        {
+          "file": "bear/read-side.webp",
+          "width": 475,
+          "height": 373
+        },
+        {
+          "file": "bear/read-prone.webp",
+          "width": 558,
+          "height": 327
+        },
+        {
+          "file": "bear/chin.webp",
+          "width": 488,
+          "height": 318
+        },
+        {
+          "file": "bear/read-lying.webp",
+          "width": 616,
+          "height": 344
+        },
+        {
+          "file": "bear/focus.webp",
+          "width": 503,
+          "height": 392
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/poses-reading-b.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "bear/turn-page.webp",
+          "width": 449,
+          "height": 364
+        },
+        {
+          "file": "bear/think-read.webp",
+          "width": 511,
+          "height": 396
+        },
+        {
+          "file": "bear/sleep-book.webp",
+          "width": 503,
+          "height": 263
+        },
+        {
+          "file": "bear/tower.webp",
+          "width": 464,
+          "height": 411
+        },
+        {
+          "file": "bear/turn.webp",
+          "width": 355,
+          "height": 405
+        },
+        {
+          "file": "bear/book.webp",
+          "width": 279,
+          "height": 196
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/poses-reactions.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "bear/hyo.webp",
+          "width": 271,
+          "height": 232
+        },
+        {
+          "file": "bear/ear.webp",
+          "width": 292,
+          "height": 300
+        },
+        {
+          "file": "bear/chira.webp",
+          "width": 363,
+          "height": 259
+        },
+        {
+          "file": "bear/idea.webp",
+          "width": 388,
+          "height": 331
+        },
+        {
+          "file": "bear/hop.webp",
+          "width": 355,
+          "height": 373
+        },
+        {
+          "file": "bear/flat.webp",
+          "width": 465,
+          "height": 213
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/poses-fever-a.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "bear/what.webp",
+          "width": 346,
+          "height": 307
+        },
+        {
+          "file": "bear/wait.webp",
+          "width": 391,
+          "height": 256
+        },
+        {
+          "file": "bear/surprise.webp",
+          "width": 377,
+          "height": 272
+        },
+        {
+          "file": "bear/jump.webp",
+          "width": 360,
+          "height": 386
+        },
+        {
+          "file": "bear/launch.webp",
+          "width": 386,
+          "height": 362
+        },
+        {
+          "file": "bear/tumble.webp",
+          "width": 422,
+          "height": 379
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/poses-fever-b.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "bear/spin.webp",
+          "width": 385,
+          "height": 438
+        },
+        {
+          "file": "bear/fall.webp",
+          "width": 323,
+          "height": 319
+        },
+        {
+          "file": "bear/land.webp",
+          "width": 499,
+          "height": 271
+        },
+        {
+          "file": "bear/back.webp",
+          "width": 491,
+          "height": 341
+        },
+        {
+          "file": "bear/flag.webp",
+          "width": 403,
+          "height": 449
+        },
+        {
+          "file": "bear/mug.webp",
+          "width": 278,
+          "height": 277
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/poses-props.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "bear/stack.webp",
+          "width": 383,
+          "height": 377
+        },
+        {
+          "file": "bear/box.webp",
+          "width": 426,
+          "height": 427
+        },
+        {
+          "file": "bear/nozoku.webp",
+          "width": 277,
+          "height": 433
+        },
+        {
+          "file": "bear/fx-leaf.webp",
+          "width": 101,
+          "height": 152
+        },
+        {
+          "file": "bear/fx-tulip.webp",
+          "width": 128,
+          "height": 148
+        },
+        {
+          "file": "bear/fx-flower.webp",
+          "width": 148,
+          "height": 136
+        }
+      ]
+    },
+    {
+      "source": "docs/style/sprites/poses-effects.png",
+      "columns": 3,
+      "rows": 2,
+      "frames": [
+        {
+          "file": "bear/fx-orange.webp",
+          "width": 99,
+          "height": 85
+        },
+        {
+          "file": "bear/fx-sprig.webp",
+          "width": 108,
+          "height": 104
+        },
+        {
+          "file": "bear/fx-blossom.webp",
+          "width": 196,
+          "height": 128
+        },
+        {
+          "file": "bear/fx-petals.webp",
+          "width": 252,
+          "height": 176
+        },
+        {
+          "file": "bear/fx-star.webp",
+          "width": 108,
+          "height": 132
+        },
+        {
+          "file": "bear/fx-sparkles.webp",
+          "width": 192,
+          "height": 184
+        }
+      ]
+    }
+  ]
+}
