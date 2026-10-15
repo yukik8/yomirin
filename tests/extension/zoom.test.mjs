@@ -3,7 +3,8 @@
 // 確かめるのは: 倍率の式(θ 配下・θ=0 と小さい θ では掛けない)・本人が自分で大きくしていたら掛けない・
 // このタブだけに掛ける(per-tab にできなければ掛けない — Play ブックスの倍率として残さない)・
 // 終わったら元に戻す・本人が途中で変えていたら戻さない・Chrome が戻していたら触らない・タブが無くても落ちない・
-// θ のダイヤルで掛け直す・お祝いのあとに戻すのを待っている間に次が始まったら先に戻す。
+// θ のダイヤルで掛け直す・お祝いのあとに戻すのを待っている間に次が始まったら先に戻す・
+// 計測中にページを再読み込みしたら(Chrome が戻した倍率を)掛け直す(#38)。
 //
 //   node --test "tests/extension/*.test.mjs"
 
@@ -17,6 +18,7 @@ import {
   zoomTarget,
   applyZoom,
   retuneZoom,
+  reapplyZoom,
   restoreZoom,
   restoreZoomLater,
   flushZoomRestore,
@@ -159,6 +161,48 @@ describe('掛ける・戻す', () => {
     assert.equal(await restoreZoom(TAB, null), false);
     await restoreZoomLater(TAB, null, 0);
     assert.deepEqual(tabs.calls, []);
+  });
+});
+
+describe('再読み込みで掛け直す(#38)', () => {
+  test('Chrome が戻していたら、開始のときの倍率を per-tab で掛け直す。終わりには元に戻る', async (t) => {
+    const tabs = setup(t, { [TAB]: { zoom: 1.1 } }, { originZoom: 1.1 });
+    const zoom = await applyZoom(TAB, THETA_MAX);
+    // 再読み込みで、per-tab の倍率は Chrome が origin の倍率に戻す
+    Object.assign(tabs.tabs[TAB], { zoom: 1.1, scope: 'per-origin' });
+    assert.equal(await reapplyZoom(TAB, zoom), true);
+    assert.equal(tabs.tabs[TAB].zoom, zoom.applied);
+    assert.equal(tabs.tabs[TAB].scope, 'per-tab');
+    assert.equal(tabs.origin.zoom, 1.1, 'Play ブックスの倍率は変えない');
+    assert.equal(await restoreZoom(TAB, zoom), true);
+    assert.equal(tabs.tabs[TAB].zoom, 1.1);
+    assert.equal(tabs.tabs[TAB].scope, 'per-origin');
+  });
+
+  test('per-tab のまま倍率だけ戻されていても掛け直す', async (t) => {
+    const tabs = setup(t);
+    const zoom = await applyZoom(TAB, THETA_MAX);
+    tabs.tabs[TAB].zoom = 1;
+    assert.equal(await reapplyZoom(TAB, zoom), true);
+    assert.equal(tabs.tabs[TAB].zoom, zoom.applied);
+  });
+
+  test('掛けたままなら触らない。掛けていなければ何もしない', async (t) => {
+    const tabs = setup(t);
+    const zoom = await applyZoom(TAB, THETA_MAX);
+    const before = sets(tabs).length;
+    assert.equal(await reapplyZoom(TAB, zoom), false);
+    assert.equal(await reapplyZoom(TAB, null), false);
+    assert.equal(sets(tabs).length, before);
+  });
+
+  test('倍率を変えられなければ、設定を元に戻す。タブが無くても落ちない', async (t) => {
+    const tabs = setup(t, { [TAB]: { zoom: 1 } }, { fail: ['setZoom'] });
+    const zoom = { before: 1, mode: 'automatic', scope: 'per-origin', applied: PAGE_ZOOM.max };
+    assert.equal(await reapplyZoom(TAB, zoom), false);
+    assert.equal(tabs.tabs[TAB].scope, 'per-origin');
+    assert.equal(tabs.tabs[TAB].zoom, 1);
+    assert.equal(await reapplyZoom(99, zoom), false);
   });
 });
 

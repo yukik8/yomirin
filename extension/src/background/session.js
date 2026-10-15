@@ -63,7 +63,7 @@ import { nextStateStaircase } from './staircase.js';
 import { onQuizAnswered } from './memory.js';
 import { sessionRow, sessionCounts } from './telemetry.js';
 import { queueTelemetry } from './server.js';
-import { applyZoom, retuneZoom, restoreZoom, restoreZoomLater, flushZoomRestore } from './zoom.js';
+import { applyZoom, retuneZoom, reapplyZoom, restoreZoom, restoreZoomLater, flushZoomRestore } from './zoom.js';
 import { scaleRange } from './book-scale.js';
 
 const CURRENT_KEY = 'currentSession';
@@ -157,6 +157,38 @@ function pageKey(url) {
 /** Play ブックスのタブのタイトル「書名 - Google Play Books」から書名だけを取り出す。 */
 function bookTitle(tabTitle) {
   return tabTitle.replace(/\s*[-–—|]\s*Google\s*Play\s*(?:Books|ブックス)\s*$/i, '').trim();
+}
+
+const BOOK_FRAME_HOST = 'books.googleusercontent.com';
+
+/**
+ * loader を全フレームに入れる。本文のフレームに入ったら true(本文のフレームがまだ無ければ false)。
+ * loader は文書ごとに版で二重注入を止めるので、何度入れても1回だけ動く。結果は loader の最後の式(location.hostname)
+ */
+async function injectLoader(tabId) {
+  const results = await chrome.scripting.executeScript({
+    target: { tabId, allFrames: true },
+    files: ['src/content/loader.js'],
+  });
+  return results.some((r) => r.result === BOOK_FRAME_HOST);
+}
+
+/**
+ * 本文のフレームに入るまで、少し待っては loader を入れ直す(#38)。列の外で走らせる(待つ間に報告を止めない)。
+ * 待つたびに同じセッションが続いているかを確かめ、終わっていたらやめる。入ったら true。
+ */
+export async function injectUntilBook(tabId, sessionId, waits = SESSION.injectRetryMs) {
+  for (const ms of waits) {
+    await new Promise((r) => setTimeout(r, ms));
+    const current = await getCurrent();
+    if (current?.session_id !== sessionId || current.state === SessionState.ENDED) return false;
+    try {
+      if (await injectLoader(tabId)) return true;
+    } catch {
+      return false; // タブが閉じた・別のページへ移った(セッションのハンドラが閉じる)
+    }
+  }
+  return false;
 }
 
 /**
@@ -260,16 +292,16 @@ async function startSessionImpl(tabId) {
   // モジュールを直接注入できないためローダーを挟む。
   // Play ブックスは本文が別ドメインのフレームにあるので全フレームへ入れ、
   // 本文のないフレームではローダーが何もせずに戻る。
+  let inBook;
   try {
-    await chrome.scripting.executeScript({
-      target: { tabId, allFrames: playBooks },
-      files: ['src/content/loader.js'],
-    });
+    inBook = await injectLoader(tabId);
   } catch (err) {
     await setCurrent(null); // 注入できなかった。セッションを残さない
     await restoreZoom(tabId, session.zoom);
     throw err;
   }
+  // 本文のフレームがまだ無かった(読み込み直後の「計測しますか?」ですぐ「はい」を押した等)。列の外で入れ直す
+  if (!inBook) injectUntilBook(tabId, session.session_id).catch(() => {});
 
   // 無操作・未復帰の監視。SWが止まってもalarmで起こされる。
   await chrome.alarms.create(WATCHDOG_ALARM, { periodInMinutes: 0.5 });
@@ -764,6 +796,11 @@ async function onTabRemovedImpl(tabId) {
 async function onTabUpdatedImpl(tabId, changeInfo) {
   const session = await getCurrent();
   if (!session || session.state === SessionState.ENDED || tabId !== session.tab_id) return;
+  // 同じ本を読み込み直し終えた(#38)。ページに入れていたものを入れ直す
+  if (changeInfo.status === 'complete' && session.reloading) {
+    await resumeAfterReload(session);
+    return;
+  }
   let url = changeInfo.url;
   if (!url) {
     // Play ブックスの外へ移ると、host 権限が無いので changeInfo に URL が載らない。
@@ -774,17 +811,42 @@ async function onTabUpdatedImpl(tabId, changeInfo) {
     } catch {
       url = null;
     }
-    if (url && pageKey(url) === session.page_url) return; // 同じ本の再読み込み
+    if (url && pageKey(url) === session.page_url) {
+      // 同じ本の再読み込み。終わりにはしない。読み込み終わり(status=complete)で入れ直す(#38)
+      session.reloading = true;
+      await setCurrent(session);
+      return;
+    }
     if (!url) {
       await endSessionImpl(EndReason.CLOSE);
       return;
     }
   }
   if (pageKey(url) === session.page_url) {
+    // URL が変わる知らせはページ送りとして扱い、入れ直さない(めくるたびに入れ直すと、本人が途中で変えた
+    // 倍率まで掛け直してしまう)。入れ直すのは、URL が変わらない読み込み(再読み込み)だけ(#38)
     if (session.site === 'play_books') await onPageTurn(session);
     return;
   }
   await endSessionImpl(EndReason.CLOSE);
+}
+
+/**
+ * 計測中のタブで、同じ本を読み込み直した(再読み込み・#38)。ページに入れていたもの(計測の鼓動・くま・話・
+ * ページ表示の見張り)は前の文書と一緒に消え、倍率は Chrome が戻している。同じセッションのまま(θ も数も
+ * 引き継ぐ)、倍率を掛け直して loader を入れ直す。入れ直しは列の外で、本文のフレームに入るまで。
+ * main.js は resumed_at を見て、開始の合図を「計測を続けています」にする。
+ */
+async function resumeAfterReload(session) {
+  session.reloading = false;
+  session.resumed_at = Date.now();
+  session.last_event_at = session.resumed_at; // 読み込み直したのは本人の操作。無操作に数えない
+  await setCurrent(session);
+  const { tab_id: tabId, session_id: sessionId, zoom } = session;
+  (async () => {
+    await reapplyZoom(tabId, zoom);
+    await injectUntilBook(tabId, sessionId, [0, ...SESSION.injectRetryMs]);
+  })().catch(() => {});
 }
 
 /**
