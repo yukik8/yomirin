@@ -113,8 +113,8 @@ cd server
 - 本物の Anthropic・Upstash・Neon は使わない(`tests/conftest.py` で偽物に差し替える)。鍵は要らない
 - 確かめること: 単語の候補のほか(本文・書名など)は 422・Anthropic へ渡すのは候補の並びだけ・回数制限・生成の検め・**ログに単語も生成文も出ない**
 - クイズと問い(`tests/test_text.py`): 表の項目と長さのほかは 422・回数はうんちくと同じ上限で数える・クイズと答えの検め(選択肢3つ・根拠の番号は渡した段落のどれか)・関係のない頼みごとを断る・**ログに本文も問いも生成文も出ない**
-- 使われ方の要約(`tests/test_telemetry.py`): 表の項目と範囲のほかは 422・**自由な文字列の項目が無い**(JSON Schema で見る)・項目が見本(`../tests/fixtures/telemetry.json`)と同じ・**ログに値も ID も出ない**・DB に届かなければ 503
-- 表まで確かめるテスト(送り直しても重ならない・hello の上書き・消せる・列が見本と同じ)は、`RS_TEST_DATABASE_URL` に捨ててよい Postgres があるときだけ回る(無ければ飛ばす。上の Docker のもので `RS_TEST_DATABASE_URL=postgresql://postgres:test@127.0.0.1:54329/tm`)。**テストは表を消して作り直すので、Neon の URL は渡さない**。CI は service の Postgres で回す
+- 使われ方の要約(`tests/test_telemetry.py`): 表の項目と範囲のほかは 422・前の版の拡張が送る行の形(`v: 1`・`chrome` 無し)も受ける・**自由な文字列の項目が無い**(JSON Schema で見る)・項目が見本(`../tests/fixtures/telemetry.json`)と同じ・**ログに値も ID も出ない**・DB に届かなければ 503
+- 表まで確かめるテスト(送り直しても重ならない・hello の上書き・セッションの行の `chrome` は hello が上書きされても残る・消せる・列が見本と同じ)は、`RS_TEST_DATABASE_URL` に捨ててよい Postgres があるときだけ回る(無ければ飛ばす。上の Docker のもので `RS_TEST_DATABASE_URL=postgresql://postgres:test@127.0.0.1:54329/tm`)。**テストは表を消して作り直すので、Neon の URL は渡さない**。CI は service の Postgres で回す
 - 擬音らしい語の表(`../tests/fixtures/terms.json`)は、拡張のテスト(`ai.js` の `looksLikeSound`)と同じものを通す。片方の式を変えたら、もう片方も
 - PR ごとに GitHub Actions(`.github/workflows/ci.yml` の `server`)で回る。テストは `.vercelignore` で Vercel に上げない
 

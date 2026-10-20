@@ -2,8 +2,9 @@
   "_": "使われ方の要約(#28)で送る行の見本。拡張(background/telemetry.js)とサーバ(main.py の TmSession / TmHello・sql/)のテストが、項目がこれと同じことを確かめる。項目を変えるときは、ここ・telemetry.js・main.py・sql/・docs/design.md §9 の表・PRIVACY.md をそろえる",
   "session": {
     "kind": "session",
-    "v": 1,
+    "v": 2,
     "ext": "0.27",
+    "chrome": 141,
     "session_id": "6f7c1c52-5b1e-4f0e-9a51-1d2f6c0b9e11",
     "date": "2026-10-14",
     "hour": 21,
@@ -36,7 +37,7 @@
   },
   "hello": {
     "kind": "hello",
-    "v": 1,
+    "v": 2,
     "ext": "0.27",
     "build": "dev",
     "chrome": 141,

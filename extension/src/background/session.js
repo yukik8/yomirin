@@ -519,6 +519,7 @@ async function finishSession(session, reason, { at, notify }) {
       await queueTelemetry(
         sessionRow(record, {
           ext: chrome.runtime.getManifest().version,
+          userAgent: navigator.userAgent,
           ...control,
           ...sessionCounts(await getEventsBySession(session.session_id)),
           position_read: Boolean(bookPos),

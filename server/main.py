@@ -523,6 +523,8 @@ Count = Annotated[int, Field(ge=0, le=100_000)]
 Ms = Annotated[int, Field(ge=0, le=86_400_000)]  # 24時間まで
 Theta = Annotated[float, Field(ge=0, le=8, allow_inf_nan=False)]  # 0〜THETA_MAX
 Version = Annotated[str, StringConstraints(pattern=r"^\d{1,4}(\.\d{1,4}){0,3}$")]
+Chrome = Annotated[int, Field(ge=1, le=999)]  # メジャー版だけ
+RowShape = Literal[1, 2]  # 行の形の版。2 でセッションの行に chrome を足した(前の版の拡張は 1 を送り続ける)
 
 
 class TmSession(BaseModel):
@@ -531,8 +533,9 @@ class TmSession(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     kind: Literal["session"]
-    v: Literal[1]  # 行の形の版
+    v: RowShape
     ext: Version  # そのセッションを測った拡張の版
+    chrome: Chrome | None = None  # その回の Chrome。v1 の行には無い(拡張は 4xx の行を捨てるので、無くても断らない)
     session_id: uuid.UUID  # 送り直しの重なりを除くため
     date: datetime.date  # 端末の日付
     hour: Annotated[int, Field(ge=0, le=23)]
@@ -572,10 +575,10 @@ class TmHello(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
     kind: Literal["hello"]
-    v: Literal[1]
+    v: RowShape
     ext: Version
     build: Literal["store", "dev"]
-    chrome: Annotated[int, Field(ge=1, le=999)] | None  # メジャー版だけ
+    chrome: Chrome | None
     theta0: Theta | None  # 診断で置いた θ の初期値
     goal: Literal["level1", "level2", "level3"] | None
     trivia: bool  # うんちくのサーバを使うか

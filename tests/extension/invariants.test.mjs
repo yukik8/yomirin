@@ -282,6 +282,7 @@ describe('使われ方の要約で送るもの(§11-7・§11-8・#28)', () => {
   const extra = {
     ...RECORD,
     ext: '0.27',
+    userAgent: RECORD.user_agent,
     theta_after: 4.86,
     controller_reason: 'success',
     quiz_answered: 1,
@@ -324,6 +325,7 @@ describe('使われ方の要約で送るもの(§11-7・§11-8・#28)', () => {
     assert.equal(row.hour, 21);
     assert.equal(row.theta, 5.112);
     assert.equal(row.end_reason, 'manual');
+    assert.equal(row.chrome, 141, 'その回の Chrome のメジャー版だけ(UA の全文は送らない)');
   });
 
   test('環境の行(hello)も表の項目だけ。UA の全文ではなく Chrome のメジャー版だけ', async () => {
@@ -339,7 +341,7 @@ describe('使われ方の要約で送るもの(§11-7・§11-8・#28)', () => {
     const { sessionRow, helloRow } = await import('../../extension/src/background/telemetry.js');
     const row = sessionRow(
       { ...record, reason: '本文の段落', theta: 99, read_ms: 9e12, completion_pct: -3, stability: 'とても', pace_wpm: NaN },
-      { ...extra, controller_reason: '本文の段落', quiz_answered: '3' },
+      { ...extra, controller_reason: '本文の段落', quiz_answered: '3', userAgent: 'Firefox/130' },
     );
     await assertNoFreeText(row);
     assert.equal(row.end_reason, null);
@@ -350,6 +352,7 @@ describe('使われ方の要約で送るもの(§11-7・§11-8・#28)', () => {
     assert.equal(row.stability, null);
     assert.equal(row.pace_wpm, null);
     assert.equal(row.quiz_answered, 0, '数でない値は 0');
+    assert.equal(row.chrome, null);
     const hello = helloRow({ ext: '0.27', goal: '本文の段落', userAgent: 'Firefox/130', theta0: 'x' });
     await assertNoFreeText(hello);
     assert.equal(hello.goal, null);
