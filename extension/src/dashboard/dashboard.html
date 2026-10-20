@@ -138,6 +138,36 @@
           「はい」を押すまで何も測りません。「読む」を押して始めることもできます。</p>
       </section>
 
+      <!-- めくりの演出の置き場所(#42)。静の画面なので、動く見本は置かず、静止した図だけ -->
+      <section aria-label="めくり">
+        <span class="eyebrow">めくり</span>
+        <div class="turn-modes" role="radiogroup" aria-label="めくった瞬間の色の広がり方">
+          <label class="turn-mode">
+            <svg class="turn-fig" viewBox="0 0 160 96" aria-hidden="true">
+              <rect class="wash" x="1" y="1" width="158" height="94" rx="8" />
+              <rect class="page" x="52" y="10" width="56" height="76" rx="3" />
+              <path class="lines" d="M60 22h40M60 31h40M60 40h40M60 49h40M60 58h40M60 67h26" />
+            </svg>
+            <input type="radio" name="turn-mode" value="edge" />
+            <b>余白に広げる</b>
+            <span class="note">本文の上は通りません。</span>
+          </label>
+          <label class="turn-mode">
+            <svg class="turn-fig" viewBox="0 0 160 96" aria-hidden="true">
+              <rect class="wash" x="1" y="1" width="158" height="94" rx="8" />
+              <rect class="page" x="52" y="10" width="56" height="76" rx="3" />
+              <path class="lines" d="M60 22h40M60 31h40M60 40h40M60 49h40M60 58h40M60 67h26" />
+              <rect class="wash over" x="52" y="10" width="56" height="76" rx="3" />
+            </svg>
+            <input type="radio" name="turn-mode" value="full" />
+            <b>画面いっぱいに広げる</b>
+            <span class="note">本文の上も一瞬(0.4秒ほど)通ります。</span>
+          </label>
+        </div>
+        <p class="note">めくった瞬間に色と粒が広がるときの、広がり方です。どちらも、次のページを読み始める前に消えます。
+          切り替えると、読んでいるページにもすぐ効きます。</p>
+      </section>
+
       <section aria-label="データ">
         <span class="eyebrow">データ</span>
         <p class="note">

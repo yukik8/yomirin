@@ -8,7 +8,7 @@
 //   - 読んでいる時間の報酬は「世界が育っていること」で表す。手が止まっても何も減らさない
 //
 // 3つの階層(どれも θ に比例し、θ=0 では出ない):
-//   Micro(めくり中)… めくりの光: 画面の上下の縁を光が走り、新しいページが落ち着く頃には消える
+//   Micro(めくり中)… めくりの演出(turnfx.js): 色と粒が本文のまわりに広がり、新しいページを読み始める前に消える
 //   Meso(読書中)   … 余白の飾り: めくるたびに一つ、ふわっと増えて、あとは静止(芽・葉・花・銀の星・ときどきくま)。
 //                      縁の光: めくるたびにごくゆっくり濃くなる(減らない)。予告: 金の星 → くまの耳 → 虹のかけら
 //   Macro(章・読了)… 余白の飾りと縁の光が中心へ吸い込まれる(collapse)→ stage.js のフィーバーへ
@@ -60,7 +60,7 @@ const GROW = [
 ];
 
 const CSS = `
-canvas.paint { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+canvas.paint, canvas.turn { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 /* 縁の光: 画面の四隅と上下から水彩の色がにじむ。2枚を14秒かけて入れ替えて、色がゆっくり移ろう。
    本文の枠(--tx --ty --tw --th)はマスクでくり抜き、文字の上には決して乗せない。
    濃さが変わるのはめくった瞬間だけで、4秒かけてゆっくり(目を奪わない) */
@@ -92,14 +92,6 @@ canvas.paint { position: fixed; inset: 0; width: 100%; height: 100%; pointer-eve
 .item.edge { animation-name: appear-edge; }
 @keyframes appear { from { opacity: 0; transform: translateY(4px) scale(.7) rotate(var(--r)) } to { opacity: .95; transform: rotate(var(--r)) } }
 @keyframes appear-edge { from { opacity: 0; transform: translateY(40%) } to { opacity: 1; transform: none } }
-/* めくりの光: 上下の縁を走る細い虹 */
-.flash {
-  position: fixed; left: 0; right: 0; height: 5px; pointer-events: none; transform: scaleX(0);
-  background: linear-gradient(90deg, #f7a1b4, #ffc98a, #ffe27a, #8fdcc0, #94c6f0, #c4b2fb);
-  box-shadow: 0 0 14px 4px rgba(255, 226, 122, .55);
-}
-.flash.top { top: 0; }
-.flash.bottom { bottom: 0; }
 @media (prefers-reduced-motion: reduce) {
   .glow { transition: none; }
   .glow .b { animation: none; opacity: .5; }
@@ -131,14 +123,15 @@ function rainbowShard(width) {
 
 /**
  * @param {*} Paint paint.js の Paint
- * @param {{ bearURL?: Function, staticSprite?: Function, fx?: object }} o
- *   bearURL はくまの絵の URL、staticSprite は paint.js の静かな形、fx は config の READING_FX
+ * @param {{ bearURL?: Function, staticSprite?: Function, fx?: object, createTurnFx?: Function }} o
+ *   bearURL はくまの絵の URL、staticSprite は paint.js の静かな形、fx は config の READING_FX、
+ *   createTurnFx は turnfx.js のめくりの演出(無ければ、めくりの演出は出さない)
  */
-export function createMargin(Paint, { bearURL, staticSprite, fx = {} } = {}) {
+export function createMargin(Paint, { bearURL, staticSprite, fx = {}, createTurnFx } = {}) {
   const host = document.createElement('div');
   host.style.cssText = 'all: initial; position: fixed; inset: 0; z-index: 2147483645; pointer-events: none;';
   const root = host.attachShadow({ mode: 'open' });
-  root.innerHTML = `<style>${CSS}</style><div class="glow"><i class="a"></i><i class="b"></i></div><canvas class="paint"></canvas>`;
+  root.innerHTML = `<style>${CSS}</style><div class="glow"><i class="a"></i><i class="b"></i></div><canvas class="turn"></canvas><canvas class="paint"></canvas>`;
   document.documentElement.append(host);
   const paint = new Paint(root.querySelector('canvas.paint'), 320);
   paint.reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -148,6 +141,7 @@ export function createMargin(Paint, { bearURL, staticSprite, fx = {} } = {}) {
   const items = []; // { el, x, y, w, h }
 
   let text = null; // 本文の枠 { left, right, top, bottom, vertical }
+  const turnFx = createTurnFx?.(root.querySelector('canvas.turn'), () => text, { clearOnScroll: false });
   let raf = 0;
   let last = 0;
 
@@ -334,6 +328,7 @@ export function createMargin(Paint, { bearURL, staticSprite, fx = {} } = {}) {
           items.splice(i, 1);
         }
       }
+      turnFx?.check(); // めくりの演出も、描かない枠を新しいページの本文まで広げる
     },
 
     /**
@@ -377,6 +372,7 @@ export function createMargin(Paint, { bearURL, staticSprite, fx = {} } = {}) {
      * 吸い込み終わったら解決する(そこからフィーバーが広がる)。
      */
     collapse() {
+      turnFx?.clear();
       const list = items.splice(0);
       glowEl.classList.add('gone');
       glowEl.style.opacity = '0';
@@ -399,24 +395,15 @@ export function createMargin(Paint, { bearURL, staticSprite, fx = {} } = {}) {
       return new Promise((r) => setTimeout(r, 460));
     },
 
-    /** Micro・めくりの光: 画面の上下の縁を、細い虹が走って消える(約0.7秒・めくっている間に終わる)。 */
-    turnFlash(intensity = 1) {
-      if (paint.reduced) return;
-      const a = Math.min(1, Math.max(0.35, intensity));
-      for (const [edge, delay] of [['top', 0], ['bottom', 70]]) {
-        const el = document.createElement('div');
-        el.className = `flash ${edge}`;
-        el.style.transformOrigin = edge === 'top' ? '0 50%' : '100% 50%';
-        root.append(el);
-        el.animate(
-          [
-            { transform: 'scaleX(0)', opacity: a },
-            { transform: 'scaleX(1)', opacity: a, offset: 0.5 },
-            { transform: 'scaleX(1)', opacity: 0 },
-          ],
-          { duration: 600, delay, easing: 'cubic-bezier(.3, .7, .3, 1)', fill: 'both' },
-        ).onfinish = () => el.remove();
-      }
+    /**
+     * Micro・めくりの演出(turnfx.js の planTurn の options: theta・mood・size・mode・timing・seed)。
+     * mode 'edge' は本文の紙面+16px を描かない。'full' は紙面の内側からも広がり、本文の上は 0.36 秒まで
+     * (早く拾えためくりだけ。timing 'late' なら 'edge' になる)。本文の位置が分からなければ出さない。
+     * 出したら plan(実際の mode が入る)、出さなければ null。
+     */
+    turn(options) {
+      if (!text || !turnFx) return null;
+      return turnFx.play(options);
     },
 
     /** 地のきらきら: 余白の一点で小さな星がふっと瞬く(読んでいる最中に動くので、READING_FX.still では使わない)。 */
@@ -485,6 +472,7 @@ export function createMargin(Paint, { bearURL, staticSprite, fx = {} } = {}) {
 
     destroy() {
       cancelAnimationFrame(raf);
+      turnFx?.destroy();
       host.remove();
     },
   };

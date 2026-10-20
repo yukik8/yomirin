@@ -9,7 +9,7 @@
 //   TAB_RETURN     { away_ms }
 //   HINT_SHOWN     { hint_id, kind }        // kind: canned | llm
 //   HINT_CLICKED   { hint_id }
-//   EFFECT_SHOWN   { effect_id }
+//   EFFECT_SHOWN   { effect_id }            // turn_fx だけ size・mood・mode も(決まった語だけ・effectDetail)
 //   SESSION_END    { reason, read_ms, completion_pct }
 export const EventType = {
   SESSION_START: 'session_start',
@@ -27,6 +27,21 @@ export const EventType = {
   PAGE_TURN: 'page_turn', // {} Play ブックスのページ送り(URLの pg= の変化)
   PAGE_READ: 'page_read', // { words, ms, d } めくる直前まで見えていたページ(語数・滞在時間・難しさ0〜1)。速さの素材
 };
+
+// めくりの演出(#42)の記録に残してよい語。ほかの値・ほかの項目は捨てる
+const TURN_FX_WORDS = {
+  size: ['small', 'medium', 'large'],
+  mood: ['plain', 'calm', 'warm', 'sad', 'tense', 'eerie', 'joyful', 'wonder'],
+  mode: ['edge', 'full'],
+};
+
+/** effect_shown の payload から、記録に残すものだけ({ effect_id, ... })。 */
+export function effectDetail(payload) {
+  const out = { effect_id: payload?.effect_id };
+  if (out.effect_id !== 'turn_fx') return out;
+  for (const [key, words] of Object.entries(TURN_FX_WORDS)) if (words.includes(payload[key])) out[key] = payload[key];
+  return out;
+}
 
 export const SessionState = {
   IDLE: 'idle',

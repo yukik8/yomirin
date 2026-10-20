@@ -21,7 +21,7 @@
 // 失われる。取り残されたセッションは、ブラウザの起動時と拡張の更新時に recoverSession が
 // 最後の記録の時点で閉じる。
 
-import { EventType, EndReason, SessionState } from '../shared/events.js';
+import { EventType, EndReason, SessionState, effectDetail } from '../shared/events.js';
 import {
   SESSION,
   SUCCESS,
@@ -727,11 +727,9 @@ async function onReportImpl(event, payload, sender) {
       }
       break;
 
-    case EventType.EFFECT_SHOWN: // レア演出(金の雨)。補助の一種として数える
+    case EventType.EFFECT_SHOWN: // レア演出・めくりの演出など。補助の一種として数える
       session.effects_shown += 1;
-      await appendEvent(session.session_id, EventType.EFFECT_SHOWN, {
-        effect_id: payload.effect_id,
-      });
+      await appendEvent(session.session_id, EventType.EFFECT_SHOWN, effectDetail(payload));
       break;
 
     default:

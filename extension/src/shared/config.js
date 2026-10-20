@@ -404,9 +404,32 @@ export const READING_FX = {
   // Macro・章の終わり: めくった先が章の始まり(見出しが見つからない本は fallbackPages ページごと)で、
   // 余白が吸い込まれてフィーバー「章 読了!!」。数秒で本に戻る
   chapter: { enabled: true },
-  // Micro・めくりの光: めくっている間に画面の上下の縁を光が走る。θ=THETA_MAX で maxP の確率、minGapMs 以上空ける
-  turnFlash: { enabled: true, maxP: 0.2, minGapMs: 20_000 },
+  // Micro・めくりの演出(#42・content/turnfx.js): ちゃんと読んだページ(garden.minPageMs 以上)をめくった瞬間に、
+  // 確率 maxP × θ/8 で色と粒が広がる(仮。毎回か確率かは #42 の決めていないこと2)。大きさは sizes の重みで乱数(可変の大きさ)。
+  // 置き場所は本人がダッシュボードで選ぶ(turn_fx_mode・既定は余白)。雰囲気はまだ決めていないので、ふだんの型(turnfx.js の PLAIN)
+  turnFx: { enabled: true, maxP: 0.5, sizes: { small: 0.45, medium: 0.4, large: 0.15 } },
 };
+
+// めくりの演出の置き場所(#42・ダッシュボードの「めくり」)。'edge' = 余白に広げる(既定・本文の上を通らない)/
+// 'full' = 短く画面いっぱい(本文の上は 0.36 秒まで)。キーが無い・読めない=edge。外へ送るものではないので同意は要らない
+export const TURN_FX_MODE_KEY = 'turn_fx_mode';
+export const turnFxMode = (value) => (value === 'full' ? 'full' : 'edge');
+
+export async function readTurnFxMode() {
+  try {
+    return turnFxMode((await chrome.storage.local.get(TURN_FX_MODE_KEY))[TURN_FX_MODE_KEY]);
+  } catch {
+    return 'edge';
+  }
+}
+
+export async function writeTurnFxMode(value) {
+  try {
+    await chrome.storage.local.set({ [TURN_FX_MODE_KEY]: turnFxMode(value) });
+  } catch {
+    /* 失敗は無視(次回の読みで今の値のまま) */
+  }
+}
 
 // 1ページの長さ(#33・background/zoom.js): 補助の多いうちは、読書中のタブを大きく映して1ページに入る字数を減らす。
 // ⌘+ と同じブラウザの倍率を、セッションの開始で実効θから決めてこのタブだけに掛け、終わったら元に戻す。

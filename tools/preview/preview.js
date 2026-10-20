@@ -4,6 +4,7 @@ import { Paint, staticSprite } from '../../extension/src/content/paint.js';
 import { READING_FX } from '../../extension/src/shared/config.js';
 import { bearImg, bearURL } from '../../extension/src/content/bear.js';
 import { createMargin } from '../../extension/src/content/margin.js';
+import { createTurnFx } from '../../extension/src/content/turnfx.js';
 import { createStory } from '../../extension/src/content/story.js';
 import { STORIES } from '../../extension/src/content/stories.js';
 
@@ -88,7 +89,7 @@ for (const [id, rarity] of [['peek', 'normal'], ['peek-rare', 'rare'], ['peek-ep
 }
 // ---- 余白(本文の枠の外)と、読書中の派手さ ----------------------------------
 // main.js の onAdvance(めくって進んだ瞬間)を、ボタンで1回ずつ起こす
-const margin = createMargin(Paint, { bearURL, staticSprite, fx: READING_FX });
+const margin = createMargin(Paint, { bearURL, staticSprite, fx: READING_FX, createTurnFx });
 // よみりんの話(右下の角)。?story=<id>&step=<コマ> で、決めた話の決めたコマから始める(撮影用)
 const story = createStory(Paint, { fx: READING_FX.story });
 for (const s of STORIES) $('story').append(new Option(`${s.name}(${s.frames}コマ・${s.ending})`, s.id));
@@ -129,8 +130,8 @@ const sim = { cyclePages: 0, bearPlaced: false, premonition: null };
 function advance() {
   const level = intensity();
   const fx = READING_FX;
-  // Micro: めくりの光
-  if ($('flash-always').checked || Math.random() < fx.turnFlash.maxP * level) margin.turnFlash(level);
+  // Micro: めくりの演出(ふだんの型・置き場所は余白)
+  if ($('flash-always').checked || Math.random() < fx.turnFx.maxP * level) margin.turn({ theta: level * 8, size: 'medium' });
   // Meso: 世界が少し育つ。話が確率で1コマ進む(前の話がオチたあとなら、次の話が始まる)
   sim.cyclePages += 1;
   if (fx.glow.enabled) margin.world(sim.cyclePages / fx.glow.fullPages, level);

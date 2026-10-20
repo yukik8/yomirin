@@ -1,4 +1,4 @@
-// #43 / #42: めくりの試写用。まだ本番の main.js には接続しない。
+// Micro・めくりの演出(#42。型と描画は #43 の試写室で比べたもの)。margin.js の層に描き、試写室(tools/preview/turn/)でも使う。
 // 本文上は早い検知だけ・360msまで。粒は720msまで。以降は余白の残光だけ。
 export const BODY_MS = 360;
 export const PARTICLE_MS = 720;
@@ -13,10 +13,25 @@ export const MOODS = {
   joyful: { label: 'うれしい', motion: 'burst', note: '花びらが扇状に弾け、くるっと跳ねる。', colors: ['#e884a6', '#65b7a1', '#a0aee0'] },
   wonder: { label: '驚き・発見', motion: 'rise', note: '光の柱と羽根が、下から空へ昇る。', colors: ['#70b7df', '#a58bd1', '#c3dcec'] },
 };
+// 雰囲気が分からないとき(#42 の /mood がまだ無い・本文を送らない・サーバに届かない)の、ふだんの型。
+// 色はいつもの水彩(margin.js の PASTEL)から3色。金・虹は使わない
+export const PLAIN = { label: 'ふだん', motion: 'ripple', note: '水彩の輪が、本文のまわりにふわっと広がる。', colors: ['#f7a1b4', '#8fdcc0', '#94c6f0'] };
+export const turnType = (mood) => MOODS[mood] ?? PLAIN;
 export const MOTIFS = { rain: '雨粒', snow: '雪', sea: '泡', forest: '葉', night: '小さな光', city: '紙片', fire: '火の粉', flower: '花びら', sky: '羽根', none: '水彩の粒' };
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+const PAD = 16; // 余白案で描かない、本文の紙面の周りの幅
 const finite = (n, fallback) => Number.isFinite(n) ? n : fallback;
 const ease = (t) => 1 - (1 - clamp(t, 0, 1)) ** 3;
+
+/**
+ * 描かない枠(本文の紙面+PAD)を、本文の枠 rect が入るまで広げる(狭めない)。cut が null なら rect から作る。
+ * めくった直後は前のページの枠で始めているので、新しいページの本文が見えたら広げる。
+ */
+export function widenCut(cut, rect, width, height) {
+  const next = { left: clamp(rect.left - PAD, 0, width), right: clamp(rect.right + PAD, 0, width), top: clamp(rect.top - PAD, 0, height), bottom: clamp(rect.bottom + PAD, 0, height) };
+  if (!cut) return next;
+  return { left: Math.min(cut.left, next.left), right: Math.max(cut.right, next.right), top: Math.min(cut.top, next.top), bottom: Math.max(cut.bottom, next.bottom) };
+}
 
 export function mixPalette(from, to, amount = .55) {
   return to.map((color, i) => {
@@ -30,7 +45,7 @@ export function planTurn(options = {}) {
   const width = Math.max(1, finite(options.width, 1200));
   const height = Math.max(1, finite(options.height, 800));
   const intensity = clamp(finite(options.theta, 8) / 8, 0, 1);
-  const mood = Object.hasOwn(MOODS, options.mood) ? options.mood : 'calm';
+  const mood = Object.hasOwn(MOODS, options.mood) ? options.mood : 'plain';
   const motif = Object.hasOwn(MOTIFS, options.motif) ? options.motif : 'none';
   const size = Object.hasOwn({ small: 1, medium: 1, large: 1 }, options.size) ? options.size : 'large';
   const weight = { small: .45, medium: .72, large: 1 }[size];
@@ -38,10 +53,10 @@ export function planTurn(options = {}) {
   const mode = options.mode === 'full' && options.timing !== 'late' && !reduced ? 'full' : 'edge';
   const energy = clamp(finite(options.energy, 1), 0, 2);
   const rect = options.rect ?? { left: width * .3, right: width * .7, top: 60, bottom: height - 60 };
-  const cut = { left: clamp(rect.left - 16, 0, width), right: clamp(rect.right + 16, 0, width), top: clamp(rect.top - 16, 0, height), bottom: clamp(rect.bottom + 16, 0, height) };
+  const cut = widenCut(null, rect, width, height);
   let state = (finite(options.seed, 43) >>> 0) || 43;
   const random = () => { state ^= state << 13; state ^= state >>> 17; state ^= state << 5; return (state >>> 0) / 4294967296; };
-  const colors = options.colors ?? MOODS[mood].colors;
+  const colors = options.colors ?? turnType(mood).colors;
   const particles = [];
   const count = reduced ? 0 : Math.round(112 * intensity * weight * (.75 + energy * .25));
   for (let i = 0; i < count; i += 1) {
@@ -49,7 +64,7 @@ export function planTurn(options = {}) {
       delay: random() * 95, angle: random() * Math.PI * 2, spin: (random() - .5) * 2,
       color: colors[i % colors.length] });
   }
-  return { width, height, intensity, mood, motion: MOODS[mood].motion, motif, size, weight, mode, reduced, colors, cut, particles, energy };
+  return { width, height, intensity, mood, motion: turnType(mood).motion, motif, size, weight, mode, reduced, colors, cut, particles, energy };
 }
 
 /** 同じ粒でも、場面ごとに出発点・軌道・時間の進み方を変える。 */
@@ -175,13 +190,14 @@ function sprite(motif, color) {
   return canvas;
 }
 
+// 切り抜きは clip(本文の枠に合わせて広げたもの)。粒の軌道と構図は始めの cut のまま(途中で飛ばない)
 function outside(g, plan) {
-  const r = plan.cut;
+  const r = plan.clip ?? plan.cut;
   g.beginPath(); g.rect(0, 0, plan.width, plan.height); g.rect(r.left, r.top, r.right - r.left, r.bottom - r.top); g.clip('evenodd');
 }
 
 function inside(g, plan) {
-  const r = plan.cut;
+  const r = plan.clip ?? plan.cut;
   g.beginPath(); g.rect(r.left, r.top, r.right - r.left, r.bottom - r.top); g.clip();
 }
 
@@ -297,7 +313,12 @@ export function drawTurn(g, plan, elapsed) {
   return frame;
 }
 
-export function createTurnFx(canvas, getRect) {
+/**
+ * canvas に描く。getRect は本文の枠。play は出したら plan、出さなければ null を返す。
+ * clearOnScroll: 試写室はページごと動くので、スクロールで消す。本物は本文の枠が変わるたびに check() を呼び、
+ * 描かない枠を新しいページの本文まで広げる(widenCut)。
+ */
+export function createTurnFx(canvas, getRect, { clearOnScroll = true } = {}) {
   const g = canvas.getContext('2d');
   let raf = 0, timer = 0, tail = null, lastAt = -Infinity, current = null, destroyed = false;
   const media = matchMedia('(prefers-reduced-motion: reduce)');
@@ -318,12 +339,13 @@ export function createTurnFx(canvas, getRect) {
   }
   function play(options) {
     const now = performance.now();
-    if (destroyed || document.hidden || now - lastAt < GAP_MS) return false;
+    if (destroyed || document.hidden || now - lastAt < GAP_MS) return null;
     clear(); const plan = prepare(options);
-    if (!plan.intensity) return false;
+    if (!plan.intensity) return null;
     lastAt = now; current = plan;
-    if (plan.reduced) { draw(plan, 0); timer = setTimeout(clear, END_MS); return true; }
+    if (plan.reduced) { draw(plan, 0); timer = setTimeout(clear, END_MS); return plan; }
     const tick = (time) => {
+      raf = 0; // 描いている間だけ 0 でない(check が残光を消すかの目印)
       const elapsed = time - now;
       draw(plan, elapsed);
       if (elapsed < PARTICLE_MS) raf = requestAnimationFrame(tick);
@@ -334,13 +356,24 @@ export function createTurnFx(canvas, getRect) {
         tail.onfinish = clear;
       }
     };
-    raf = requestAnimationFrame(tick); return true;
+    raf = requestAnimationFrame(tick); return plan;
   }
   function preview(options, elapsed) { if (destroyed) return; clear(); current = prepare(options); draw(current, elapsed); }
+  // 本文の枠が変わったら、描かない枠をすぐ広げる(狭めない)。描いている間は次のコマから効く。
+  // 描き直さない残光と動きを減らす設定の静止色は、広げた所をその場で消す
+  function check() {
+    const plan = current, r = getRect();
+    if (!plan || !r) return;
+    const before = plan.clip ?? plan.cut;
+    const clip = widenCut(before, r, plan.width, plan.height);
+    if (clip.left === before.left && clip.right === before.right && clip.top === before.top && clip.bottom === before.bottom) return;
+    plan.clip = clip;
+    if (!raf) g.clearRect(clip.left, clip.top, clip.right - clip.left, clip.bottom - clip.top);
+  }
   const visibility = () => { if (document.hidden) clear(); };
-  addEventListener('resize', clear); addEventListener('scroll', clear, { passive: true });
+  addEventListener('resize', clear); if (clearOnScroll) addEventListener('scroll', clear, { passive: true });
   document.addEventListener('visibilitychange', visibility); media.addEventListener('change', clear);
-  return { play, preview, clear, get plan() { return current; }, destroy() {
+  return { play, preview, clear, check, get plan() { return current; }, destroy() {
     clear(); destroyed = true; removeEventListener('resize', clear); removeEventListener('scroll', clear);
     document.removeEventListener('visibilitychange', visibility); media.removeEventListener('change', clear); sprites.clear();
   } };
