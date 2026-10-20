@@ -4,7 +4,8 @@
 
 ## 関連 Issue
 
-Closes #
+<!-- merge で閉じないように Refs。確かめるものが無い変更(文書だけ・CI だけ)は Closes でよい -->
+Refs #
 
 ## 変更内容
 
