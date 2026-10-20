@@ -29,6 +29,7 @@ export const SESSION_FIELDS = [
   'kind',
   'v',
   'ext',
+  'chrome',
   'session_id',
   'date',
   'hour',
@@ -101,7 +102,7 @@ export function sessionCounts(events) {
 /**
  * セッションの要約の行。送れる形にならなければ null(送らない)。
  * @param {object} rec - sessions に書いた行(session.js の finishSession)
- * @param {object} extra - { ext: 拡張の版, theta_after, controller_reason, quiz_answered, quiz_correct,
+ * @param {object} extra - { ext: 拡張の版, userAgent, theta_after, controller_reason, quiz_answered, quiz_correct,
  *   questions_asked, position_read: ページ表示が読めたか, reached_end }
  */
 export function sessionRow(rec, extra) {
@@ -113,6 +114,7 @@ export function sessionRow(rec, extra) {
     kind: 'session',
     v: TELEMETRY.v,
     ext: extra.ext,
+    chrome: chromeMajor(extra.userAgent), // その回の Chrome(hello の版は上書きされるので、回ごとにも持つ)
     session_id: rec.session_id,
     date,
     hour: Number.isFinite(started) ? new Date(started).getHours() : 0,

@@ -152,7 +152,7 @@ export async function writeTextConsent(value) {
 // 新しく入れた人には、最初の設定でチェックを入れた状態で見せる(既定オン)。この版より前から使っている人は、
 // 選ぶまでオフ(キーが無い=送らない。ダッシュボードで一度だけ知らせる)。
 export const TELEMETRY = {
-  v: 1, // 送る行の形の版(サーバの TmSession / TmHello と揃える)
+  v: 2, // 送る行の形の版(サーバの TmSession / TmHello と揃える)。2: セッションの行に chrome を足した
   maxOutbox: 50, // 送り待ちに置く行の上限(古い順に捨てる)。1回の POST もこの行数まで
   timeoutMs: 10_000,
 };

@@ -489,14 +489,14 @@ recalls       想起の記録(追記のみ) { recall_id, item_id, kind, page_id,
 
 | 行 | 項目 |
 |---|---|
-| session | `session_id`(送り直しの重なりを除く)・`ext`(測った版)・`date`(端末の日付)・`hour`・`theta`・`theta_base`・`theta_after`・`controller_reason`(enum)・`read_ms`・`escapes`・`away_total_ms`・`quick_returns`・`longest_streak_ms`・`completion_pct`・`success`・`stability`・`end_reason`(enum)・`hints_shown`・`effects_shown`・`pages_read`・`pace_wpm`・`pace_cv`・`slow_pages`・`fast_pages`・`backs`・`quiz_answered`・`quiz_correct`・`questions_asked`(数だけ)・`position_read`(ページ表示が読めたか)・`reached_end` |
+| session | `session_id`(送り直しの重なりを除く)・`ext`(測った版)・`chrome`(その回の Chrome のメジャー版・v0.31.3)・`date`(端末の日付)・`hour`・`theta`・`theta_base`・`theta_after`・`controller_reason`(enum)・`read_ms`・`escapes`・`away_total_ms`・`quick_returns`・`longest_streak_ms`・`completion_pct`・`success`・`stability`・`end_reason`(enum)・`hints_shown`・`effects_shown`・`pages_read`・`pace_wpm`・`pace_cv`・`slow_pages`・`fast_pages`・`backs`・`quiz_answered`・`quiz_correct`・`questions_asked`(数だけ)・`position_read`(ページ表示が読めたか)・`reached_end` |
 | hello | `ext`(版)・`build`(store / dev)・`chrome`(メジャー版だけ。UA の全文は送らない)・`theta0`(診断で置いた初期値)・`goal`(L1〜L3)・`trivia`(うんちくのサーバのオン/オフ) |
-| どちらにも | ヘッダ `X-RS-Telemetry: <telemetry_id>`・`kind`・`v`(行の形の版) |
+| どちらにも | ヘッダ `X-RS-Telemetry: <telemetry_id>`・`kind`・`v`(行の形の版。2 でセッションの行に `chrome` を足した。サーバは前の版の拡張が送る 1 も受け、`chrome` は null で入れる) |
 
 - **値は数・真偽・決まった語・版の番号・UUID・日付だけ。** 自由な文字列の項目が無いので、本文や書名が混ざる余地が型で無い。表のほかの項目はサーバが 422 で断る。範囲(read_ms は24時間まで、など)はサーバと同じに拡張の側で丸める(範囲の外れで行ごと断られないように)。項目の見本は `tests/fixtures/telemetry.json`(拡張とサーバの両方のテストがこれと比べる)
 - **送らないもの:** 記録層(本の ID・URL・書名・本文・抜粋・問い・主張・クイズの中身・うんちくの単語)、診断の答えそのもの、IP・UA の全文・画面の大きさなど端末を見分けられるもの
 - **同意:** 新しく入れた人は、最初の設定の最後にチェックを入れた状態で見せる(送る前に必ず一度見せる・ストアの Prominent Disclosure)。v0.27 より前から使っている人は、選ぶまでオフ(PRIVACY.md §6「送るものを増やすときは、あらためて同意をいただく」)で、ダッシュボードの上に一度だけお知らせを出す(「送る」「送らない」。催促しないので二度は出さない)。ダッシュボードの「データ」で切り替え・「送ったものを消す」
-- **サーバ:** pydantic で項目と範囲を検める(`extra='forbid'`)。表は `tm_installs`(ID ごとに1行・最後に届いた hello)と `tm_sessions`(`(telemetry_id, session_id)` で一意。送り直しても重ならない)。SQL は `server/sql/`(インスタンスが最初に DB を使うときに流す)。回数制限は ID ごと・全体の1日の上限(うんちくとは別に数える)。IP は保存しない。ログは状態・行の数・所要時間だけ(値も ID も出さない)。`DATABASE_URL` が無ければ受け取って捨てる
+- **サーバ:** pydantic で項目と範囲を検める(`extra='forbid'`)。表は `tm_installs`(ID ごとに1行・最後に届いた hello)と `tm_sessions`(`(telemetry_id, session_id)` で一意。送り直しても重ならない)。hello は上書きなので、昔の回の環境はセッションの行の `ext`・`chrome` で見る(hello は Chrome が上がっても送らない)。SQL は `server/sql/`(インスタンスが最初に DB を使うときに流す)。回数制限は ID ごと・全体の1日の上限(うんちくとは別に数える)。IP は保存しない。ログは状態・行の数・所要時間だけ(値も ID も出さない)。`DATABASE_URL` が無ければ受け取って捨てる
 - **保存期間は決めていない**(本人が消すまで残る)。誰でも POST できるので、偽のデータは回数制限と値の範囲で抑えるだけ。分析では `build = 'store'` に絞る。見方は、まず Neon の SQL だけ
 
 ---
@@ -582,6 +582,7 @@ recalls       想起の記録(追記のみ) { recall_id, item_id, kind, page_id,
 | 10/15 | v0.31 | 本を開いたら「計測しますか?」とたずねる(#32): 計測していないとき、Play ブックスの本を開くと画面の右下に [はい][いいえ]。「はい」で計測を始める(自動では始めない)。タブと本ごとに1回・無操作で閉じたあとはまたたずねる。ダッシュボードの「計測」で切れる。不変条件2に文言を足した |
 | 10/15 | v0.31.1 | 計測中にページを再読み込みすると、倍率が戻り、くま・話・読書時間の計測が止まったまま、セッションだけが裏で続いていたのを直した(#38): 同じ本の読み込み終わりで、同じセッションのまま倍率を掛け直し、loader を入れ直す。loader は本文のフレームに入るまで入れ直す(開始のときも) |
 | 10/15 | v0.31.2 | 切り抜き由来の透け・色崩れを直した(#40)。くまと小物48枚・ストーリー18話88コマを基準のくまに合わせて透過背景で描き起こし、不透明な本体と縁を保つロスレス WebP に。名前・出力寸法・表示倍率を維持。元の透過素材と書き出し・明暗背景の確認手順を保存 |
+| 10/20 | v0.31.3 | 使われ方の要約のセッションの行に、その回の Chrome のメジャー版(`chrome`)を足した(#45)。hello の版は上書きされ、Chrome が上がっても送らないので、昔の回に今の版が結びついていた。行の形の版を 2 に。サーバは前の版の拡張が送る 1 も受け、`chrome` は null で入れる(`sql/002`) |
 
 ### これから
 

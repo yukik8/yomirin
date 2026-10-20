@@ -87,7 +87,10 @@ def test_telemetry_idが無い_形が違うと401(client, tm_rows, headers):
         ("session", {"escapes": -1}),
         ("session", {"date": "きのう"}),
         ("session", {"session_id": "s-1"}),
-        ("session", {"v": 2}),
+        ("session", {"v": 3}),
+        ("hello", {"v": 3}),
+        ("session", {"chrome": 0}),
+        ("session", {"chrome": "141.0.7390.54"}),
         ("hello", {"chrome": 0}),
         # 項目が足りない・種類が違う
         ("session", {"read_ms": None}),
@@ -108,6 +111,12 @@ def test_項目が欠けても_行の外に何か付いても_行が多すぎて
     many = [{**tm_rows["session"], "session_id": str(uuid.uuid4())} for _ in range(main.TM_MAX_ROWS + 1)]
     assert post(client, many).status_code == 422
     assert post(client, many[: main.TM_MAX_ROWS]).status_code == 204
+
+
+def test_前の版の拡張が送る行の形1も受ける_chromeが無くても(client, tm_rows):
+    # 拡張は 4xx の行を捨てるので、更新前の拡張や送り待ちに残った行を断らない
+    v1 = {k: v for k, v in tm_rows["session"].items() if k != "chrome"} | {"v": 1}
+    assert post(client, [v1, {**tm_rows["hello"], "v": 1}]).status_code == 204
 
 
 def test_回数の上限を超えると429(client, tm_rows, monkeypatch):
@@ -208,7 +217,7 @@ def test_DB_送った行が1行ずつ入り_送り直しても重ならない(cl
     assert len(rows) == 2
     got = next(r for r in rows if str(r["session_id"]) == s["session_id"])
     assert str(got["date"]) == s["date"]
-    for key in ("v", "ext", "hour", "read_ms", "escapes", "completion_pct", "success", "end_reason", "controller_reason", "position_read"):
+    for key in ("v", "ext", "chrome", "hour", "read_ms", "escapes", "completion_pct", "success", "end_reason", "controller_reason", "position_read"):
         assert got[key] == s[key], key
     assert got["theta"] == pytest.approx(s["theta"], rel=1e-6)
     assert next(r for r in rows if str(r["session_id"]) == other["session_id"])["pace_wpm"] is None
@@ -216,6 +225,15 @@ def test_DB_送った行が1行ずつ入り_送り直しても重ならない(cl
     install = _install(db)
     assert install["ext"] == "0.27" and install["build"] == "dev" and install["chrome"] == 141
     assert install["goal"] == "level1" and install["trivia"] is False and install["theta0"] == 6
+
+
+def test_DB_セッションの行はその回のChromeを持ち_helloが上書きされても残る(client, db, tm_rows):
+    old = {k: v for k, v in tm_rows["session"].items() if k != "chrome"} | {"v": 1, "session_id": str(uuid.uuid4())}
+    post(client, [old, tm_rows["session"], tm_rows["hello"]])
+    post(client, [{**tm_rows["hello"], "chrome": 142}])  # Chrome が上がったあとの hello
+    assert _install(db)["chrome"] == 142
+    chrome = {str(r["session_id"]): r["chrome"] for r in _sessions(db)}
+    assert chrome == {tm_rows["session"]["session_id"]: 141, old["session_id"]: None}  # 前の版の拡張の行は null
 
 
 def test_DB_helloは最後に届いたもので上書きし_セッションだけなら残す(client, db, tm_rows):
