@@ -328,7 +328,7 @@ export function createMargin(Paint, { bearURL, staticSprite, fx = {}, createTurn
           items.splice(i, 1);
         }
       }
-      turnFx?.check(); // めくりの演出も、新しいページの本文にかかるなら消す
+      turnFx?.check(); // めくりの演出も、描かない枠を新しいページの本文まで広げる
     },
 
     /**

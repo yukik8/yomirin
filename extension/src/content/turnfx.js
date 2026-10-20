@@ -4,7 +4,6 @@ export const BODY_MS = 360;
 export const PARTICLE_MS = 720;
 export const END_MS = 1800;
 export const GAP_MS = 1000;
-const SETTLE_MS = 400; // 本文の枠が変わってから、落ち着いたとみなすまで
 export const MOODS = {
   calm: { label: '穏やか', motion: 'wind', note: '大きな葉と横風が、ゆったり通り抜ける。', colors: ['#579b7d', '#b4cf9b', '#dbe4c8'] },
   warm: { label: 'あたたかい', motion: 'ripple', note: 'あたたかな輪が、ふわっと広がる。', colors: ['#e8a45f', '#df8f77', '#f2c8a5'] },
@@ -20,8 +19,19 @@ export const PLAIN = { label: 'ふだん', motion: 'ripple', note: '水彩の輪
 export const turnType = (mood) => MOODS[mood] ?? PLAIN;
 export const MOTIFS = { rain: '雨粒', snow: '雪', sea: '泡', forest: '葉', night: '小さな光', city: '紙片', fire: '火の粉', flower: '花びら', sky: '羽根', none: '水彩の粒' };
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+const PAD = 16; // 余白案で描かない、本文の紙面の周りの幅
 const finite = (n, fallback) => Number.isFinite(n) ? n : fallback;
 const ease = (t) => 1 - (1 - clamp(t, 0, 1)) ** 3;
+
+/**
+ * 描かない枠(本文の紙面+PAD)を、本文の枠 rect が入るまで広げる(狭めない)。cut が null なら rect から作る。
+ * めくった直後は前のページの枠で始めているので、新しいページの本文が見えたら広げる。
+ */
+export function widenCut(cut, rect, width, height) {
+  const next = { left: clamp(rect.left - PAD, 0, width), right: clamp(rect.right + PAD, 0, width), top: clamp(rect.top - PAD, 0, height), bottom: clamp(rect.bottom + PAD, 0, height) };
+  if (!cut) return next;
+  return { left: Math.min(cut.left, next.left), right: Math.max(cut.right, next.right), top: Math.min(cut.top, next.top), bottom: Math.max(cut.bottom, next.bottom) };
+}
 
 export function mixPalette(from, to, amount = .55) {
   return to.map((color, i) => {
@@ -43,7 +53,7 @@ export function planTurn(options = {}) {
   const mode = options.mode === 'full' && options.timing !== 'late' && !reduced ? 'full' : 'edge';
   const energy = clamp(finite(options.energy, 1), 0, 2);
   const rect = options.rect ?? { left: width * .3, right: width * .7, top: 60, bottom: height - 60 };
-  const cut = { left: clamp(rect.left - 16, 0, width), right: clamp(rect.right + 16, 0, width), top: clamp(rect.top - 16, 0, height), bottom: clamp(rect.bottom + 16, 0, height) };
+  const cut = widenCut(null, rect, width, height);
   let state = (finite(options.seed, 43) >>> 0) || 43;
   const random = () => { state ^= state << 13; state ^= state >>> 17; state ^= state << 5; return (state >>> 0) / 4294967296; };
   const colors = options.colors ?? turnType(mood).colors;
@@ -180,13 +190,14 @@ function sprite(motif, color) {
   return canvas;
 }
 
+// 切り抜きは clip(本文の枠に合わせて広げたもの)。粒の軌道と構図は始めの cut のまま(途中で飛ばない)
 function outside(g, plan) {
-  const r = plan.cut;
+  const r = plan.clip ?? plan.cut;
   g.beginPath(); g.rect(0, 0, plan.width, plan.height); g.rect(r.left, r.top, r.right - r.left, r.bottom - r.top); g.clip('evenodd');
 }
 
 function inside(g, plan) {
-  const r = plan.cut;
+  const r = plan.clip ?? plan.cut;
   g.beginPath(); g.rect(r.left, r.top, r.right - r.left, r.bottom - r.top); g.clip();
 }
 
@@ -305,14 +316,14 @@ export function drawTurn(g, plan, elapsed) {
 /**
  * canvas に描く。getRect は本文の枠。play は出したら plan、出さなければ null を返す。
  * clearOnScroll: 試写室はページごと動くので、スクロールで消す。本物は本文の枠が変わるたびに check() を呼び、
- * 新しいページの本文が描かない枠からはみ出したら消す。
+ * 描かない枠を新しいページの本文まで広げる(widenCut)。
  */
 export function createTurnFx(canvas, getRect, { clearOnScroll = true } = {}) {
   const g = canvas.getContext('2d');
-  let raf = 0, timer = 0, checkTimer = 0, tail = null, lastAt = -Infinity, current = null, destroyed = false;
+  let raf = 0, timer = 0, tail = null, lastAt = -Infinity, current = null, destroyed = false;
   const media = matchMedia('(prefers-reduced-motion: reduce)');
   function clear() {
-    cancelAnimationFrame(raf); clearTimeout(timer); clearTimeout(checkTimer); tail?.cancel(); tail = null; raf = timer = checkTimer = 0;
+    cancelAnimationFrame(raf); clearTimeout(timer); tail?.cancel(); tail = null; raf = timer = 0;
     current = null; canvas.style.opacity = ''; canvas.dataset.phase = 'clear';
     g.clearRect(0, 0, canvas.width, canvas.height);
   }
@@ -334,6 +345,7 @@ export function createTurnFx(canvas, getRect, { clearOnScroll = true } = {}) {
     lastAt = now; current = plan;
     if (plan.reduced) { draw(plan, 0); timer = setTimeout(clear, END_MS); return plan; }
     const tick = (time) => {
+      raf = 0; // 描いている間だけ 0 でない(check が残光を消すかの目印)
       const elapsed = time - now;
       draw(plan, elapsed);
       if (elapsed < PARTICLE_MS) raf = requestAnimationFrame(tick);
@@ -347,17 +359,16 @@ export function createTurnFx(canvas, getRect, { clearOnScroll = true } = {}) {
     raf = requestAnimationFrame(tick); return plan;
   }
   function preview(options, elapsed) { if (destroyed) return; clear(); current = prepare(options); draw(current, elapsed); }
-  // 本文の枠が変わったら、落ち着くのを待って(めくっている最中は2ページ分が重なったり一瞬消えたりする)、
-  // 描かない枠からはみ出していれば消す
+  // 本文の枠が変わったら、描かない枠をすぐ広げる(狭めない)。描いている間は次のコマから効く。
+  // 描き直さない残光と動きを減らす設定の静止色は、広げた所をその場で消す
   function check() {
-    if (!current || checkTimer) return;
-    checkTimer = setTimeout(() => {
-      checkTimer = 0;
-      const r = getRect(), plan = current;
-      if (!r || !plan) return;
-      const c = plan.cut, W = plan.width, H = plan.height;
-      if (clamp(r.left, 0, W) < c.left || clamp(r.right, 0, W) > c.right || clamp(r.top, 0, H) < c.top || clamp(r.bottom, 0, H) > c.bottom) clear();
-    }, SETTLE_MS);
+    const plan = current, r = getRect();
+    if (!plan || !r) return;
+    const before = plan.clip ?? plan.cut;
+    const clip = widenCut(before, r, plan.width, plan.height);
+    if (clip.left === before.left && clip.right === before.right && clip.top === before.top && clip.bottom === before.bottom) return;
+    plan.clip = clip;
+    if (!raf) g.clearRect(clip.left, clip.top, clip.right - clip.left, clip.bottom - clip.top);
   }
   const visibility = () => { if (document.hidden) clear(); };
   addEventListener('resize', clear); if (clearOnScroll) addEventListener('scroll', clear, { passive: true });
