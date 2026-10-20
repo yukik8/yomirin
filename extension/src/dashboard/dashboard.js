@@ -17,6 +17,8 @@ import {
   writeTextConsent,
   readStartPrompt,
   writeStartPrompt,
+  readTurnFxMode,
+  writeTurnFxMode,
 } from '../shared/config.js';
 import { bearImg, showBear } from '../content/bear.js';
 import { buildMirror } from '../background/mirror.js';
@@ -674,6 +676,13 @@ readStartPrompt().then((on) => {
   $('start-prompt').checked = on;
 });
 $('start-prompt').addEventListener('change', () => writeStartPrompt($('start-prompt').checked));
+
+// めくりの演出の置き場所(#42・既定は余白に広げる)。読んでいるタブにもすぐ効く(main.js が storage の変化を見る)
+const turnModeInputs = document.querySelectorAll('input[name="turn-mode"]');
+readTurnFxMode().then((mode) => {
+  for (const input of turnModeInputs) input.checked = input.value === mode;
+});
+for (const input of turnModeInputs) input.addEventListener('change', () => input.checked && writeTurnFxMode(input.value));
 
 // うんちくのサーバ利用(本人の同意・既定オフ)。切り替えると次のうんちくから効く。
 readServerConsent().then((on) => {

@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { planTurn, particleAt, frameAt, mixPalette, MOODS, MOTIFS, BODY_MS, PARTICLE_MS, END_MS } from '../../tools/preview/turn/turnfx.js';
+import { planTurn, particleAt, frameAt, mixPalette, MOODS, MOTIFS, PLAIN, BODY_MS, PARTICLE_MS, END_MS } from '../../extension/src/content/turnfx.js';
+import { effectDetail } from '../../extension/src/shared/events.js';
+import { turnFxMode } from '../../extension/src/shared/config.js';
 
 test('どの雰囲気・粒でも本文上は360ms未満、粒は720ms未満、1800msで何も残らない', () => {
   for (const mood of Object.keys(MOODS)) for (const motif of Object.keys(MOTIFS)) {
@@ -61,12 +63,36 @@ test('全画面案は紙面の中から始まる構図、余白案は周囲か�
   assert.notEqual(particleAt(edge, edge.particles[0], 180).x, particleAt(full, full.particles[0], 180).x);
 });
 
-test('同じ条件の比較は同じ配置。未知の語は静かな基本形に戻す', () => {
+test('同じ条件の比較は同じ配置。未知の語・雰囲気なしは、ふだんの型に戻す', () => {
   assert.deepEqual(planTurn({ seed: 42 }), planTurn({ seed: 42 }));
   assert.deepEqual(planTurn({ mode: 'full' }).particles, planTurn({ mode: 'edge' }).particles);
-  const plan = planTurn({ mood: 'unknown', motif: 'unknown', size: 'unknown' });
-  assert.equal(plan.mood, 'calm'); assert.equal(plan.motif, 'none'); assert.equal(plan.size, 'large');
-  assert.ok(Number.isFinite(plan.particles[0].size));
+  for (const mood of ['unknown', undefined, null]) {
+    const plan = planTurn({ mood, motif: 'unknown', size: 'unknown' });
+    assert.equal(plan.mood, 'plain'); assert.equal(plan.motif, 'none'); assert.equal(plan.size, 'large');
+    assert.equal(plan.motion, PLAIN.motion); assert.deepEqual(plan.colors, PLAIN.colors);
+    assert.ok(Number.isFinite(plan.particles[0].size));
+  }
+});
+
+test('ふだんの型も雰囲気の型も、色は2〜3色で、金・虹の合図の色を使わない(style.md §2)', () => {
+  const signal = ['#ffd23f', '#ffc23a', '#ffe17a', '#ffb347', '#ffe27a', '#c4b2fb', '#ffc98a'];
+  for (const { colors } of [PLAIN, ...Object.values(MOODS)]) {
+    assert.ok(colors.length >= 2 && colors.length <= 3);
+    for (const c of colors) assert.ok(!signal.includes(c.toLowerCase()), c);
+  }
+});
+
+test('めくりの演出の記録は決まった語だけ(ほかの値・項目は捨てる)', () => {
+  assert.deepEqual(effectDetail({ effect_id: 'turn_fx', size: 'large', mood: 'plain', mode: 'full' }), { effect_id: 'turn_fx', size: 'large', mood: 'plain', mode: 'full' });
+  assert.deepEqual(effectDetail({ effect_id: 'turn_fx', size: 'huge', mood: '雨の場面', mode: 'edge', text: '本文' }), { effect_id: 'turn_fx', mode: 'edge' });
+  assert.deepEqual(effectDetail({ effect_id: 'chapter_end', size: 'large', mode: 'full' }), { effect_id: 'chapter_end' });
+});
+
+test('置き場所の設定は、選んでいなければ余白に広げる', () => {
+  assert.equal(turnFxMode(undefined), 'edge');
+  assert.equal(turnFxMode('edge'), 'edge');
+  assert.equal(turnFxMode('FULL'), 'edge');
+  assert.equal(turnFxMode('full'), 'full');
 });
 
 test('色は新しい場面に徐々に近づき、2回一致を待たずに反映する', () => {

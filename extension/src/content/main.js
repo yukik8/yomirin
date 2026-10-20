@@ -30,6 +30,9 @@ const {
   PACE,
   IS_STORE_BUILD,
   readDemoFlag,
+  readTurnFxMode,
+  turnFxMode,
+  TURN_FX_MODE_KEY,
 } = await mod('src/shared/config.js');
 const { difficultyOf, weightedSample } = await mod('src/content/difficulty.js');
 const { createOverlay, setTextColumn, setDemoTheta, setDemoEnabled } =
@@ -38,12 +41,18 @@ const { Paint, clearSprites, staticSprite } = await mod('src/content/paint.js');
 const { bearImg, bearURL } = await mod('src/content/bear.js');
 const { createStage } = await mod('src/content/stage.js');
 const { createMargin } = await mod('src/content/margin.js');
+const { createTurnFx } = await mod('src/content/turnfx.js');
 const { createStory } = await mod('src/content/story.js');
 const { createPageCurl } = await mod('src/content/pagecurl.js');
 
 // デモモードの現在値(プロフィールごと・既定OFF)。セッション開始時にSWから受け取る。
 // 演出の増幅にだけ効き、計測・制御・記録には一切影響しない。
 let demoEnabled = false;
+// めくりの演出の置き場所(#42・ダッシュボードで本人が選ぶ)。開始時に読み、切り替えたら読んでいるタブにもすぐ効く
+let turnMode = 'edge';
+function onStorageChange(changes, area) {
+  if (area === 'local' && changes[TURN_FX_MODE_KEY]) turnMode = turnFxMode(changes[TURN_FX_MODE_KEY].newValue);
+}
 const { pickHint } = await mod('src/content/hints.js');
 
 // ---- 本文検出(読み取り専用) --------------------------------------------
@@ -484,7 +493,7 @@ const overlayStartedAt = Date.now();
 // ---- 余白の演出(Play ブックス) --------------------------------------------
 // 普段の小さな演出(地のきらきら・ヒント・金/虹のレア)は、本文の枠の外にだけ描く。
 if (PLAY_BOOKS && mode === 'full') {
-  margin = createMargin(Paint, { bearURL, staticSprite, fx: READING_FX });
+  margin = createMargin(Paint, { bearURL, staticSprite, fx: READING_FX, createTurnFx });
   if (READING_FX.story.enabled) {
     story = createStory(Paint, { fx: READING_FX.story });
     story.begin();
@@ -1241,7 +1250,7 @@ function showBookFinale() {
 // ---- 読書中の派手さ(READING_FX): Micro / Meso / Macro ----------------------------
 //
 // 読んでいる瞬間には動かさない。動かすのは、めくって新しいページへ進んだ瞬間(目が文章から離れている間)だけ。
-//   Micro … めくりの光(抽選・めくっている間に終わる)
+//   Micro … めくりの演出(抽選・新しいページを読み始める前に消える)
 //   Meso  … 右下の角のよみりんの話が確率で1コマ進み、縁の光が少し育つ(静止。手が止まっても減らない)。予告の印は話の近くに
 //   Macro … 章の終わり(めくった先が章の始まり)で、話がオチて余白が吸い込まれ、フィーバー「章 読了!!」
 // めくった合図は3つの入口から拾い、いちばん早く届いたもので1回だけ動く(同じめくりは二重に数えない):
@@ -1257,7 +1266,6 @@ let flipAt = 0; // いまのめくりを拾った時刻
 let seenBatches = 0; // 「初めての段落が見えた」の回数(最初の1回は開いたときのもの)
 let headingSeen = false; // この本で見出しを見つけたか(見つからない本は fallbackPages ごとに区切る)
 let chapterTitle = ''; // いまの章の見出し(短ければ「〇〇 読了!!」に使う)
-let lastTurnFlashAt = 0;
 let bearPlaced = false; // 余白で一緒に読むくま(章ごとに一度)
 
 /** 開発版だけ: 読書中の派手さの動きをコンソールに残す(本物の Play ブックスで確かめる用)。 */
@@ -1266,7 +1274,7 @@ function fxLog(...args) {
 }
 
 /**
- * めくった合図(source: 'seen' | 'turn' | 'key')。めくりの光はすぐ(めくっている間に)、
+ * めくった合図(source: 'seen' | 'turn' | 'key')。めくりの演出はすぐ(めくっている間に)、
  * 余白の飾り・章の区切りは新しいページの段落が見えてから(0.7秒後)。
  */
 function noteFlip(source) {
@@ -1277,7 +1285,7 @@ function noteFlip(source) {
   if (now - flipAt < 1_200) return; // 同じめくり(入口が複数ある)
   flipAt = now;
   fxLog('めくり', source);
-  if (theta > 0) maybeTurnFlash(theta / THETA_MAX); // Micro: めくっている間に
+  if (theta > 0) maybeTurnFx(source, now - lastAdvanceAt); // Micro: めくっている間に
   clearTimeout(advanceTimer);
   advanceTimer = setTimeout(onAdvance, 700);
 }
@@ -1411,14 +1419,23 @@ async function chapterMacro(label) {
   });
 }
 
-function maybeTurnFlash(level) {
-  const fx = READING_FX.turnFlash;
-  if (!fx.enabled || stage.modalOpen) return;
-  const now = Date.now();
-  if (now - lastTurnFlashAt < fx.minGapMs) return;
-  if (Math.random() >= fx.maxP * level) return;
-  lastTurnFlashAt = now;
-  margin.turnFlash(level);
+/**
+ * Micro・めくりの演出(#42): ちゃんと読んだページ(pageMs が garden.minPageMs 以上)をめくった瞬間に、
+ * 確率 maxP × θ/8 で色と粒が広がる。大きさは乱数(可変の大きさ)。置き場所は本人が選んだもの(turnMode)。
+ * 'full' でも、新しいページが出たあとに届きうる合図(seen・turn)では本文にかけない(timing 'late')。
+ * 雰囲気はまだ決めていない(#42 の /mood)ので、ふだんの型
+ */
+function maybeTurnFx(source, pageMs) {
+  const fx = READING_FX.turnFx;
+  if (!fx.enabled || stage.modalOpen || pageMs < READING_FX.garden.minPageMs) return;
+  if (Math.random() >= fx.maxP * (theta / THETA_MAX)) return;
+  let r = Math.random() * Object.values(fx.sizes).reduce((a, w) => a + w, 0);
+  const size = Object.keys(fx.sizes).find((k) => (r -= fx.sizes[k]) < 0) ?? 'small';
+  const timing = source === 'key' ? 'early' : 'late';
+  const plan = margin.turn({ theta, size, mode: turnMode, timing, seed: Math.random() * 2 ** 32 });
+  if (!plan) return;
+  fxLog('めくりの演出', { size, mode: plan.mode, source });
+  report(EventType.EFFECT_SHOWN, { effect_id: 'turn_fx', size, mood: plan.mood, mode: plan.mode });
 }
 
 // めくった瞬間の花びら(Play ブックス)。クイズ正解と同じ降り方を、めくるたびに数秒。
@@ -1504,6 +1521,7 @@ function stop({ celebrate = false, readMin = 0 } = {}) {
   for (const [type, fn] of listeners) removeEventListener(type, fn);
   try {
     chrome.runtime.onMessage.removeListener(onMessage);
+    chrome.storage.onChanged.removeListener(onStorageChange);
   } catch {
     /* 拡張のコンテキストが消えている */
   }
@@ -1623,6 +1641,8 @@ for (let i = 0; i < 6 && !sessionInfo && !stopped; i += 1) {
 if (!sessionInfo || sessionInfo.state === SessionState.ENDED) stop();
 // デモモード(プロフィールごと・既定OFF)を読み、演出系に反映してから計画する。
 if (!stopped) demoEnabled = await readDemoFlag();
+if (!stopped) turnMode = await readTurnFxMode();
+if (!stopped) chrome.storage.onChanged.addListener(onStorageChange);
 // 上の await の間に終了が届いていたら、監視を新しく作らない(作ると二度と外れない)
 if (!stopped) {
   setDemoEnabled(demoEnabled);

@@ -511,6 +511,72 @@ details.override input[type='range']::-webkit-slider-thumb {
   font-weight: 600;
 }
 
+/* ---- めくり: 置き場所を選ぶ。静止した図だけ(動く見本は置かない・style.md §0) ---- */
+
+.turn-modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.turn-mode {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 4px 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--faint);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.turn-mode:has(input:checked) {
+  border-color: var(--caramel);
+}
+
+.turn-mode input {
+  margin: 0;
+  accent-color: var(--dusty);
+}
+
+.turn-mode b {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.turn-mode .note {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.turn-fig {
+  grid-column: 1 / -1;
+  width: 100%;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.turn-fig .wash {
+  fill: var(--dusty-soft);
+}
+
+.turn-fig .wash.over {
+  opacity: 0.55;
+}
+
+.turn-fig .page {
+  fill: var(--paper);
+  stroke: var(--faint);
+}
+
+.turn-fig .lines {
+  stroke: rgba(79, 58, 44, 0.28);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
 /* ---- 週次グラフ: 補助なし=くすみ青、補助あり=淡いくすみ青 ---- */
 
 #chart {

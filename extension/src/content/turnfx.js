@@ -1,9 +1,10 @@
-// #43 / #42: めくりの試写用。まだ本番の main.js には接続しない。
+// Micro・めくりの演出(#42。型と描画は #43 の試写室で比べたもの)。margin.js の層に描き、試写室(tools/preview/turn/)でも使う。
 // 本文上は早い検知だけ・360msまで。粒は720msまで。以降は余白の残光だけ。
 export const BODY_MS = 360;
 export const PARTICLE_MS = 720;
 export const END_MS = 1800;
 export const GAP_MS = 1000;
+const SETTLE_MS = 400; // 本文の枠が変わってから、落ち着いたとみなすまで
 export const MOODS = {
   calm: { label: '穏やか', motion: 'wind', note: '大きな葉と横風が、ゆったり通り抜ける。', colors: ['#579b7d', '#b4cf9b', '#dbe4c8'] },
   warm: { label: 'あたたかい', motion: 'ripple', note: 'あたたかな輪が、ふわっと広がる。', colors: ['#e8a45f', '#df8f77', '#f2c8a5'] },
@@ -13,6 +14,10 @@ export const MOODS = {
   joyful: { label: 'うれしい', motion: 'burst', note: '花びらが扇状に弾け、くるっと跳ねる。', colors: ['#e884a6', '#65b7a1', '#a0aee0'] },
   wonder: { label: '驚き・発見', motion: 'rise', note: '光の柱と羽根が、下から空へ昇る。', colors: ['#70b7df', '#a58bd1', '#c3dcec'] },
 };
+// 雰囲気が分からないとき(#42 の /mood がまだ無い・本文を送らない・サーバに届かない)の、ふだんの型。
+// 色はいつもの水彩(margin.js の PASTEL)から3色。金・虹は使わない
+export const PLAIN = { label: 'ふだん', motion: 'ripple', note: '水彩の輪が、本文のまわりにふわっと広がる。', colors: ['#f7a1b4', '#8fdcc0', '#94c6f0'] };
+export const turnType = (mood) => MOODS[mood] ?? PLAIN;
 export const MOTIFS = { rain: '雨粒', snow: '雪', sea: '泡', forest: '葉', night: '小さな光', city: '紙片', fire: '火の粉', flower: '花びら', sky: '羽根', none: '水彩の粒' };
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 const finite = (n, fallback) => Number.isFinite(n) ? n : fallback;
@@ -30,7 +35,7 @@ export function planTurn(options = {}) {
   const width = Math.max(1, finite(options.width, 1200));
   const height = Math.max(1, finite(options.height, 800));
   const intensity = clamp(finite(options.theta, 8) / 8, 0, 1);
-  const mood = Object.hasOwn(MOODS, options.mood) ? options.mood : 'calm';
+  const mood = Object.hasOwn(MOODS, options.mood) ? options.mood : 'plain';
   const motif = Object.hasOwn(MOTIFS, options.motif) ? options.motif : 'none';
   const size = Object.hasOwn({ small: 1, medium: 1, large: 1 }, options.size) ? options.size : 'large';
   const weight = { small: .45, medium: .72, large: 1 }[size];
@@ -41,7 +46,7 @@ export function planTurn(options = {}) {
   const cut = { left: clamp(rect.left - 16, 0, width), right: clamp(rect.right + 16, 0, width), top: clamp(rect.top - 16, 0, height), bottom: clamp(rect.bottom + 16, 0, height) };
   let state = (finite(options.seed, 43) >>> 0) || 43;
   const random = () => { state ^= state << 13; state ^= state >>> 17; state ^= state << 5; return (state >>> 0) / 4294967296; };
-  const colors = options.colors ?? MOODS[mood].colors;
+  const colors = options.colors ?? turnType(mood).colors;
   const particles = [];
   const count = reduced ? 0 : Math.round(112 * intensity * weight * (.75 + energy * .25));
   for (let i = 0; i < count; i += 1) {
@@ -49,7 +54,7 @@ export function planTurn(options = {}) {
       delay: random() * 95, angle: random() * Math.PI * 2, spin: (random() - .5) * 2,
       color: colors[i % colors.length] });
   }
-  return { width, height, intensity, mood, motion: MOODS[mood].motion, motif, size, weight, mode, reduced, colors, cut, particles, energy };
+  return { width, height, intensity, mood, motion: turnType(mood).motion, motif, size, weight, mode, reduced, colors, cut, particles, energy };
 }
 
 /** 同じ粒でも、場面ごとに出発点・軌道・時間の進み方を変える。 */
@@ -297,12 +302,17 @@ export function drawTurn(g, plan, elapsed) {
   return frame;
 }
 
-export function createTurnFx(canvas, getRect) {
+/**
+ * canvas に描く。getRect は本文の枠。play は出したら plan、出さなければ null を返す。
+ * clearOnScroll: 試写室はページごと動くので、スクロールで消す。本物は本文の枠が変わるたびに check() を呼び、
+ * 新しいページの本文が描かない枠からはみ出したら消す。
+ */
+export function createTurnFx(canvas, getRect, { clearOnScroll = true } = {}) {
   const g = canvas.getContext('2d');
-  let raf = 0, timer = 0, tail = null, lastAt = -Infinity, current = null, destroyed = false;
+  let raf = 0, timer = 0, checkTimer = 0, tail = null, lastAt = -Infinity, current = null, destroyed = false;
   const media = matchMedia('(prefers-reduced-motion: reduce)');
   function clear() {
-    cancelAnimationFrame(raf); clearTimeout(timer); tail?.cancel(); tail = null; raf = timer = 0;
+    cancelAnimationFrame(raf); clearTimeout(timer); clearTimeout(checkTimer); tail?.cancel(); tail = null; raf = timer = checkTimer = 0;
     current = null; canvas.style.opacity = ''; canvas.dataset.phase = 'clear';
     g.clearRect(0, 0, canvas.width, canvas.height);
   }
@@ -318,11 +328,11 @@ export function createTurnFx(canvas, getRect) {
   }
   function play(options) {
     const now = performance.now();
-    if (destroyed || document.hidden || now - lastAt < GAP_MS) return false;
+    if (destroyed || document.hidden || now - lastAt < GAP_MS) return null;
     clear(); const plan = prepare(options);
-    if (!plan.intensity) return false;
+    if (!plan.intensity) return null;
     lastAt = now; current = plan;
-    if (plan.reduced) { draw(plan, 0); timer = setTimeout(clear, END_MS); return true; }
+    if (plan.reduced) { draw(plan, 0); timer = setTimeout(clear, END_MS); return plan; }
     const tick = (time) => {
       const elapsed = time - now;
       draw(plan, elapsed);
@@ -334,13 +344,25 @@ export function createTurnFx(canvas, getRect) {
         tail.onfinish = clear;
       }
     };
-    raf = requestAnimationFrame(tick); return true;
+    raf = requestAnimationFrame(tick); return plan;
   }
   function preview(options, elapsed) { if (destroyed) return; clear(); current = prepare(options); draw(current, elapsed); }
+  // 本文の枠が変わったら、落ち着くのを待って(めくっている最中は2ページ分が重なったり一瞬消えたりする)、
+  // 描かない枠からはみ出していれば消す
+  function check() {
+    if (!current || checkTimer) return;
+    checkTimer = setTimeout(() => {
+      checkTimer = 0;
+      const r = getRect(), plan = current;
+      if (!r || !plan) return;
+      const c = plan.cut, W = plan.width, H = plan.height;
+      if (clamp(r.left, 0, W) < c.left || clamp(r.right, 0, W) > c.right || clamp(r.top, 0, H) < c.top || clamp(r.bottom, 0, H) > c.bottom) clear();
+    }, SETTLE_MS);
+  }
   const visibility = () => { if (document.hidden) clear(); };
-  addEventListener('resize', clear); addEventListener('scroll', clear, { passive: true });
+  addEventListener('resize', clear); if (clearOnScroll) addEventListener('scroll', clear, { passive: true });
   document.addEventListener('visibilitychange', visibility); media.addEventListener('change', clear);
-  return { play, preview, clear, get plan() { return current; }, destroy() {
+  return { play, preview, clear, check, get plan() { return current; }, destroy() {
     clear(); destroyed = true; removeEventListener('resize', clear); removeEventListener('scroll', clear);
     document.removeEventListener('visibilitychange', visibility); media.removeEventListener('change', clear); sprites.clear();
   } };
