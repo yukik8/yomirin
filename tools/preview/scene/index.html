@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>よみりん · 場面の絵の試写室</title>
+  <style>
+    :root{--bg:#f6f0e6;--paper:#fdfaf3;--ink:#4f3a2c;--muted:#8a7666;--line:#4f3a2c1c;--accent:#94623f;--soft:#ecd7c3;--card:300px;color-scheme:light;font-family:'Hiragino Maru Gothic ProN','Zen Maru Gothic',system-ui,sans-serif;color:var(--ink)}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink)}button,select,input{font:inherit}button,select{color:var(--ink);border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:9px 10px}button{cursor:pointer}button:hover{background:var(--soft)}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #6b8fba;outline-offset:3px}a{color:var(--accent)}
+    header{position:relative;z-index:30;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px 30px;border-bottom:1px solid var(--line);background:var(--bg)}.brand{font-size:13px;letter-spacing:.1em}h1{font-size:19px;font-weight:600;letter-spacing:.06em;margin:7px 0 0}.header-actions{display:flex;align-items:center;gap:15px;font-size:12px}.header-actions button{border-radius:999px;padding:8px 16px}
+    .layout{display:grid;grid-template-columns:276px 1fr;gap:28px;padding:24px 30px 40px;align-items:start}.controls{position:sticky;top:20px;z-index:30;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 6px 18px #4f3a2c08;max-height:calc(100vh - 160px);overflow:auto;scrollbar-width:thin}.eyebrow{font-size:11px;letter-spacing:.12em;color:var(--muted);margin:0 0 12px}h2{font-size:13px;font-weight:600;margin:0 0 12px}.field{display:block;margin-top:15px;font-size:12px;color:var(--muted)}.field select{display:block;width:100%;margin-top:6px;font-size:13px}.range{display:flex;gap:9px;align-items:center;margin-top:6px}input[type=range]{width:100%;accent-color:#c58a5c;min-width:0}output{font-size:12px;white-space:nowrap;text-align:right;color:var(--ink)}.check{display:flex;align-items:center;gap:7px;font-size:12px;margin-top:14px;color:var(--muted)}input[type=checkbox]{accent-color:#c58a5c}.rule{height:1px;background:var(--line);margin:18px 0}.play{display:block;width:100%;border-radius:999px;padding:13px;background:var(--soft);border-color:transparent;font-weight:600;font-size:14px;margin-top:14px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.pair button{border-radius:999px;font-size:12px}.hint{font-size:11px;color:var(--muted);line-height:1.8;margin:0}
+    .facts{font-size:11.5px;line-height:1.8;margin:0;display:grid;grid-template-columns:auto 1fr;gap:0 10px}.facts dt{color:var(--muted)}.facts dd{margin:0;font-variant-numeric:tabular-nums}.items{list-style:none;padding:0;margin:8px 0 0;font-size:11.5px;line-height:1.7}.items li{padding-left:1.4em;text-indent:-1.4em}.items .no{color:#b5523b}
+    .reading{min-width:0;padding:12px calc(var(--card) + 36px) 0 24px}.book{max-width:620px;margin:0 auto;min-height:720px;padding:64px 56px 60px;background:var(--paper);box-shadow:0 6px 30px #4f3a2c09;border:1px solid var(--line);border-radius:4px 14px 14px 4px}.chapter{font-size:11px;letter-spacing:.15em;color:var(--muted);margin:0 0 16px}.book h2{font-size:25px;font-weight:500;letter-spacing:.13em;margin-bottom:30px}.prose{font-family:'Hiragino Mincho ProN','Yu Mincho',serif;font-size:17px;line-height:2.35;letter-spacing:.06em}.prose p{margin:0 0 1.3em;text-indent:1em}.folio{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:34px;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.reading-note{max-width:620px;margin:16px auto;font-size:11px;line-height:1.8;color:var(--muted)}
+    .scene-card{position:fixed;right:24px;bottom:20px;width:var(--card);aspect-ratio:4/3;pointer-events:none;z-index:10}.scene-card img{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .9s ease;border-radius:3px;filter:drop-shadow(0 6px 14px #4f3a2c22)}.scene-card img.on{opacity:1}
+    .grid{padding:24px 30px 60px}.grid section{margin-bottom:36px}.grid h2{font-size:15px;margin:0 0 4px}.grid .sub{font-size:11.5px;color:var(--muted);margin:0 0 12px}.grid .row{display:grid;grid-template-columns:180px repeat(5,minmax(0,1fr));gap:10px;align-items:center;margin-bottom:12px}.grid .row img{width:100%;display:block;border-radius:3px;box-shadow:0 4px 12px #4f3a2c14}.grid .head{font-size:11px;color:var(--muted);text-align:center}.grid .meta{font-size:11.5px;line-height:1.7}.grid .meta b{font-weight:600;display:block}
+    body.dark{--bg:#20242b;--paper:#2a2e35;--ink:#e7ddd0;--muted:#b3a79a;--line:#e7ddd01b;--accent:#dbb38e;--soft:#4c4037;color-scheme:dark}
+    body.grid-view .layout,body.grid-view .scene-card{display:none}body:not(.grid-view) .grid{display:none}
+    @media(prefers-reduced-motion:reduce){.scene-card img{transition:none}}
+    @media(max-width:900px){.layout{grid-template-columns:240px 1fr;padding:20px 18px;gap:16px}.controls{padding:16px}.reading{padding:0 calc(var(--card) + 24px) 0 0}.book{padding:44px 28px}.prose{font-size:16px}:root{--card:220px}.grid .row{grid-template-columns:120px repeat(5,minmax(0,1fr))}}
+  </style>
+</head>
+<body>
+  <header><div><div class="brand">よみりん / PREVIEW</div><h1>読んだ場面が、余白で一枚の絵になる。</h1></div><div class="header-actions"><a href="../">いつもの試写室</a><a id="view-link" href="?view=grid">全部を並べる</a><button id="theme" type="button" aria-pressed="false">暗い背景</button></div></header>
+  <main class="layout">
+    <aside class="controls" aria-label="絵の設定">
+      <p class="eyebrow">場面の絵の試写室 · #50</p><h2>形のデータに、端末の画風を掛ける</h2>
+      <label class="field">場面<select id="scene"></select></label>
+      <label class="field">版<select id="version"></select></label>
+      <button id="turn" class="play" type="button">めくる</button>
+      <div class="pair"><button id="finish" type="button">章の終わり</button><button id="reset" type="button">はじめから</button></div>
+      <label class="field" for="stage">段</label><div class="range"><input id="stage" type="range" min="0" max="4" step="1" value="0"><output id="stage-out" for="stage">まだ無い</output></div>
+      <label class="check"><input type="checkbox" id="styled" checked>画風を掛ける(外すと Claude が書いたままの形)</label>
+      <label class="field">大きさ<select id="size"><option value="220">小(220px)</option><option value="300" selected>中(300px)</option><option value="380">大(380px)</option></select></label>
+      <div class="rule"></div>
+      <dl class="facts" id="facts"></dl>
+      <ul class="items" id="items" aria-label="描いた物と本文の根拠"></ul>
+      <div class="rule"></div>
+      <p class="hint">めくるたびに1段進み、「色が濃くなる」で待ちます(#34 では章の終わりで仕上がる)。Space / → でもめくれます。</p>
+    </aside>
+    <div class="reading">
+      <article class="book"><p class="chapter">読み終えたページ</p><h2 id="title"></h2><div class="prose" id="prose"></div><footer class="folio"><span id="source"></span><span id="page">01</span></footer></article>
+      <p class="reading-note">絵に使うのは、この本文だけです(書名と作者は Claude に渡していません)。本文は青空文庫の公開作品から。</p>
+    </div>
+  </main>
+  <div class="scene-card" aria-hidden="true"><img id="pic-a" alt="" draggable="false"><img id="pic-b" alt="" draggable="false"></div>
+  <div class="grid" id="grid"></div>
+  <script type="module" src="./preview.js"></script>
+</body>
+</html>

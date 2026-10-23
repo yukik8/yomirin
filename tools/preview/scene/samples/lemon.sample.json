@@ -1,0 +1,63 @@
+{
+  "scene": "lemon",
+  "model": "sample",
+  "note": "見本: Claude Code が generate.py と同じ指示で手で書いた。計測していないので判定に使わない",
+  "data": {
+    "items": [
+      { "thing": "画本の棚", "quote": "私は画本の棚の前へ行ってみた" },
+      { "thing": "積み重ねた本", "quote": "自分が抜いたまま積み重ねた本の群を眺めていた" },
+      { "thing": "アングルの橙色の重い本", "quote": "アングルの橙色の重い本" },
+      { "thing": "本の城", "quote": "奇怪な幻想的な城が、そのたびに赤くなったり青くなったりした" },
+      { "thing": "城壁の頂きの檸檬", "quote": "その城壁の頂きに恐る恐る檸檬を据えつけた" },
+      { "thing": "冴えかえる檸檬の色", "quote": "カーンと冴えかえっていた" }
+    ],
+    "ground": [
+      { "d": "M0 0 H320 V176 H0 Z", "color": "sand", "tone": "pale" },
+      { "d": "M0 176 H320 V240 H0 Z", "color": "brown", "tone": "pale" },
+      { "d": "M14 14 H112 V166 H14 Z", "color": "brown", "tone": "pale" },
+      { "d": "M232 14 H308 V166 H232 Z", "color": "brown", "tone": "pale" }
+    ],
+    "forms": [
+      { "d": "M14 62 H112 V67 H14 Z M14 112 H112 V117 H14 Z M14 162 H112 V167 H14 Z M232 62 H308 V67 H232 Z M232 112 H308 V117 H232 Z M232 162 H308 V167 H232 Z", "color": "umber", "tone": "mid" },
+      { "d": "M18 26 h8 v36 h-8 z M50 30 h7 v32 h-7 z M86 24 h9 v38 h-9 z M28 80 h8 v32 h-8 z M70 76 h9 v36 h-9 z M42 126 h8 v36 h-8 z M90 130 h8 v32 h-8 z M246 28 h8 v34 h-8 z M280 78 h9 v34 h-9 z M256 128 h8 v34 h-8 z", "color": "red", "tone": "mid" },
+      { "d": "M27 30 h8 v32 h-8 z M66 26 h9 v36 h-9 z M98 32 h8 v30 h-8 z M18 78 h9 v34 h-9 z M56 82 h8 v30 h-8 z M92 80 h9 v32 h-9 z M24 124 h9 v38 h-9 z M66 128 h9 v34 h-9 z M236 26 h9 v36 h-9 z M270 30 h8 v32 h-8 z M240 80 h8 v32 h-8 z M290 126 h9 v36 h-9 z", "color": "blue", "tone": "mid" },
+      { "d": "M36 24 h8 v38 h-8 z M76 30 h8 v32 h-8 z M38 82 h9 v30 h-9 z M80 78 h9 v34 h-9 z M52 128 h9 v34 h-9 z M100 126 h8 v36 h-8 z M256 26 h9 v36 h-9 z M290 30 h9 v32 h-9 z M266 82 h9 v30 h-9 z M244 124 h9 v38 h-9 z M276 130 h9 v32 h-9 z", "color": "green", "tone": "mid" },
+      { "d": "M58 28 h7 v34 h-7 z M102 80 h8 v32 h-8 z M34 130 h7 v32 h-7 z M78 124 h9 v38 h-9 z M280 28 h9 v34 h-9 z M250 82 h9 v30 h-9 z M298 78 h7 v34 h-7 z M266 126 h8 v36 h-8 z", "color": "orange", "tone": "mid" },
+      { "d": "M46 80 h7 v32 h-7 z M106 28 h5 v34 h-5 z M14 130 h8 v32 h-8 z M258 80 h7 v32 h-7 z M300 128 h6 v34 h-6 z", "color": "violet", "tone": "mid" },
+      { "d": "M88 190 C120 198 210 198 238 190 L234 186 L92 186 Z", "color": "umber", "tone": "pale" },
+      { "d": "M92 170 L234 168 L236 188 L90 190 Z", "color": "orange", "tone": "deep" },
+      { "d": "M100 156 L160 154 L161 170 L101 171 Z", "color": "blue", "tone": "mid" },
+      { "d": "M163 152 L226 150 L227 168 L163 170 Z", "color": "red", "tone": "mid" },
+      { "d": "M106 140 L148 139 L148 155 L106 156 Z", "color": "green", "tone": "mid" },
+      { "d": "M150 142 L214 135 L216 151 L152 156 Z", "color": "violet", "tone": "mid" },
+      { "d": "M108 108 L120 108 L120 140 L108 140 Z", "color": "red", "tone": "deep" },
+      { "d": "M122 114 L133 114 L133 140 L122 140 Z", "color": "sand", "tone": "deep" },
+      { "d": "M196 102 L207 102 L207 136 L196 136 Z", "color": "blue", "tone": "deep" },
+      { "d": "M183 112 L194 112 L194 137 L183 137 Z", "color": "orange", "tone": "mid" },
+      { "d": "M136 126 L180 122 L181 138 L137 141 Z", "color": "leaf", "tone": "mid" },
+      { "d": "M142 112 L176 111 L176 123 L142 124 Z", "color": "red", "tone": "pale" },
+      { "d": "M148 101 L171 101 L171 112 L148 112 Z", "color": "blue", "tone": "pale" },
+      { "d": "M145 92 C149 83 170 81 176 88 C178.5 90.5 178.5 94 176 96 C170 102 151 103 146 97 C144.5 95.5 144.2 93.5 145 92 Z M145 94 L141.5 93 L145.5 91.5 Z M176.5 92 L180 92.5 L176.5 94 Z", "color": "lemon", "tone": "deep" }
+    ],
+    "lines": [
+      { "d": "M0 176 H320", "color": "umber", "width": "mid" },
+      { "d": "M14 14 H112 V166 M14 14 V166 M232 14 H308 V166 M232 14 V166", "color": "umber", "width": "thin" },
+      { "d": "M14 62 H112 M14 112 H112 M232 62 H308 M232 112 H308", "color": "umber", "width": "mid" },
+      { "d": "M92 170 L234 168 L236 188 L90 190 Z", "color": "umber", "width": "mid" },
+      { "d": "M96 176 L232 174 M95 182 L233 180", "color": "orange", "width": "thin" },
+      { "d": "M100 156 L160 154 L161 170 L101 171 Z M163 152 L226 150 L227 168 L163 170 Z", "color": "umber", "width": "thin" },
+      { "d": "M106 140 L148 139 L148 155 L106 156 Z M150 142 L214 135 L216 151 L152 156 Z", "color": "umber", "width": "thin" },
+      { "d": "M108 108 L120 108 L120 140 L108 140 Z M122 114 L133 114 L133 140 L122 140 Z M196 102 L207 102 L207 136 L196 136 Z M183 112 L194 112 L194 137 L183 137 Z", "color": "umber", "width": "thin" },
+      { "d": "M111 114 H117 M111 132 H117 M199 108 H204 M199 128 H204", "color": "white", "width": "thin" },
+      { "d": "M136 126 L180 122 L181 138 L137 141 Z M142 112 L176 111 L176 123 L142 124 Z M148 101 L171 101 L171 112 L148 112 Z", "color": "umber", "width": "thin" },
+      { "d": "M145 92 C149 83 170 81 176 88 C178.5 90.5 178.5 94 176 96 C170 102 151 103 146 97 C144.5 95.5 144.2 93.5 145 92 Z", "color": "brown", "width": "mid" },
+      { "d": "M150 97 C156 100 166 100 172 96 M152 99 L156 96 M158 100 L161 97 M164 100 L167 97", "color": "orange", "width": "thin" },
+      { "d": "M102 160 L104 166 M210 140 L212 146 M170 156 L172 163 M116 146 L118 152", "color": "umber", "width": "thin" },
+      { "d": "M60 200 C90 206 230 206 262 198", "color": "umber", "width": "thin" }
+    ],
+    "light": [
+      { "d": "M145 92 C149 83 170 81 176 88 C178.5 90.5 178.5 94 176 96 C170 102 151 103 146 97 C144.5 95.5 144.2 93.5 145 92 Z", "color": "lemon" },
+      { "d": "M153 88 C157 85 164 84.5 168 86.5 C163 88 158 89 153 88 Z", "color": "white" }
+    ]
+  }
+}
