@@ -1,7 +1,22 @@
 {
   "files": [
+    "ginga.claude-haiku-5-5.1.json",
+    "ginga.claude-opus-5-5.1.json",
+    "ginga.claude-opus-5-5.2.json",
+    "ginga.claude-opus-5-5.3.json",
+    "ginga.claude-sonnet-5-5.1.json",
     "ginga.sample.json",
+    "lemon.claude-haiku-5-5.1.json",
+    "lemon.claude-opus-5-5.1.json",
+    "lemon.claude-opus-5-5.2.json",
+    "lemon.claude-opus-5-5.3.json",
+    "lemon.claude-sonnet-5-5.1.json",
     "lemon.sample.json",
+    "torokko.claude-haiku-5-5.1.json",
+    "torokko.claude-opus-5-5.1.json",
+    "torokko.claude-opus-5-5.2.json",
+    "torokko.claude-opus-5-5.3.json",
+    "torokko.claude-sonnet-5-5.1.json",
     "torokko.sample.json"
   ]
 }

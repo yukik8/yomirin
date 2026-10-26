@@ -1,0 +1,172 @@
+{
+  "scene": "ginga",
+  "model": "claude-sonnet-5-5",
+  "run": 1,
+  "effort": "medium",
+  "served_model": "claude-sonnet-5-5",
+  "ms": 12754,
+  "first_text_ms": 2099,
+  "usage": {
+    "input_tokens": 6234,
+    "output_tokens": 1496
+  },
+  "stop_reason": "end_turn",
+  "request_id": "req_011CgK3FTQ2nFFk1yUuXYZ98",
+  "data": {
+    "items": [
+      {
+        "thing": "銀河の岸のすすき",
+        "quote": "銀いろの空のすすきが"
+      },
+      {
+        "thing": "天の川の水",
+        "quote": "そのきれいな水は"
+      },
+      {
+        "thing": "紫の小さな波",
+        "quote": "ちらちら紫いろのこまかな波をたてたり"
+      },
+      {
+        "thing": "三角標",
+        "quote": "燐光の三角標が、うつくしく立っていた"
+      },
+      {
+        "thing": "遠い橙や黄の三角標",
+        "quote": "遠いものは橙や黄いろではっきりし"
+      },
+      {
+        "thing": "汽車",
+        "quote": "その小さなきれいな汽車は"
+      },
+      {
+        "thing": "窓",
+        "quote": "窓から顔を出して"
+      }
+    ],
+    "ground": [
+      {
+        "d": "M0 0H320V120H0Z",
+        "color": "night",
+        "tone": "deep"
+      },
+      {
+        "d": "M0 120H320V170H0Z",
+        "color": "blue",
+        "tone": "pale"
+      },
+      {
+        "d": "M0 170H320V240H0Z",
+        "color": "night",
+        "tone": "mid"
+      }
+    ],
+    "forms": [
+      {
+        "d": "M0 110C40 100 80 108 120 104C170 100 230 108 320 100V125H0Z",
+        "color": "sky",
+        "tone": "pale"
+      },
+      {
+        "d": "M0 140C60 128 120 150 190 138C240 130 290 142 320 136V240H0Z",
+        "color": "blue",
+        "tone": "mid"
+      },
+      {
+        "d": "M0 120C50 110 100 125 150 118C220 108 270 122 320 114V135C260 140 200 130 150 136C90 142 40 134 0 138Z",
+        "color": "white",
+        "tone": "pale"
+      },
+      {
+        "d": "M60 112L68 96L76 112Z M250 108L257 94L264 108Z",
+        "color": "orange",
+        "tone": "mid"
+      },
+      {
+        "d": "M120 116L127 102L134 116Z M200 114L207 100L214 114Z",
+        "color": "lemon",
+        "tone": "mid"
+      },
+      {
+        "d": "M30 150L45 120L60 150Z M270 156L287 122L304 156Z",
+        "color": "blue",
+        "tone": "mid"
+      },
+      {
+        "d": "M0 0H320V30H0Z",
+        "color": "night",
+        "tone": "deep"
+      },
+      {
+        "d": "M0 190H320V240H0Z",
+        "color": "umber",
+        "tone": "deep"
+      },
+      {
+        "d": "M20 240V196H300V240H255V215H215V240H105V215H65V240Z",
+        "color": "umber",
+        "tone": "mid"
+      },
+      {
+        "d": "M70 205H100V232H70Z M215 205H245V232H215Z",
+        "color": "night",
+        "tone": "mid"
+      }
+    ],
+    "lines": [
+      {
+        "d": "M0 112C40 102 80 110 120 106C170 102 230 110 320 102",
+        "color": "white",
+        "width": "thin"
+      },
+      {
+        "d": "M0 148C60 136 120 158 190 146C240 138 290 150 320 144",
+        "color": "blue",
+        "width": "thin"
+      },
+      {
+        "d": "M20 135C60 125 110 145 160 135C210 127 260 140 310 132",
+        "color": "violet",
+        "width": "thin"
+      },
+      {
+        "d": "M60 112L68 96L76 112Z M120 116L127 102L134 116Z M200 114L207 100L214 114Z M250 108L257 94L264 108Z",
+        "color": "orange",
+        "width": "mid"
+      },
+      {
+        "d": "M30 150L45 120L60 150Z M270 156L287 122L304 156Z",
+        "color": "blue",
+        "width": "bold"
+      },
+      {
+        "d": "M20 240V196H300V240 M105 215H65 M255 215H215 M70 205H100V232H70Z M215 205H245V232H215Z",
+        "color": "sand",
+        "width": "bold"
+      },
+      {
+        "d": "M10 100C12 92 14 88 18 82 M30 104C32 96 34 92 38 86 M290 98C292 90 294 86 298 80 M308 102C310 94 312 90 316 84 M150 108C152 100 154 96 158 90 M170 110C172 102 174 98 178 92",
+        "color": "white",
+        "width": "mid"
+      },
+      {
+        "d": "M5 190C60 186 110 192 160 189C220 186 270 192 315 188",
+        "color": "brown",
+        "width": "mid"
+      }
+    ],
+    "light": [
+      {
+        "d": "M40 150L45 140L50 150Z M285 160L287 146L294 160Z",
+        "color": "white"
+      },
+      {
+        "d": "M90 140L96 138L100 142Z M150 150L156 148L160 152Z M220 142L226 140L230 144Z",
+        "color": "violet"
+      },
+      {
+        "d": "M150 125L155 115L160 125Z M30 20L33 14L36 20Z M150 22L153 16L156 22Z M240 26L243 20L246 26Z",
+        "color": "lemon"
+      }
+    ]
+  }
+}

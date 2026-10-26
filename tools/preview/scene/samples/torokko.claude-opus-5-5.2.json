@@ -1,0 +1,185 @@
+{
+  "scene": "torokko",
+  "model": "claude-opus-5-5",
+  "run": 2,
+  "effort": "medium",
+  "served_model": "claude-opus-5-5",
+  "ms": 24753,
+  "first_text_ms": 10776,
+  "usage": {
+    "input_tokens": 6199,
+    "output_tokens": 2390
+  },
+  "stop_reason": "end_turn",
+  "request_id": "req_011CgK1iZyCE9xTzWrASrK5B",
+  "data": {
+    "items": [
+      {
+        "thing": "広く薄ら寒い海",
+        "quote": "広広と薄ら寒い海が開けた"
+      },
+      {
+        "thing": "高い崖",
+        "quote": "高い崖の向うに"
+      },
+      {
+        "thing": "トロッコ",
+        "quote": "三人は又トロッコへ乗った"
+      },
+      {
+        "thing": "赤錆の線路",
+        "quote": "赤錆の線路も見えない程"
+      },
+      {
+        "thing": "落葉",
+        "quote": "落葉のたまっている場所もあった"
+      },
+      {
+        "thing": "雑木の枝",
+        "quote": "雑木の枝の下を走って行った"
+      }
+    ],
+    "ground": [
+      {
+        "d": "M0 0 H320 V104 H0 Z",
+        "color": "sky",
+        "tone": "pale"
+      },
+      {
+        "d": "M130 100 L320 100 L320 180 L215 152 L140 112 Z",
+        "color": "gray",
+        "tone": "pale"
+      },
+      {
+        "d": "M150 104 L320 104 L320 140 L200 130 Z",
+        "color": "blue",
+        "tone": "pale"
+      },
+      {
+        "d": "M0 92 L130 100 L140 112 L215 152 L320 180 V240 H0 Z",
+        "color": "brown",
+        "tone": "pale"
+      }
+    ],
+    "forms": [
+      {
+        "d": "M140 112 L215 152 L320 180 L320 196 L210 166 L135 120 Z",
+        "color": "umber",
+        "tone": "mid"
+      },
+      {
+        "d": "M20 30 L30 30 L34 175 L14 175 Z M240 0 L248 0 L250 60 L242 60 Z",
+        "color": "umber",
+        "tone": "mid"
+      },
+      {
+        "d": "M0 0 H180 C160 18 130 30 100 26 C80 42 50 40 30 52 C18 58 8 56 0 62 Z",
+        "color": "green",
+        "tone": "mid"
+      },
+      {
+        "d": "M200 0 H320 V40 C300 50 280 42 262 48 C240 40 220 30 200 0 Z",
+        "color": "green",
+        "tone": "pale"
+      },
+      {
+        "d": "M50 230 L140 230 L160 140 L150 118 Z",
+        "color": "umber",
+        "tone": "pale"
+      },
+      {
+        "d": "M72 172 L176 172 L166 204 L82 204 Z",
+        "color": "brown",
+        "tone": "mid"
+      },
+      {
+        "d": "M72 172 L176 172 L172 180 L76 180 Z",
+        "color": "umber",
+        "tone": "mid"
+      },
+      {
+        "d": "M84 210 A9 9 0 1 0 102 210 A9 9 0 1 0 84 210 Z M142 210 A9 9 0 1 0 160 210 A9 9 0 1 0 142 210 Z",
+        "color": "gray",
+        "tone": "deep"
+      },
+      {
+        "d": "M40 236 L46 232 L52 237 Z M120 160 L126 156 L130 162 Z M60 220 L66 216 L70 222 Z M140 140 L146 137 L148 143 Z M110 228 L117 225 L119 231 Z M150 125 L155 122 L157 127 Z M30 200 L36 196 L39 202 Z",
+        "color": "orange",
+        "tone": "mid"
+      }
+    ],
+    "lines": [
+      {
+        "d": "M130 100 H320",
+        "color": "blue",
+        "width": "thin"
+      },
+      {
+        "d": "M140 112 L215 152 L320 180",
+        "color": "umber",
+        "width": "mid"
+      },
+      {
+        "d": "M135 120 L210 166 L320 196",
+        "color": "umber",
+        "width": "thin"
+      },
+      {
+        "d": "M40 240 C80 190 120 150 150 116",
+        "color": "brown",
+        "width": "mid"
+      },
+      {
+        "d": "M136 240 C152 190 164 150 166 116",
+        "color": "brown",
+        "width": "mid"
+      },
+      {
+        "d": "M70 214 H150 M88 190 H156 M104 168 H160 M118 150 H162 M130 136 H164 M140 126 H165",
+        "color": "umber",
+        "width": "thin"
+      },
+      {
+        "d": "M72 172 L176 172 L166 204 L82 204 Z",
+        "color": "umber",
+        "width": "bold"
+      },
+      {
+        "d": "M84 210 A9 9 0 1 0 102 210 A9 9 0 1 0 84 210 Z M142 210 A9 9 0 1 0 160 210 A9 9 0 1 0 142 210 Z",
+        "color": "gray",
+        "width": "mid"
+      },
+      {
+        "d": "M100 172 L98 204 M124 172 L124 204 M148 172 L150 204",
+        "color": "umber",
+        "width": "thin"
+      },
+      {
+        "d": "M20 30 L14 175 M30 30 L34 175",
+        "color": "umber",
+        "width": "mid"
+      },
+      {
+        "d": "M30 40 C60 30 100 34 150 20 M28 60 C50 52 80 60 110 50 M246 30 C230 40 210 30 190 36",
+        "color": "umber",
+        "width": "mid"
+      },
+      {
+        "d": "M0 62 C8 56 18 58 30 52 C50 40 80 42 100 26 C130 30 160 18 180 0",
+        "color": "green",
+        "width": "mid"
+      },
+      {
+        "d": "M200 0 C220 30 240 40 262 48 C280 42 300 50 320 40",
+        "color": "green",
+        "width": "thin"
+      },
+      {
+        "d": "M180 116 C200 114 220 118 240 116 M250 126 C270 124 290 128 310 126",
+        "color": "blue",
+        "width": "thin"
+      }
+    ],
+    "light": []
+  }
+}

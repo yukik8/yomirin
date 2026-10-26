@@ -1,0 +1,128 @@
+{
+  "scene": "ginga",
+  "model": "claude-haiku-5-5",
+  "run": 1,
+  "effort": "medium",
+  "served_model": "claude-haiku-5-5",
+  "ms": 17093,
+  "first_text_ms": 13625,
+  "usage": {
+    "input_tokens": 6234,
+    "output_tokens": 3215
+  },
+  "stop_reason": "end_turn",
+  "request_id": "req_011CgK3x9rFAHnkzapZv1xpC",
+  "data": {
+    "items": [
+      {
+        "thing": "夜空",
+        "quote": "青白く光る銀河の岸に"
+      },
+      {
+        "thing": "天の川の水",
+        "quote": "そのきれいな水は、ガラスよりも水素よりもすきとおって"
+      },
+      {
+        "thing": "すすき",
+        "quote": "銀いろの空のすすきが"
+      },
+      {
+        "thing": "燐光の三角標",
+        "quote": "燐光の三角標が、うつくしく立っていたのです"
+      },
+      {
+        "thing": "汽車",
+        "quote": "その小さなきれいな汽車は"
+      },
+      {
+        "thing": "野原",
+        "quote": "野原いっぱい光っているのでした"
+      }
+    ],
+    "ground": [
+      {
+        "d": "M0 0 H320 V240 H0 Z",
+        "color": "night",
+        "tone": "deep"
+      },
+      {
+        "d": "M0 40 C100 20 220 60 320 30 L320 80 C220 110 100 70 0 95 Z",
+        "color": "blue",
+        "tone": "pale"
+      },
+      {
+        "d": "M0 150 C80 135 200 160 320 140 V240 H0 Z",
+        "color": "violet",
+        "tone": "deep"
+      }
+    ],
+    "forms": [
+      {
+        "d": "M28 150 Q36 120 24 102 Q38 124 34 150 Z M48 152 Q56 124 46 100 Q60 126 56 152 Z M262 150 Q270 122 258 102 Q272 124 268 150 Z M284 152 Q292 126 282 106 Q296 128 292 152 Z",
+        "color": "white",
+        "tone": "pale"
+      },
+      {
+        "d": "M130 160 H210 V182 H130 Z M210 150 H232 V182 H210 Z",
+        "color": "blue",
+        "tone": "mid"
+      },
+      {
+        "d": "M140 186 A6 6 0 1 0 152 186 A6 6 0 1 0 140 186 Z M198 186 A6 6 0 1 0 210 186 A6 6 0 1 0 198 186 Z",
+        "color": "gray",
+        "tone": "deep"
+      },
+      {
+        "d": "M144 166 H156 V174 H144 Z M164 166 H176 V174 H164 Z M184 166 H196 V174 H184 Z",
+        "color": "lemon",
+        "tone": "pale"
+      },
+      {
+        "d": "M100 186 L260 186 L262 190 L98 190 Z",
+        "color": "sand",
+        "tone": "mid"
+      }
+    ],
+    "lines": [
+      {
+        "d": "M130 160 H210 V182 H130 Z M210 150 H232 V182 M210 150 V160 M232 150 H210",
+        "color": "night",
+        "width": "mid"
+      },
+      {
+        "d": "M28 150 Q36 120 24 102 M48 152 Q56 124 46 100 M262 150 Q270 122 258 102 M284 152 Q292 126 282 106",
+        "color": "white",
+        "width": "thin"
+      },
+      {
+        "d": "M0 60 C100 45 200 75 320 55 M0 85 C100 72 220 100 320 75",
+        "color": "sky",
+        "width": "thin"
+      },
+      {
+        "d": "M0 150 C80 135 200 160 320 140",
+        "color": "violet",
+        "width": "mid"
+      },
+      {
+        "d": "M98 186 L260 186 M96 190 L262 190",
+        "color": "brown",
+        "width": "thin"
+      }
+    ],
+    "light": [
+      {
+        "d": "M50 118 L56 106 L62 118 Z M120 128 L126 116 L132 128 Z M200 124 L206 112 L212 124 Z M276 118 L282 106 L288 118 Z",
+        "color": "orange"
+      },
+      {
+        "d": "M80 60 L84 52 L88 60 Z M180 52 L184 44 L188 52 Z",
+        "color": "sky"
+      },
+      {
+        "d": "M150 30 L151 34 L155 34 L152 36 L153 40 L150 38 L147 40 L148 36 L145 34 L149 34 Z",
+        "color": "white"
+      }
+    ]
+  }
+}

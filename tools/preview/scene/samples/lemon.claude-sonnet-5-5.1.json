@@ -1,0 +1,140 @@
+{
+  "scene": "lemon",
+  "model": "claude-sonnet-5-5",
+  "run": 1,
+  "effort": "medium",
+  "served_model": "claude-sonnet-5-5",
+  "ms": 8203,
+  "first_text_ms": 1764,
+  "usage": {
+    "input_tokens": 6502,
+    "output_tokens": 971
+  },
+  "stop_reason": "end_turn",
+  "request_id": "req_011CgK3E8RV9yitYaoUMiKZv",
+  "data": {
+    "items": [
+      {
+        "thing": "積み上げた画本の城",
+        "quote": "奇怪な幻想的な城"
+      },
+      {
+        "thing": "城壁の頂きの檸檬",
+        "quote": "その城壁の頂きに恐る恐る檸檬を据えつけた"
+      },
+      {
+        "thing": "画本の棚",
+        "quote": "画本の棚の前"
+      },
+      {
+        "thing": "橙色の重い本",
+        "quote": "アングルの橙色の重い本"
+      },
+      {
+        "thing": "香水の壜",
+        "quote": "香水の壜"
+      },
+      {
+        "thing": "煙管",
+        "quote": "煙管"
+      }
+    ],
+    "ground": [
+      {
+        "d": "M0 0H320V165H0Z",
+        "color": "sand",
+        "tone": "pale"
+      },
+      {
+        "d": "M0 165H320V240H0Z",
+        "color": "brown",
+        "tone": "mid"
+      },
+      {
+        "d": "M0 20H70V165H0Z",
+        "color": "umber",
+        "tone": "mid"
+      }
+    ],
+    "forms": [
+      {
+        "d": "M8 30H64V160H8Z",
+        "color": "brown",
+        "tone": "deep"
+      },
+      {
+        "d": "M70 190L250 190L250 205L70 205Z",
+        "color": "umber",
+        "tone": "pale"
+      },
+      {
+        "d": "M95 170H225V190H95Z",
+        "color": "blue",
+        "tone": "mid"
+      },
+      {
+        "d": "M105 148H215V170H105Z",
+        "color": "red",
+        "tone": "mid"
+      },
+      {
+        "d": "M120 128H200V148H120Z",
+        "color": "green",
+        "tone": "mid"
+      },
+      {
+        "d": "M135 110H185V128H135Z",
+        "color": "orange",
+        "tone": "deep"
+      },
+      {
+        "d": "M145 100H175V110H145Z",
+        "color": "violet",
+        "tone": "mid"
+      },
+      {
+        "d": "M160 62C176 70 184 86 176 98C168 102 152 102 144 98C136 86 144 70 160 62Z",
+        "color": "lemon",
+        "tone": "mid"
+      }
+    ],
+    "lines": [
+      {
+        "d": "M95 170H225V190H95Z M105 148H215V170H105Z M120 128H200V148H120Z M135 110H185V128H135Z M145 100H175V110H145Z",
+        "color": "umber",
+        "width": "mid"
+      },
+      {
+        "d": "M160 62C176 70 184 86 176 98C168 102 152 102 144 98C136 86 144 70 160 62Z M160 62L162 56",
+        "color": "brown",
+        "width": "bold"
+      },
+      {
+        "d": "M8 30H64V160H8Z M8 70H64 M8 110H64",
+        "color": "umber",
+        "width": "mid"
+      },
+      {
+        "d": "M70 190L250 190",
+        "color": "umber",
+        "width": "thin"
+      },
+      {
+        "d": "M20 40V68 M28 40V68 M36 40V68 M20 80V108 M30 80V108 M44 80V108",
+        "color": "sand",
+        "width": "thin"
+      },
+      {
+        "d": "M255 195L290 175 M270 205L300 190",
+        "color": "umber",
+        "width": "thin"
+      }
+    ],
+    "light": [
+      {
+        "d": "M160 66C172 72 178 84 172 94C164 96 154 94 150 90C146 80 150 72 160 66Z",
+        "color": "lemon"
+      }
+    ]
+  }
+}

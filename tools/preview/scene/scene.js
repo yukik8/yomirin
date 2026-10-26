@@ -134,7 +134,9 @@ export function buildSvg(scene, stage, { styled = true } = {}) {
     for (const s of [...scene.ground, ...scene.forms]) {
       const a = +(TONES[s.tone] * WASH[at]).toFixed(3);
       if (styled && scene.forms.includes(s)) art.push(`<path d="${s.d}" fill="${PAPER}" filter="url(#under)"/>`);
-      art.push(`<path d="${s.d}" fill="${COLORS[s.color][0]}" fill-opacity="${a}"${styled ? ' filter="url(#wash)" style="mix-blend-mode:multiply"' : ''}/>`);
+      // 物だけ multiply で重ねる。地まで multiply にすると、暗い地の上の明るい地(夜空の天の川)が消える
+      const blend = scene.forms.includes(s) ? ' style="mix-blend-mode:multiply"' : '';
+      art.push(`<path d="${s.d}" fill="${COLORS[s.color][0]}" fill-opacity="${a}"${styled ? ` filter="url(#wash)"${blend}` : ''}/>`);
     }
   }
   if (LINE[at] > 0 && scene.lines.length) {

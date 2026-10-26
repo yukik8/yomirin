@@ -1,0 +1,163 @@
+{
+  "scene": "torokko",
+  "model": "claude-sonnet-5-5",
+  "run": 1,
+  "effort": "medium",
+  "served_model": "claude-sonnet-5-5",
+  "ms": 9852,
+  "first_text_ms": 1732,
+  "usage": {
+    "input_tokens": 6199,
+    "output_tokens": 1217
+  },
+  "stop_reason": "end_turn",
+  "request_id": "req_011CgK3EjFzRfDQeY8Yq1G5q",
+  "data": {
+    "items": [
+      {
+        "thing": "トロッコ",
+        "quote": "重いトロッコを押し始めた"
+      },
+      {
+        "thing": "線路",
+        "quote": "赤錆の線路"
+      },
+      {
+        "thing": "蜜柑畑の黄色い実",
+        "quote": "黄色い実がいくつも日を受けている"
+      },
+      {
+        "thing": "雑木林",
+        "quote": "雑木林になった"
+      },
+      {
+        "thing": "落葉",
+        "quote": "落葉のたまっている場所"
+      },
+      {
+        "thing": "海",
+        "quote": "広広と薄ら寒い海が開けた"
+      },
+      {
+        "thing": "高い崖",
+        "quote": "高い崖の向うに"
+      },
+      {
+        "thing": "雑木の枝",
+        "quote": "雑木の枝の下を走って行った"
+      }
+    ],
+    "ground": [
+      {
+        "d": "M0 0H320V110H0Z",
+        "color": "sky",
+        "tone": "pale"
+      },
+      {
+        "d": "M0 85H320V125H0Z",
+        "color": "blue",
+        "tone": "mid"
+      },
+      {
+        "d": "M0 175L320 150V240H0Z",
+        "color": "sand",
+        "tone": "mid"
+      }
+    ],
+    "forms": [
+      {
+        "d": "M0 120L70 105L130 115L130 140L0 150Z",
+        "color": "green",
+        "tone": "mid"
+      },
+      {
+        "d": "M190 120L250 110L320 118V165L190 170Z",
+        "color": "green",
+        "tone": "deep"
+      },
+      {
+        "d": "M0 150L120 135L170 145L100 175L0 190Z",
+        "color": "leaf",
+        "tone": "mid"
+      },
+      {
+        "d": "M0 175L320 150V165L0 195Z",
+        "color": "brown",
+        "tone": "mid"
+      },
+      {
+        "d": "M0 185L320 160V240H0Z",
+        "color": "umber",
+        "tone": "pale"
+      },
+      {
+        "d": "M105 150H205L198 188H112Z",
+        "color": "gray",
+        "tone": "deep"
+      },
+      {
+        "d": "M105 150H205L203 158H107Z",
+        "color": "brown",
+        "tone": "deep"
+      },
+      {
+        "d": "M20 205Q60 195 100 205Q60 220 20 205Z M215 215Q255 205 295 215Q255 228 215 215Z",
+        "color": "orange",
+        "tone": "pale"
+      }
+    ],
+    "lines": [
+      {
+        "d": "M105 150H205L198 188H112Z",
+        "color": "umber",
+        "width": "bold"
+      },
+      {
+        "d": "M105 158H205",
+        "color": "umber",
+        "width": "mid"
+      },
+      {
+        "d": "M120 194A8 8 0 1 0 136 194A8 8 0 1 0 120 194Z M180 194A8 8 0 1 0 196 194A8 8 0 1 0 180 194Z",
+        "color": "umber",
+        "width": "mid"
+      },
+      {
+        "d": "M0 200L320 168",
+        "color": "red",
+        "width": "mid"
+      },
+      {
+        "d": "M0 218L320 185",
+        "color": "red",
+        "width": "mid"
+      },
+      {
+        "d": "M30 200L26 220M80 195L76 215M140 188L136 208M200 180L196 200M260 172L256 192",
+        "color": "brown",
+        "width": "thin"
+      },
+      {
+        "d": "M0 85H320",
+        "color": "blue",
+        "width": "thin"
+      },
+      {
+        "d": "M0 40Q50 20 90 40T180 30M230 0Q250 30 320 45",
+        "color": "green",
+        "width": "mid"
+      },
+      {
+        "d": "M20 30L45 75M70 20L100 70M260 20L240 70M290 30L275 80",
+        "color": "brown",
+        "width": "mid"
+      }
+    ],
+    "light": [
+      {
+        "d": "M20 160A6 6 0 1 0 32 160A6 6 0 1 0 20 160Z M45 168A6 6 0 1 0 57 168A6 6 0 1 0 45 168Z M70 158A6 6 0 1 0 82 158A6 6 0 1 0 70 158Z M35 145A6 6 0 1 0 47 145A6 6 0 1 0 35 145Z",
+        "color": "lemon"
+      }
+    ]
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "scene": "lemon",
+  "model": "claude-haiku-5-5",
+  "run": 1,
+  "effort": "medium",
+  "served_model": "claude-haiku-5-5",
+  "ms": 17454,
+  "first_text_ms": 14427,
+  "usage": {
+    "input_tokens": 6502,
+    "output_tokens": 3589
+  },
+  "stop_reason": "end_turn",
+  "request_id": "req_011CgK3ugUQ7tYcMRyRN2Lj4",
+  "data": {
+    "items": [
+      {
+        "thing": "画本の棚",
+        "quote": "画本の棚の前へ行ってみた"
+      },
+      {
+        "thing": "積み上げた本の城",
+        "quote": "本の色彩をゴチャゴチャに積みあげて"
+      },
+      {
+        "thing": "橙色のアングルの本",
+        "quote": "アングルの橙色の重い本"
+      },
+      {
+        "thing": "檸檬",
+        "quote": "その城壁の頂きに恐る恐る檸檬を据えつけた"
+      }
+    ],
+    "ground": [
+      {
+        "d": "M0 0H320V170H0Z",
+        "color": "sand",
+        "tone": "pale"
+      },
+      {
+        "d": "M0 170H320V240H0Z",
+        "color": "brown",
+        "tone": "pale"
+      }
+    ],
+    "forms": [
+      {
+        "d": "M8 18H118V168H8Z M202 18H312V168H202Z",
+        "color": "umber",
+        "tone": "mid"
+      },
+      {
+        "d": "M14 30H24V80H14Z M28 30H36V80H28Z M40 34H52V80H40Z M56 30H64V80H56Z M212 30H222V80H212Z M226 34H236V80H226Z M240 30H250V80H240Z M254 30H262V80H254Z M268 34H280V80H268Z",
+        "color": "red",
+        "tone": "mid"
+      },
+      {
+        "d": "M14 90H26V150H14Z M30 92H40V150H30Z M44 90H56V150H44Z M216 90H228V150H216Z M232 92H242V150H232Z M246 90H258V150H246Z",
+        "color": "blue",
+        "tone": "mid"
+      },
+      {
+        "d": "M78 188H252V204H78Z",
+        "color": "blue",
+        "tone": "deep"
+      },
+      {
+        "d": "M86 172H244V188H86Z",
+        "color": "green",
+        "tone": "mid"
+      },
+      {
+        "d": "M96 156H234V172H96Z",
+        "color": "violet",
+        "tone": "mid"
+      },
+      {
+        "d": "M104 142H226V156H104Z",
+        "color": "orange",
+        "tone": "mid"
+      },
+      {
+        "d": "M92 128H238V142H92Z",
+        "color": "pink",
+        "tone": "mid"
+      },
+      {
+        "d": "M112 116H220V128H112Z",
+        "color": "red",
+        "tone": "mid"
+      },
+      {
+        "d": "M138 104Q168 82 198 104Q168 120 138 104Z",
+        "color": "lemon",
+        "tone": "deep"
+      }
+    ],
+    "lines": [
+      {
+        "d": "M8 18H118V168H8Z M202 18H312V168H202Z",
+        "color": "umber",
+        "width": "thin"
+      },
+      {
+        "d": "M24 30V80M36 30V80M52 34V80M226 34V80M240 30V80M268 34V80",
+        "color": "umber",
+        "width": "thin"
+      },
+      {
+        "d": "M78 188H252V204H78Z M86 172H244V188H86Z M96 156H234V172H96Z M104 142H226V156H104Z M92 128H238V142H92Z M112 116H220V128H112Z",
+        "color": "umber",
+        "width": "mid"
+      },
+      {
+        "d": "M138 104Q168 82 198 104Q168 120 138 104Z",
+        "color": "brown",
+        "width": "bold"
+      },
+      {
+        "d": "M150 98Q156 92 166 90",
+        "color": "white",
+        "width": "thin"
+      },
+      {
+        "d": "M170 112Q182 110 192 102",
+        "color": "brown",
+        "width": "thin"
+      },
+      {
+        "d": "M104 142H226",
+        "color": "brown",
+        "width": "thin"
+      }
+    ],
+    "light": [
+      {
+        "d": "M120 104Q168 60 216 104Q168 140 120 104Z",
+        "color": "lemon"
+      },
+      {
+        "d": "M150 98L160 92L158 102Z",
+        "color": "white"
+      }
+    ]
+  }
+}

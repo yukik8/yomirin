@@ -75,6 +75,8 @@ test('段: 下描きは鉛筆の線だけ、色はだんだん濃くなり、光
   assert.ok(!buildSvg(scene, LAST - 1).includes('url(#glow)'));
   assert.ok(buildSvg(scene, LAST).includes('url(#glow)'));
   assert.ok(!buildSvg(scene, LAST, { styled: false }).includes('filter'));
+  // multiply は物だけ(地まで multiply にすると、暗い地の上の明るい地が消える)
+  assert.equal((buildSvg(scene, LAST).match(/mix-blend-mode:multiply/g) ?? []).length, scene.forms.length);
 });
 
 test('根拠の語句は、空白と改行を無視して本文にそのまま有るかを数える', () => {

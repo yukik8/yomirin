@@ -1,0 +1,164 @@
+{
+  "scene": "torokko",
+  "model": "claude-opus-5-5",
+  "run": 1,
+  "effort": "medium",
+  "served_model": "claude-opus-5-5",
+  "ms": 24577,
+  "first_text_ms": 12314,
+  "usage": {
+    "input_tokens": 6199,
+    "output_tokens": 2149
+  },
+  "stop_reason": "end_turn",
+  "request_id": "req_011CgK1gkpzLv8H9P9F8mApb",
+  "data": {
+    "items": [
+      {
+        "thing": "トロッコ",
+        "quote": "重いトロッコを押し始めた"
+      },
+      {
+        "thing": "赤錆の線路",
+        "quote": "赤錆の線路も見えない程"
+      },
+      {
+        "thing": "落葉",
+        "quote": "落葉のたまっている場所もあった"
+      },
+      {
+        "thing": "雑木林",
+        "quote": "竹藪は何時か雑木林になった"
+      },
+      {
+        "thing": "高い崖",
+        "quote": "高い崖の向うに"
+      },
+      {
+        "thing": "薄ら寒い海",
+        "quote": "広広と薄ら寒い海が開けた"
+      },
+      {
+        "thing": "雑木の枝",
+        "quote": "雑木の枝の下を走って行った"
+      }
+    ],
+    "ground": [
+      {
+        "d": "M0 0H320V90H0Z",
+        "color": "sky",
+        "tone": "pale"
+      },
+      {
+        "d": "M140 88H320V160Q230 140 140 108Z",
+        "color": "blue",
+        "tone": "mid"
+      },
+      {
+        "d": "M0 92Q80 86 140 104Q220 140 320 160V240H0Z",
+        "color": "brown",
+        "tone": "pale"
+      }
+    ],
+    "forms": [
+      {
+        "d": "M0 22Q30 2 70 16Q110 6 132 40Q142 80 112 112Q60 122 0 116Z",
+        "color": "green",
+        "tone": "mid"
+      },
+      {
+        "d": "M0 0H210Q190 20 150 18Q110 32 66 22Q24 32 0 26Z",
+        "color": "green",
+        "tone": "deep"
+      },
+      {
+        "d": "M195 130Q260 146 320 156V180Q258 168 195 150Z",
+        "color": "umber",
+        "tone": "mid"
+      },
+      {
+        "d": "M58 240L140 108L162 108L174 240Z",
+        "color": "sand",
+        "tone": "pale"
+      },
+      {
+        "d": "M80 215Q86 210 92 215Q86 220 80 215ZM150 225Q156 220 162 225Q156 230 150 225ZM100 180Q106 176 111 181Q105 185 100 180ZM60 200Q66 195 72 200Q66 205 60 200ZM170 210Q176 206 181 211Q175 215 170 210Z",
+        "color": "orange",
+        "tone": "mid"
+      },
+      {
+        "d": "M112 162L198 162L190 198L120 198Z",
+        "color": "brown",
+        "tone": "mid"
+      },
+      {
+        "d": "M125 203A8 8 0 1 0 141 203A8 8 0 1 0 125 203ZM169 203A8 8 0 1 0 185 203A8 8 0 1 0 169 203Z",
+        "color": "gray",
+        "tone": "deep"
+      }
+    ],
+    "lines": [
+      {
+        "d": "M70 240L143 108",
+        "color": "red",
+        "width": "mid"
+      },
+      {
+        "d": "M165 240L157 108",
+        "color": "red",
+        "width": "mid"
+      },
+      {
+        "d": "M76 228H164M88 205H162M100 184H160M112 162H159M122 144H158M130 128H157M136 118H157",
+        "color": "umber",
+        "width": "thin"
+      },
+      {
+        "d": "M112 162L198 162L190 198L120 198Z",
+        "color": "umber",
+        "width": "bold"
+      },
+      {
+        "d": "M115 172H195M118 186H192",
+        "color": "umber",
+        "width": "thin"
+      },
+      {
+        "d": "M125 203A8 8 0 1 0 141 203A8 8 0 1 0 125 203ZM169 203A8 8 0 1 0 185 203A8 8 0 1 0 169 203Z",
+        "color": "gray",
+        "width": "mid"
+      },
+      {
+        "d": "M0 30Q60 20 120 30Q170 36 230 20M40 26Q70 40 90 50M150 24Q170 40 175 55M100 28Q110 10 130 4",
+        "color": "umber",
+        "width": "mid"
+      },
+      {
+        "d": "M20 116V60M60 118V50M100 112V55",
+        "color": "umber",
+        "width": "thin"
+      },
+      {
+        "d": "M140 88H320",
+        "color": "blue",
+        "width": "thin"
+      },
+      {
+        "d": "M180 105Q190 102 200 105M230 115Q242 112 254 115M270 130Q284 126 298 130M210 125Q220 122 230 125",
+        "color": "blue",
+        "width": "thin"
+      },
+      {
+        "d": "M195 130Q260 146 320 156M195 150Q258 168 320 180",
+        "color": "umber",
+        "width": "mid"
+      },
+      {
+        "d": "M0 22Q30 2 70 16Q110 6 132 40Q142 80 112 112",
+        "color": "green",
+        "width": "mid"
+      }
+    ],
+    "light": []
+  }
+}
