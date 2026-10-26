@@ -6,7 +6,7 @@ import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { paginate, replay } from './emaki.js';
-import { CRITERIA, SAMPLE, label, measure, median } from './measure.js';
+import { CRITERIA, FORMAT, SAMPLE, label, measure, median } from './measure.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const dir = join(here, 'runs');
@@ -38,7 +38,7 @@ for (const { run, book, m } of rows) {
 }
 
 // 組み合わせ(下調べの有無 × 読み取り・描くモデル)ごとに、判定基準と比べる
-const measured = rows.filter((r) => r.run.model !== SAMPLE);
+const measured = rows.filter((r) => r.run.model !== SAMPLE && r.run.format === FORMAT);
 const groups = Map.groupBy(measured, (r) => `${r.run.brief ? '下調べあり' : '下調べなし'}・読み取り ${r.run.models.reader}・描く ${r.run.models.drawer}`);
 if (groups.size) {
   console.log(`\n| 組み合わせ | 版の数 | ネタバレ(${CRITERIA.spoilers}回) | 語句(${pct(CRITERIA.grounded)} 以上) | 場面の変わり目(${pct(CRITERIA.scenes)} 以上) | 1回の秒(中央値 ${CRITERIA.medianMs / 1000}・最長 ${CRITERIA.maxMs / 1000} 以内) | 1,000字あたり(中央値 $${CRITERIA.perThousand} 以下) |`);

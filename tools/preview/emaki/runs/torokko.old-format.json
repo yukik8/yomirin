@@ -1,0 +1,2247 @@
+{
+ "book": "torokko",
+ "label": "torokko.brief.sonnet-opus.1",
+ "settings": {
+  "pageSize": 400,
+  "every": 700,
+  "start": 0,
+  "chapters": null
+ },
+ "models": {
+  "brief": "claude-opus-5-5",
+  "reader": "claude-sonnet-5-5",
+  "drawer": "claude-opus-5-5",
+  "summary": "claude-sonnet-5-5",
+  "judge": "claude-opus-5-5"
+ },
+ "brief": {
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "served_model": "claude-opus-5-5",
+  "ms": 20253,
+  "usage": {
+   "input_tokens": 26,
+   "output_tokens": 1392,
+   "cache_creation_input_tokens": 898,
+   "cache_read_input_tokens": 0
+  },
+  "stop_reason": "end_turn",
+  "request_id": "req_011CgQhnaR1iXe5GrrTEqQUH",
+  "data": {
+   "known": "yes",
+   "work": "芥川龍之介『トロッコ』(1922年発表の短編)",
+   "whole": "小田原と熱海のあいだで軽便鉄道を敷く工事が始まったのは、良平が八つの年だった。良平は毎日村はずれへ工事を見に行き、土工が土を積んだトロッコに乗って坂を下る様子に憧れる。二月初旬のある夕方、弟と隣の子を連れて、置いてあったトロッコを押して坂を上がり、乗って下りるが、二度目に土工に怒鳴られて逃げ帰る。十日ほど後、枕木を積んだトロッコを押す若い土工二人に手伝いを頼むと、快く許される。良平は夢中で押し、上り坂では押し、下りでは乗り、蜜柑畑のあいだを抜け、竹藪や雑木林を過ぎ、やがて広々とした冷たい海が開ける場所まで来る。遠くへ来すぎたと不安になる。土工は途中の茶店に寄り、良平は新聞紙に包まれた駄菓子をもらうが、石油の匂いがする。さらに進んだ先の茶店で、日が傾く頃、土工たちは「われはもう帰んな。おれたちは今日は向う泊りだから」と言う。良平は一人で長い道を引き返すことになり、泣きそうになりながら走る。菓子包みを捨て、板草履も脱ぎ捨て、汗で羽織も脱ぎ、暗くなりかけた線路沿いをひたすら走る。村に着いて家の門口に駆け込むと、とうとう大声で泣き出し、集まった家族や近所の者に訳を問われても泣き続けるばかりだった。二十六歳になった良平は、妻子を連れて東京へ出て雑誌社で校正の仕事をしているが、塵労に疲れたとき、あの日の薄暗い藪や坂のある道が細々と一すじ続いているのを、今でも思い出す。",
+   "world": "明治末から大正初め頃の相模・伊豆の海沿いの村。二月初旬の冬、夕暮れは冷え込む。軽便鉄道の敷設工事現場で、土や枕木を積む木製の手押しトロッコが細い線路を走る。沿道は蜜柑畑、竹藪、雑木林、崖の向こうに冬の海。茶店では赤子を背負った女がいる。良平は羽織に板草履の子供。結末は大人になった良平が東京の雑誌社で校正をする場面。"
+  }
+ },
+ "ticks": [
+  {
+   "pages": [
+    0,
+    1
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "claude-sonnet-5-5",
+    "effort": "medium",
+    "served_model": "claude-sonnet-5-5",
+    "ms": 8896,
+    "usage": {
+     "input_tokens": 881,
+     "output_tokens": 542,
+     "cache_creation_input_tokens": 6031,
+     "cache_read_input_tokens": 0
+    },
+    "stop_reason": "end_turn",
+    "request_id": "req_011CgQhp4U1T374qDxsispF8",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "良平が八つの年、小田原と熱海の間で軽便鉄道の工事が始まり、毎日村外れへ見物に行った",
+       "quote": "良平の八つの年だった"
+      },
+      {
+       "text": "土を積んで山を下るトロッコを眺め、土工になりたい、せめて乗りたい押したいと思った",
+       "quote": "土工になりたいと思う事がある"
+      },
+      {
+       "text": "二月初旬の夕方、弟と隣の子と、人のいない村外れでトロッコを押してみた",
+       "quote": "或夕方、――それは二月の初旬だった。"
+      },
+      {
+       "text": "急な勾配で押せなくなり、良平は二人に「さあ、乗ろう！」と合図した",
+       "quote": "「さあ、乗ろう！」"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "new",
+       "place": "村外れの工事現場の線路",
+       "place_quote": "トロッコの置いてある村外れ",
+       "time": "evening",
+       "time_quote": "或夕方",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "tense",
+       "mood_quote": "恐る恐る",
+       "keep": [],
+       "things": [
+        {
+         "name": "トロッコ",
+         "look": "泥だらけの木の車台が薄明かりの中に並ぶ",
+         "quote": "トロッコは泥だらけになったまま",
+         "main": true
+        },
+        {
+         "name": "線路",
+         "look": "細い線路が山の方へ登り、先で勾配が急になる",
+         "quote": "細い線路がしなったり",
+         "main": false
+        },
+        {
+         "name": "山",
+         "look": "線路の登っていく先にある山",
+         "quote": "もと来た山の方へ",
+         "main": false
+        }
+       ],
+       "changes": []
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "claude-opus-5-5",
+     "effort": "medium",
+     "served_model": "claude-opus-5-5",
+     "ms": 23455,
+     "usage": {
+      "input_tokens": 346,
+      "output_tokens": 2168,
+      "cache_creation_input_tokens": 5460,
+      "cache_read_input_tokens": 0
+     },
+     "stop_reason": "end_turn",
+     "request_id": "req_011CgQhpjnt6AnNsJnvNBtiH",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0 H320 V140 H0 Z",
+        "color": "violet",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 85 Q160 72 320 90 V140 H0 Z",
+        "color": "orange",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 140 Q160 128 320 135 V240 H0 Z",
+        "color": "brown",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 205 Q160 192 320 208 V240 H0 Z",
+        "color": "umber",
+        "tone": "pale"
+       }
+      ],
+      "things": [
+       {
+        "id": "t4",
+        "forms": [
+         {
+          "d": "M140 140 Q195 62 240 52 Q285 58 320 98 V140 Z",
+          "color": "green",
+          "tone": "mid"
+         },
+         {
+          "d": "M240 52 Q285 58 320 98 V140 L262 140 Q258 90 240 52 Z",
+          "color": "violet",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M140 140 Q195 62 240 52 Q285 58 320 98",
+          "color": "green",
+          "width": "mid"
+         },
+         {
+          "d": "M240 52 Q258 90 262 140",
+          "color": "violet",
+          "width": "thin"
+         },
+         {
+          "d": "M180 110 Q200 100 215 104 M270 80 Q285 85 295 95",
+          "color": "green",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t3",
+        "forms": [
+         {
+          "d": "M25 240 Q125 180 210 125 Q228 108 238 92 L256 96 Q248 114 240 130 Q200 182 170 240 Z",
+          "color": "sand",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M40 240 Q130 180 215 125 Q230 110 240 95",
+          "color": "gray",
+          "width": "bold"
+         },
+         {
+          "d": "M150 240 Q190 180 235 128 Q245 113 252 98",
+          "color": "gray",
+          "width": "bold"
+         },
+         {
+          "d": "M58 228 L156 228 M80 214 L165 214 M100 200 L175 200 M120 187 L186 187 M140 174 L198 174 M160 162 L208 162 M180 150 L218 150 M198 138 L227 138 M212 126 L235 126 M224 114 L242 114 M232 104 L248 104",
+          "color": "umber",
+          "width": "mid"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t2",
+        "forms": [
+         {
+          "d": "M200 118 L240 110 L243 128 L203 134 Z",
+          "color": "brown",
+          "tone": "mid"
+         },
+         {
+          "d": "M80 150 L200 135 L205 180 L88 196 Z",
+          "color": "brown",
+          "tone": "mid"
+         },
+         {
+          "d": "M80 150 L200 135 L190 127 L92 141 Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M95 185 Q110 178 125 188 Q110 194 95 190 Z M160 172 Q175 166 190 176 Q175 182 160 178 Z M130 160 Q140 155 150 162 Q140 166 130 163 Z",
+          "color": "umber",
+          "tone": "deep"
+         },
+         {
+          "d": "M93 198 A12 12 0 1 0 117 198 A12 12 0 1 0 93 198 Z M173 186 A12 12 0 1 0 197 186 A12 12 0 1 0 173 186 Z",
+          "color": "gray",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M80 150 L200 135 L205 180 L88 196 Z",
+          "color": "umber",
+          "width": "bold"
+         },
+         {
+          "d": "M80 150 L92 141 L190 127 L200 135",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M83 165 L202 150 M85 180 L204 165",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M120 145 L124 190 M160 140 L164 185",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M93 198 A12 12 0 1 0 117 198 A12 12 0 1 0 93 198 M173 186 A12 12 0 1 0 197 186 A12 12 0 1 0 173 186",
+          "color": "night",
+          "width": "mid"
+         },
+         {
+          "d": "M200 118 L240 110 L243 128 L203 134 Z",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M207 136 A4 4 0 1 0 215 136 M231 131 A4 4 0 1 0 239 131",
+          "color": "night",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    2,
+    3
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "claude-sonnet-5-5",
+    "effort": "medium",
+    "served_model": "claude-sonnet-5-5",
+    "ms": 6139,
+    "usage": {
+     "input_tokens": 1123,
+     "output_tokens": 731,
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 6031
+    },
+    "stop_reason": "end_turn",
+    "request_id": "req_011CgQhrUdcW26eu9MP2GAio",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "三人は手を放してトロッコに飛び乗り、勢いよく線路を下って良平は有頂天になった",
+       "quote": "良平は殆ど有頂天になった"
+      },
+      {
+       "text": "トロッコは二三分で終点に止まり、また押し上げにかかると、土工の怒鳴り声がして三人は逃げ出した",
+       "quote": "この野郎！　誰に断ってトロに触った？"
+      },
+      {
+       "text": "それきり良平は二度と乗ろうと思わなかった。土工の麦藁帽の姿は記憶に残った",
+       "quote": "二度と乗って見ようと思った事はない"
+      },
+      {
+       "text": "十日余り後の午過ぎ、良平は一人で工事場にいて、枕木を積んだトロッコを押す若い二人に「押してやろうか？」と声をかけた",
+       "quote": "「おじさん。押してやろうか？」"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "same",
+       "place": "村外れの工事現場の線路",
+       "place_quote": "もとの終点に止まっていた",
+       "time": "evening",
+       "time_quote": "顔に当る薄暮の風",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "joyful",
+       "mood_quote": "良平は殆ど有頂天になった",
+       "keep": [],
+       "things": [
+        {
+         "name": "麦藁帽",
+         "look": "薄明りの中の小さな黄色い麦藁帽",
+         "quote": "小さい黄色の麦藁帽",
+         "main": false
+        }
+       ],
+       "changes": []
+      },
+      {
+       "change": "new",
+       "place": "昼過ぎの工事場",
+       "place_quote": "午過ぎの工事場",
+       "time": "day",
+       "time_quote": "午過ぎ",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "calm",
+       "mood_quote": "何だか親しみ易いような気がした",
+       "keep": [
+        "トロッコ",
+        "線路"
+       ],
+       "things": [
+        {
+         "name": "枕木を積んだトロッコ",
+         "look": "枕木を山積みにして太い線路を登ってくる",
+         "quote": "枕木を積んだトロッコが一輛",
+         "main": true
+        },
+        {
+         "name": "太い線路",
+         "look": "本線になる太い線路が続く",
+         "quote": "太い線路を登って来た",
+         "main": false
+        }
+       ],
+       "changes": []
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "claude-opus-5-5",
+     "effort": "medium",
+     "served_model": "claude-opus-5-5",
+     "ms": 10267,
+     "usage": {
+      "input_tokens": 2077,
+      "output_tokens": 751,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 5460
+     },
+     "stop_reason": "end_turn",
+     "request_id": "req_011CgQhrw84cf34roodAuvDD",
+     "data": {
+      "ground": [],
+      "things": [
+       {
+        "id": "t5",
+        "forms": [
+         {
+          "d": "M25 172 A20 6 0 1 0 65 172 A20 6 0 1 0 25 172 Z",
+          "color": "lemon",
+          "tone": "mid"
+         },
+         {
+          "d": "M34 171 Q34 156 45 155 Q56 156 56 171 Q45 174 34 171 Z",
+          "color": "lemon",
+          "tone": "mid"
+         },
+         {
+          "d": "M34 168 Q45 171 56 168 L56 171 Q45 174 34 171 Z",
+          "color": "brown",
+          "tone": "mid"
+         },
+         {
+          "d": "M30 176 Q45 181 62 176 Q45 179 30 176 Z",
+          "color": "umber",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M25 172 A20 6 0 1 0 65 172 A20 6 0 1 0 25 172",
+          "color": "orange",
+          "width": "mid"
+         },
+         {
+          "d": "M34 171 Q34 156 45 155 Q56 156 56 171",
+          "color": "orange",
+          "width": "mid"
+         },
+         {
+          "d": "M34 168 Q45 171 56 168",
+          "color": "brown",
+          "width": "thin"
+         },
+         {
+          "d": "M38 160 L41 168 M45 157 L45 167 M52 160 L49 168 M30 172 L36 175 M58 175 L62 172",
+          "color": "brown",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       }
+      ]
+     }
+    },
+    {
+     "model": "claude-opus-5-5",
+     "effort": "medium",
+     "served_model": "claude-opus-5-5",
+     "ms": 21016,
+     "usage": {
+      "input_tokens": 580,
+      "output_tokens": 2026,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 5460
+     },
+     "stop_reason": "end_turn",
+     "request_id": "req_011CgQhshSLWQxicq9dvC5BS",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0H320V120H0Z",
+        "color": "sky",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 112C40 70 80 60 120 78C160 55 210 50 250 72C280 62 305 70 320 80V130H0Z",
+        "color": "green",
+        "tone": "mid"
+       },
+       {
+        "d": "M0 128C60 112 120 118 180 116C240 114 290 118 320 124V240H0Z",
+        "color": "sand",
+        "tone": "mid"
+       },
+       {
+        "d": "M0 200C60 190 100 210 140 240H0Z",
+        "color": "brown",
+        "tone": "pale"
+       },
+       {
+        "d": "M240 60C255 40 275 45 290 55C300 48 315 52 320 58V80C300 70 270 66 240 70Z",
+        "color": "white",
+        "tone": "pale"
+       }
+      ],
+      "things": [
+       {
+        "id": "t8",
+        "forms": [
+         {
+          "d": "M0 212L4 216L60 170L120 104L116 100L56 166Z",
+          "color": "brown",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M0 208L56 164L116 100",
+          "color": "gray",
+          "width": "mid"
+         },
+         {
+          "d": "M6 218L62 172L122 106",
+          "color": "gray",
+          "width": "mid"
+         },
+         {
+          "d": "M14 206L22 212M30 194L38 200M46 182L54 188M66 162L74 168M82 144L90 150M98 126L106 132",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t10",
+        "forms": [
+         {
+          "d": "M110 240L195 122H210L252 240Z",
+          "color": "sand",
+          "tone": "pale"
+         },
+         {
+          "d": "M112 232H248V238H112ZM132 206H238V211H132ZM150 182H230V186H150ZM166 162H224V165H166ZM178 146H219V148H178ZM187 134H215V136H187Z",
+          "color": "umber",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M120 240L197 122",
+          "color": "gray",
+          "width": "bold"
+         },
+         {
+          "d": "M240 240L210 122",
+          "color": "gray",
+          "width": "bold"
+         },
+         {
+          "d": "M128 240L199 122M232 240L208 122",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t9",
+        "forms": [
+         {
+          "d": "M132 156H240V188H132Z",
+          "color": "brown",
+          "tone": "mid"
+         },
+         {
+          "d": "M136 144H236V156H136ZM142 132H230V144H142ZM150 120H222V132H150Z",
+          "color": "sand",
+          "tone": "mid"
+         },
+         {
+          "d": "M132 180H240V188H132Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M150 196A9 9 0 1 0 150.1 196ZM222 196A9 9 0 1 0 222.1 196Z",
+          "color": "gray",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M132 156H240V188H132Z",
+          "color": "umber",
+          "width": "bold"
+         },
+         {
+          "d": "M136 144H236V156H136ZM142 132H230V144H142ZM150 120H222V132H150Z",
+          "color": "brown",
+          "width": "mid"
+         },
+         {
+          "d": "M170 120V156M196 120V156M214 132V156M160 144V156",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M141 196A9 9 0 1 0 159 196A9 9 0 1 0 141 196ZM213 196A9 9 0 1 0 231 196A9 9 0 1 0 213 196Z",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M140 168H232M140 176H232",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t7",
+        "forms": [
+         {
+          "d": "M14 150H70V168H14ZM80 140H124V154H80Z",
+          "color": "brown",
+          "tone": "deep"
+         },
+         {
+          "d": "M18 160C30 156 50 164 66 160V168H18Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M26 172A5 5 0 1 0 26.1 172ZM58 172A5 5 0 1 0 58.1 172ZM90 157A4 4 0 1 0 90.1 157ZM114 157A4 4 0 1 0 114.1 157Z",
+          "color": "gray",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M14 150H70V168H14ZM80 140H124V154H80Z",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M21 172A5 5 0 1 0 31 172A5 5 0 1 0 21 172ZM53 172A5 5 0 1 0 63 172A5 5 0 1 0 53 172ZM86 157A4 4 0 1 0 94 157A4 4 0 1 0 86 157ZM110 157A4 4 0 1 0 118 157A4 4 0 1 0 110 157Z",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M28 150V168M42 150V168M56 150V168M95 140V154M109 140V154",
+          "color": "brown",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    4,
+    5
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "claude-sonnet-5-5",
+    "effort": "medium",
+    "served_model": "claude-sonnet-5-5",
+    "ms": 8040,
+    "usage": {
+     "input_tokens": 1366,
+     "output_tokens": 860,
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 6031
+    },
+    "stop_reason": "end_turn",
+    "request_id": "req_011CgQhuFzBpb2sNtJkPHqN5",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "縞のシャツの男が快く承知し、良平は二人の間に入って力一杯押し始めた",
+       "quote": "「おお、押してくよう」"
+      },
+      {
+       "text": "勾配が楽になっても、二人は黙々と押し続け、良平は何時までも押していいか尋ね、許された",
+       "quote": "「好いとも」"
+      },
+      {
+       "text": "蜜柑畑の登り坂を押し上げ、下りでは「乗れ」と言われて三人で飛び乗り走った",
+       "quote": "「やい、乗れ」"
+      },
+      {
+       "text": "竹藪、雑木林を押して登り、高い崖の向うに薄ら寒い海が開けた",
+       "quote": "広広と薄ら寒い海が開けた"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "same",
+       "place": "蜜柑畑の登り坂と下り坂の線路",
+       "place_quote": "両側の蜜柑畑に、黄色い実がいくつも日を受けている",
+       "time": "day",
+       "time_quote": "日を受けている",
+       "weather": "clear",
+       "weather_quote": "日を受けている",
+       "mood": "joyful",
+       "mood_quote": "押すよりも乗る方がずっと好い",
+       "keep": [],
+       "things": [
+        {
+         "name": "蜜柑畑",
+         "look": "両側に広がり、黄色い実が日を受けている",
+         "quote": "両側の蜜柑畑に、黄色い実がいくつも日を受けている",
+         "main": true
+        }
+       ],
+       "changes": []
+      },
+      {
+       "change": "new",
+       "place": "竹藪と雑木林を抜け海を望む崖の上の線路",
+       "place_quote": "高い崖の向うに、広広と薄ら寒い海が開けた",
+       "time": "day",
+       "time_quote": "",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "wonder",
+       "mood_quote": "広広と薄ら寒い海が開けた",
+       "keep": [
+        "トロッコ",
+        "線路"
+       ],
+       "things": [
+        {
+         "name": "海",
+         "look": "高い崖の向うに広がる薄ら寒い海",
+         "quote": "広広と薄ら寒い海が開けた",
+         "main": true
+        },
+        {
+         "name": "崖",
+         "look": "線路の先にそそり立つ高い崖",
+         "quote": "高い崖",
+         "main": false
+        },
+        {
+         "name": "竹藪",
+         "look": "線路沿いに竹が茂る",
+         "quote": "竹藪のある所",
+         "main": false
+        },
+        {
+         "name": "雑木林",
+         "look": "線路脇に雑木が茂る",
+         "quote": "雑木林になった",
+         "main": false
+        },
+        {
+         "name": "落葉",
+         "look": "赤錆の線路が見えないほど積もっている",
+         "quote": "落葉のたまっている場所",
+         "main": false
+        }
+       ],
+       "changes": []
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "claude-opus-5-5",
+     "effort": "medium",
+     "served_model": "claude-opus-5-5",
+     "ms": 39344,
+     "usage": {
+      "input_tokens": 2495,
+      "output_tokens": 4354,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 5460
+     },
+     "stop_reason": "end_turn",
+     "request_id": "req_011CgQhurZowbF6AXcBCxCQm",
+     "data": {
+      "ground": [],
+      "things": [
+       {
+        "id": "t11",
+        "forms": [
+         {
+          "d": "M258 162C266 158 280 158 288 162C280 166 266 166 258 162ZM290 169C298 165 312 165 318 169C312 173 298 173 290 169ZM250 214C258 210 276 210 284 214C276 218 258 218 250 214ZM290 220C298 216 312 216 318 220C312 224 298 224 290 220ZM8 142C14 140 24 140 28 142C24 144 14 144 8 142ZM36 140C42 138 52 138 56 140C52 142 42 142 36 140ZM63 136C68 134 78 134 82 136C78 138 68 138 63 136Z",
+          "color": "umber",
+          "tone": "pale"
+         },
+         {
+          "d": "M256 138A16 16 0 1 0 288 138A16 16 0 1 0 256 138ZM289 146A15 15 0 1 0 319 146A15 15 0 1 0 289 146ZM246 186A20 20 0 1 0 286 186A20 20 0 1 0 246 186ZM286 196A18 18 0 1 0 322 196A18 18 0 1 0 286 196ZM262 232A18 18 0 1 0 298 232A18 18 0 1 0 262 232ZM6 124A12 12 0 1 0 30 124A12 12 0 1 0 6 124ZM34 120A12 12 0 1 0 58 120A12 12 0 1 0 34 120ZM62 118A10 10 0 1 0 82 118A10 10 0 1 0 62 118Z",
+          "color": "green",
+          "tone": "mid"
+         },
+         {
+          "d": "M258 144C264 152 280 154 287 144C284 152 276 154 272 154C266 154 260 150 258 144ZM248 194C254 204 278 206 285 194C280 204 272 206 266 206C258 206 250 200 248 194ZM288 204C294 212 312 214 320 204C316 212 310 214 304 214C296 214 290 210 288 204Z",
+          "color": "green",
+          "tone": "deep"
+         },
+         {
+          "d": "M263.5 132a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM275.5 136a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM267.5 146a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM279.5 128a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM295.5 142a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM307.5 150a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM301.5 136a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM255.5 180a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM269.5 176a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM261.5 194a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM275.5 190a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM251.5 192a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM293.5 190a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM307.5 186a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM299.5 204a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM311.5 200a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM269.5 226a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM283.5 228a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM277.5 238a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM12 120a2 2 0 1 0 4 0a2 2 0 1 0 -4 0ZM20 128a2 2 0 1 0 4 0a2 2 0 1 0 -4 0ZM40 116a2 2 0 1 0 4 0a2 2 0 1 0 -4 0ZM48 124a2 2 0 1 0 4 0a2 2 0 1 0 -4 0ZM68 114a2 2 0 1 0 4 0a2 2 0 1 0 -4 0ZM74 120a2 2 0 1 0 4 0a2 2 0 1 0 -4 0Z",
+          "color": "orange",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M256 138A16 16 0 1 0 288 138A16 16 0 1 0 256 138ZM289 146A15 15 0 1 0 319 146A15 15 0 1 0 289 146ZM246 186A20 20 0 1 0 286 186A20 20 0 1 0 246 186ZM286 196A18 18 0 1 0 322 196A18 18 0 1 0 286 196ZM262 232A18 18 0 1 0 298 232A18 18 0 1 0 262 232ZM6 124A12 12 0 1 0 30 124A12 12 0 1 0 6 124ZM34 120A12 12 0 1 0 58 120A12 12 0 1 0 34 120ZM62 118A10 10 0 1 0 82 118A10 10 0 1 0 62 118Z",
+          "color": "green",
+          "width": "mid"
+         },
+         {
+          "d": "M272 154V162M304 161V168M266 206V214M304 214V220M18 136V142M46 132V140M72 128V136",
+          "color": "brown",
+          "width": "mid"
+         },
+         {
+          "d": "M263.5 132a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM275.5 136a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM267.5 146a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM295.5 142a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM307.5 150a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM255.5 180a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM269.5 176a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM261.5 194a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM275.5 190a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM293.5 190a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM307.5 186a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM299.5 204a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM269.5 226a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM283.5 228a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z",
+          "color": "orange",
+          "width": "thin"
+         },
+         {
+          "d": "M262 130C266 126 270 126 274 128M296 140C300 136 304 136 308 138M254 176C260 170 268 170 274 172M292 186C298 182 304 182 310 184M270 222C274 218 280 218 286 220",
+          "color": "leaf",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       }
+      ]
+     }
+    },
+    {
+     "model": "claude-opus-5-5",
+     "effort": "medium",
+     "served_model": "claude-opus-5-5",
+     "ms": 41609,
+     "usage": {
+      "input_tokens": 825,
+      "output_tokens": 2892,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 5460
+     },
+     "stop_reason": "end_turn",
+     "request_id": "req_011CgQhxmKNpqKaoKz9Cupx7",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0H320V98H0Z",
+        "color": "sky",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 60H320V98H0Z",
+        "color": "white",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 128Q90 112 175 124Q200 128 215 132L240 240H0Z",
+        "color": "sand",
+        "tone": "mid"
+       },
+       {
+        "d": "M0 200Q80 190 150 205L170 240H0Z",
+        "color": "brown",
+        "tone": "pale"
+       }
+      ],
+      "things": [
+       {
+        "id": "t15",
+        "forms": [
+         {
+          "d": "M120 98H320V240H250Q240 180 215 140Q170 112 120 98Z",
+          "color": "blue",
+          "tone": "mid"
+         },
+         {
+          "d": "M120 98H320V112Q220 106 120 98Z",
+          "color": "gray",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M120 98H320",
+          "color": "blue",
+          "width": "mid"
+         },
+         {
+          "d": "M230 120Q260 118 290 122M250 140Q280 137 310 141M270 165Q290 162 315 166M240 108Q270 106 300 109",
+          "color": "blue",
+          "width": "thin"
+         }
+        ],
+        "light": [
+         {
+          "d": "M260 128L272 127L270 129ZM285 150L298 149L296 151ZM245 114L256 113L254 115ZM300 175L312 174L310 176Z",
+          "color": "white"
+         }
+        ]
+       },
+       {
+        "id": "t16",
+        "forms": [
+         {
+          "d": "M180 124Q205 126 222 134Q236 170 250 240H200Q195 180 180 124Z",
+          "color": "gray",
+          "tone": "mid"
+         },
+         {
+          "d": "M215 134Q228 175 238 240H250Q236 170 222 134Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M178 122Q200 120 224 133L218 136Q198 128 178 126Z",
+          "color": "leaf",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M178 123Q205 124 223 134Q236 170 250 240",
+          "color": "umber",
+          "width": "bold"
+         },
+         {
+          "d": "M210 150L222 160M215 180L230 190M222 210L236 220",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t18",
+        "forms": [
+         {
+          "d": "M40 125Q35 95 60 92Q70 70 95 80Q115 66 135 84Q160 82 165 105Q178 118 170 126Q110 116 40 125Z",
+          "color": "green",
+          "tone": "mid"
+         },
+         {
+          "d": "M70 120Q72 100 95 98Q118 96 125 116Z",
+          "color": "orange",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M40 125Q35 95 60 92Q70 70 95 80Q115 66 135 84Q160 82 165 105Q178 118 170 126",
+          "color": "green",
+          "width": "mid"
+         },
+         {
+          "d": "M80 122V100M110 120V92M145 122V102",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t17",
+        "forms": [
+         {
+          "d": "M0 0H30Q55 40 50 90Q60 140 40 200L0 210Z",
+          "color": "leaf",
+          "tone": "mid"
+         },
+         {
+          "d": "M0 20Q30 50 25 120L0 140Z",
+          "color": "green",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M8 240V0M20 230V5M34 220L40 10",
+          "color": "green",
+          "width": "bold"
+         },
+         {
+          "d": "M8 60H12M8 130H12M20 80H24M20 160H24M35 100H39M36 170H40",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M20 40L45 30M34 70L58 62M20 110L48 104M36 140L60 135",
+          "color": "leaf",
+          "width": "mid"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t14",
+        "forms": [
+         {
+          "d": "M50 240L170 126L186 126L130 240Z",
+          "color": "umber",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M60 240L172 126M120 240L184 126",
+          "color": "umber",
+          "width": "bold"
+         },
+         {
+          "d": "M70 226L126 228M88 206L136 208M104 188L146 190M120 170L156 172M136 154L165 155M150 140L173 141M162 131L179 131",
+          "color": "brown",
+          "width": "mid"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t19",
+        "forms": [
+         {
+          "d": "M65 228l8-3l4 4l-7 3zM100 215l7-2l3 4l-7 2zM118 196l6-3l4 3l-6 3zM135 180l6-2l2 3l-6 2zM85 232l6-3l4 4l-6 2zM150 160l5-2l2 3l-5 1z",
+          "color": "orange",
+          "tone": "mid"
+         },
+         {
+          "d": "M78 220l7-2l3 3l-7 2zM112 205l6-2l3 3l-6 2zM128 188l5-2l3 3l-5 2zM95 236l7-2l2 3l-6 2z",
+          "color": "brown",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M65 228l8-3l4 4l-7 3zM100 215l7-2l3 4l-7 2zM118 196l6-3l4 3l-6 3zM78 220l7-2l3 3l-7 2z",
+          "color": "red",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t13",
+        "forms": [
+         {
+          "d": "M70 168L170 160L176 184L76 194Z",
+          "color": "brown",
+          "tone": "mid"
+         },
+         {
+          "d": "M76 194L176 184L175 196L78 206Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M78 150L165 143L168 160L80 167Z",
+          "color": "sand",
+          "tone": "mid"
+         },
+         {
+          "d": "M90 212a9 9 0 1 0 0.1 0ZM160 204a9 9 0 1 0 0.1 0Z",
+          "color": "umber",
+          "tone": "deep"
+         },
+         {
+          "d": "M90 185l20-2l5 6l-22 2zM140 180l18-2l4 5l-20 2z",
+          "color": "umber",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M70 168L170 160L176 184L175 196L78 206L76 194L70 168Z",
+          "color": "umber",
+          "width": "bold"
+         },
+         {
+          "d": "M76 194L176 184",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M78 150L165 143L168 160M80 167L78 150M79 158L166 151",
+          "color": "brown",
+          "width": "mid"
+         },
+         {
+          "d": "M90 212a9 9 0 1 0 0.1 0ZM160 204a9 9 0 1 0 0.1 0Z",
+          "color": "night",
+          "width": "mid"
+         },
+         {
+          "d": "M100 172V191M130 169V188M155 166V186",
+          "color": "brown",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    6,
+    7
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "claude-sonnet-5-5",
+    "effort": "medium",
+    "served_model": "claude-sonnet-5-5",
+    "ms": 8905,
+    "usage": {
+     "input_tokens": 1645,
+     "output_tokens": 954,
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 6031
+    },
+    "stop_reason": "end_turn",
+    "request_id": "req_011CgQi1qo6Egxt4bwb6Ux3M",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "良平は遠く来過ぎたことを急にはっきり感じ、三人はまたトロッコに乗って海を右に雑木の下を走った",
+       "quote": "余り遠く来過ぎた事が、急にはっきりと感じられた"
+      },
+      {
+       "text": "藁屋根の茶店で土工が休む間、良平はいらいらしてトロッコの周りを回った",
+       "quote": "悠悠と茶などを飲み始めた"
+      },
+      {
+       "text": "土工に新聞紙包みの駄菓子をもらい、冷淡を悔いて一つ口に入れると石油の匂いがした",
+       "quote": "石油の匂がしみついていた"
+      },
+      {
+       "text": "次の茶店で西日が消えかかり、帰ることばかり気にする良平に、土工が「もう帰んな」と告げた",
+       "quote": "われはもう帰んな。おれたちは今日は向う泊りだから"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "same",
+       "place": "海を右に見る雑木の下の線路と藁屋根の茶店",
+       "place_quote": "藁屋根の茶店の前",
+       "time": "unknown",
+       "time_quote": "",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "tense",
+       "mood_quote": "独りいらいらしながら",
+       "keep": [],
+       "things": [
+        {
+         "name": "藁屋根の茶店",
+         "look": "切り崩した山を背負う藁屋根の茶店",
+         "quote": "切崩した山を背負っている、藁屋根の茶店",
+         "main": true
+        },
+        {
+         "name": "駄菓子",
+         "look": "新聞紙に包まれた包み菓子",
+         "quote": "新聞紙に包んだ駄菓子",
+         "main": false
+        },
+        {
+         "name": "切り崩した山",
+         "look": "茶店の背後にある切り崩された山",
+         "quote": "切崩した山",
+         "main": false
+        }
+       ],
+       "changes": [
+        {
+         "name": "トロッコ",
+         "look": "頑丈な車台の板に跳ね返った泥が乾いている",
+         "quote": "跳ねかえった泥が乾いていた"
+        }
+       ]
+      },
+      {
+       "change": "same",
+       "place": "梅の咲く二軒目の茶店の前",
+       "place_quote": "又同じような茶店があった",
+       "time": "evening",
+       "time_quote": "西日の光が消えかかっている",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "tense",
+       "mood_quote": "もう日が暮れる",
+       "keep": [],
+       "things": [
+        {
+         "name": "梅",
+         "look": "花の咲いた梅の木",
+         "quote": "花のさいた梅",
+         "main": true
+        },
+        {
+         "name": "西日",
+         "look": "消えかかる西日の光",
+         "quote": "西日の光が消えかかっている",
+         "main": false
+        },
+        {
+         "name": "二軒目の茶店",
+         "look": "同じような茶店",
+         "quote": "又同じような茶店",
+         "main": false
+        },
+        {
+         "name": "枕木",
+         "look": "トロッコの車の上に積まれた枕木",
+         "quote": "車の上の枕木",
+         "main": false
+        }
+       ],
+       "changes": []
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "claude-opus-5-5",
+     "effort": "medium",
+     "served_model": "claude-opus-5-5",
+     "ms": 34904,
+     "usage": {
+      "input_tokens": 3458,
+      "output_tokens": 3287,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 5460
+     },
+     "stop_reason": "end_turn",
+     "request_id": "req_011CgQi2WGNX6dz2NQCQkdCi",
+     "data": {
+      "ground": [],
+      "things": [
+       {
+        "id": "t22",
+        "forms": [
+         {
+          "d": "M28 112L50 50Q72 34 96 46L118 58L152 110Z",
+          "color": "brown",
+          "tone": "mid"
+         },
+         {
+          "d": "M96 46L118 58L152 110L128 108L104 70Z",
+          "color": "sand",
+          "tone": "mid"
+         },
+         {
+          "d": "M50 50Q72 34 96 46L90 54Q70 46 54 58Z",
+          "color": "green",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M28 112L50 50Q72 34 96 46L118 58L152 110",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M96 46L104 70L128 108M106 60L118 80M112 72L132 98",
+          "color": "brown",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t20",
+        "forms": [
+         {
+          "d": "M64 92H142V128H64Z",
+          "color": "brown",
+          "tone": "pale"
+         },
+         {
+          "d": "M90 102H116V128H90Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M54 94L82 68L126 68L152 94Z",
+          "color": "sand",
+          "tone": "deep"
+         },
+         {
+          "d": "M54 94L152 94L148 99L58 99Z",
+          "color": "umber",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M54 94L82 68L126 68L152 94Z",
+          "color": "umber",
+          "width": "bold"
+         },
+         {
+          "d": "M64 99V128H142V99",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M90 128V102H116V128",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M70 90L88 72M84 92L98 70M100 92L108 70M116 92L116 70M130 92L122 70M142 92L130 72",
+          "color": "brown",
+          "width": "thin"
+         },
+         {
+          "d": "M70 106H84V118H70ZM124 106H136V118H124Z",
+          "color": "brown",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t23",
+        "forms": [
+         {
+          "d": "M150 84a8 8 0 1 0 0.1 0ZM166 76a9 9 0 1 0 0.1 0ZM182 86a8 8 0 1 0 0.1 0ZM158 98a7 7 0 1 0 0.1 0ZM176 100a7 7 0 1 0 0.1 0Z",
+          "color": "pink",
+          "tone": "mid"
+         },
+         {
+          "d": "M164 128L166 104L160 92L162 90L168 102L176 90L178 92L169 106L167 128Z",
+          "color": "umber",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M165 128Q167 112 166 104Q160 96 152 88M166 104Q172 96 180 88M166 104Q168 92 166 78M160 96L156 100M172 98L178 102",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M150 84a8 8 0 1 0 0.1 0ZM166 76a9 9 0 1 0 0.1 0ZM182 86a8 8 0 1 0 0.1 0Z",
+          "color": "pink",
+          "width": "thin"
+         },
+         {
+          "d": "M154 82h2M162 74h2M170 80h2M180 84h2M158 96h2M176 98h2",
+          "color": "red",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t13",
+        "forms": [
+         {
+          "d": "M70 168L170 160L176 184L76 194Z",
+          "color": "brown",
+          "tone": "mid"
+         },
+         {
+          "d": "M76 194L176 184L175 196L78 206Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M78 150L165 143L168 160L80 167Z",
+          "color": "sand",
+          "tone": "mid"
+         },
+         {
+          "d": "M90 212a9 9 0 1 0 0.1 0ZM160 204a9 9 0 1 0 0.1 0Z",
+          "color": "umber",
+          "tone": "deep"
+         },
+         {
+          "d": "M84 186q6-5 12 0q-6 4-12 0zM118 182q8-6 14 0q-7 5-14 0zM150 178q5-4 10 0q-5 4-10 0zM96 200q6-3 10 0q-5 3-10 0zM140 196q6-3 11 0q-6 3-11 0z",
+          "color": "sand",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M70 168L170 160L176 184L175 196L78 206L76 194L70 168Z",
+          "color": "umber",
+          "width": "bold"
+         },
+         {
+          "d": "M76 194L176 184",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M78 150L165 143L168 160M80 167L78 150M79 158L166 151",
+          "color": "brown",
+          "width": "mid"
+         },
+         {
+          "d": "M90 212a9 9 0 1 0 0.1 0ZM160 204a9 9 0 1 0 0.1 0Z",
+          "color": "night",
+          "width": "mid"
+         },
+         {
+          "d": "M100 172V191M130 169V188M155 166V186",
+          "color": "brown",
+          "width": "thin"
+         },
+         {
+          "d": "M84 186q6-5 12 0M118 182q8-6 14 0M150 178q5-4 10 0M96 200q6-3 10 0M140 196q6-3 11 0M88 180l2 1M124 176l2 1M110 190l2 1",
+          "color": "sand",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t21",
+        "forms": [
+         {
+          "d": "M108 146L130 144L132 156L110 158Z",
+          "color": "white",
+          "tone": "mid"
+         },
+         {
+          "d": "M110 152L131 150L132 156L110 158Z",
+          "color": "gray",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M108 146L130 144L132 156L110 158Z",
+          "color": "gray",
+          "width": "mid"
+         },
+         {
+          "d": "M112 149H126M112 152H124M113 155H127",
+          "color": "gray",
+          "width": "thin"
+         },
+         {
+          "d": "M119 145L121 157",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t24",
+        "forms": [
+         {
+          "d": "M190 60H320V98H190Z",
+          "color": "orange",
+          "tone": "pale"
+         },
+         {
+          "d": "M240 80H320V98H240Z",
+          "color": "pink",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M276 98a14 14 0 0 1 28 0",
+          "color": "orange",
+          "width": "mid"
+         },
+         {
+          "d": "M268 84L260 80M290 74V66M310 82L318 78M278 76L272 70M302 76L308 70",
+          "color": "orange",
+          "width": "thin"
+         },
+         {
+          "d": "M250 102Q290 100 318 103",
+          "color": "orange",
+          "width": "thin"
+         }
+        ],
+        "light": [
+         {
+          "d": "M276 98a14 14 0 0 1 28 0Z",
+          "color": "orange"
+         },
+         {
+          "d": "M260 104L318 103L300 106L272 106Z",
+          "color": "orange"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    8,
+    9
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "claude-sonnet-5-5",
+    "effort": "medium",
+    "served_model": "claude-sonnet-5-5",
+    "ms": 8983,
+    "usage": {
+     "input_tokens": 1894,
+     "output_tokens": 1002,
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 6031
+    },
+    "stop_reason": "end_turn",
+    "request_id": "req_011CgQi568PXJehkjnCtXJTF",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "土工の言葉に、良平は帰り道の遠さに気づいて泣きそうになり、土工に礼をして線路伝いに走り出した",
+       "quote": "どんどん線路伝いに走り出した"
+      },
+      {
+       "text": "菓子包みと板草履を路側に捨て、足は軽くなったが小石が足裏に食いこんだ",
+       "quote": "板草履も其処へ脱ぎ捨ててしまった"
+      },
+      {
+       "text": "夕焼けが消えかかる中、汗で濡れた羽織も脱ぎ捨てて走り続けた",
+       "quote": "羽織を路側へ脱いで捨てた"
+      },
+      {
+       "text": "蜜柑畑を過ぎ暗くなる中、村外れの工事場が見え、電燈の光る村へ入った",
+       "quote": "村外れの工事場が見えた"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "same",
+       "place": "海沿いの線路を走って戻る道",
+       "place_quote": "線路の側を走り続けた",
+       "time": "evening",
+       "time_quote": "もうかれこれ暗くなる",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "tense",
+       "mood_quote": "良平は、愈気が気でなかった",
+       "keep": [],
+       "things": [
+        {
+         "name": "日金山の空",
+         "look": "夕焼けの火照りが消えかかる空",
+         "quote": "夕焼けのした日金山の空",
+         "main": false
+        },
+        {
+         "name": "羽織",
+         "look": "路側に脱ぎ捨てられた羽織",
+         "quote": "羽織を路側へ脱いで捨てた",
+         "main": false
+        },
+        {
+         "name": "板草履",
+         "look": "路側に脱ぎ捨てられた板草履",
+         "quote": "板草履も其処へ脱ぎ捨てて",
+         "main": false
+        },
+        {
+         "name": "小石",
+         "look": "線路脇の小石",
+         "quote": "じかに小石が食いこんだ",
+         "main": false
+        }
+       ],
+       "changes": [
+        {
+         "name": "駄菓子",
+         "look": "路側へ投げ捨てられた菓子包み",
+         "quote": "それを路側へ抛り出す次手に"
+        }
+       ]
+      },
+      {
+       "change": "new",
+       "place": "夕闇の村の家並み",
+       "place_quote": "両側の家家には、電燈の光がさし合っていた",
+       "time": "night",
+       "time_quote": "あたりは暗くなる一方だった",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "tense",
+       "mood_quote": "一思いに泣きたくなった",
+       "keep": [],
+       "things": [
+        {
+         "name": "電燈の光",
+         "look": "家々の両側からさし合う明かり",
+         "quote": "電燈の光がさし合っていた",
+         "main": true
+        },
+        {
+         "name": "家々",
+         "look": "道の両側に並ぶ家",
+         "quote": "両側の家家",
+         "main": false
+        },
+        {
+         "name": "工事場",
+         "look": "遠い夕闇の中に見える村外れの工事場",
+         "quote": "村外れの工事場",
+         "main": false
+        },
+        {
+         "name": "蜜柑畑",
+         "look": "暗くなる中の蜜柑畑",
+         "quote": "蜜柑畑へ来る頃には",
+         "main": false
+        }
+       ],
+       "changes": []
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "claude-opus-5-5",
+     "effort": "medium",
+     "served_model": "claude-opus-5-5",
+     "ms": 8835,
+     "usage": {
+      "input_tokens": 5426,
+      "output_tokens": 725,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 5460
+     },
+     "stop_reason": "end_turn",
+     "request_id": "req_011CgQi5m2DYxNto1hjPcPwC",
+     "data": {
+      "ground": [],
+      "things": [
+       {
+        "id": "t21",
+        "forms": [
+         {
+          "d": "M14 222L38 214L46 228L22 236Z",
+          "color": "white",
+          "tone": "mid"
+         },
+         {
+          "d": "M22 236L46 228L44 232L24 238Z",
+          "color": "gray",
+          "tone": "pale"
+         },
+         {
+          "d": "M38 214L46 210L50 220L46 228Z",
+          "color": "sand",
+          "tone": "pale"
+         },
+         {
+          "d": "M52 226a3 3 0 1 0 0.1 0ZM58 232a2.5 2.5 0 1 0 0.1 0ZM50 234a2.5 2.5 0 1 0 0.1 0Z",
+          "color": "brown",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M14 222L38 214L46 228L22 236Z",
+          "color": "gray",
+          "width": "mid"
+         },
+         {
+          "d": "M38 214L46 210L50 220L46 228",
+          "color": "gray",
+          "width": "mid"
+         },
+         {
+          "d": "M19 224L37 218M21 228L39 222M23 232L41 226",
+          "color": "gray",
+          "width": "thin"
+         },
+         {
+          "d": "M26 219L34 233",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M52 226a3 3 0 1 0 0.1 0ZM58 232a2.5 2.5 0 1 0 0.1 0ZM50 234a2.5 2.5 0 1 0 0.1 0Z",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M10 238Q30 234 48 238",
+          "color": "brown",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       }
+      ]
+     }
+    },
+    {
+     "model": "claude-opus-5-5",
+     "effort": "medium",
+     "served_model": "claude-opus-5-5",
+     "ms": 45983,
+     "usage": {
+      "input_tokens": 1071,
+      "output_tokens": 4702,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 5460
+     },
+     "stop_reason": "end_turn",
+     "request_id": "req_011CgQi6RFboyqMj9xsJqDP3",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0H320V106H0Z",
+        "color": "night",
+        "tone": "deep"
+       },
+       {
+        "d": "M0 78Q160 66 320 80V106H0Z",
+        "color": "violet",
+        "tone": "mid"
+       },
+       {
+        "d": "M0 100H320V240H0Z",
+        "color": "umber",
+        "tone": "deep"
+       },
+       {
+        "d": "M152 102L168 102L215 240L105 240Z",
+        "color": "brown",
+        "tone": "mid"
+       }
+      ],
+      "things": [
+       {
+        "id": "t29",
+        "forms": [
+         {
+          "d": "M0 106Q50 82 125 100L125 110H0Z M195 100Q270 82 320 104V110H195Z",
+          "color": "green",
+          "tone": "deep"
+         },
+         {
+          "d": "M10 96a6 6 0 1 0 12 0a6 6 0 1 0 -12 0Z M34 91a6 6 0 1 0 12 0a6 6 0 1 0 -12 0Z M60 90a6 6 0 1 0 12 0a6 6 0 1 0 -12 0Z M86 93a6 6 0 1 0 12 0a6 6 0 1 0 -12 0Z M228 93a6 6 0 1 0 12 0a6 6 0 1 0 -12 0Z M252 90a6 6 0 1 0 12 0a6 6 0 1 0 -12 0Z M278 91a6 6 0 1 0 12 0a6 6 0 1 0 -12 0Z M300 96a6 6 0 1 0 12 0a6 6 0 1 0 -12 0Z",
+          "color": "green",
+          "tone": "mid"
+         },
+         {
+          "d": "M14 95a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0 -3 0Z M40 90a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0 -3 0Z M64 89a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0 -3 0Z M91 92a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0 -3 0Z M233 92a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0 -3 0Z M257 89a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0 -3 0Z M282 90a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0 -3 0Z M305 95a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0 -3 0Z",
+          "color": "orange",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M0 106Q50 82 125 100 M195 100Q270 82 320 104",
+          "color": "green",
+          "width": "mid"
+         },
+         {
+          "d": "M10 96a6 6 0 1 0 12 0a6 6 0 1 0 -12 0 M34 91a6 6 0 1 0 12 0a6 6 0 1 0 -12 0 M60 90a6 6 0 1 0 12 0a6 6 0 1 0 -12 0 M86 93a6 6 0 1 0 12 0a6 6 0 1 0 -12 0 M228 93a6 6 0 1 0 12 0a6 6 0 1 0 -12 0 M252 90a6 6 0 1 0 12 0a6 6 0 1 0 -12 0 M278 91a6 6 0 1 0 12 0a6 6 0 1 0 -12 0 M300 96a6 6 0 1 0 12 0a6 6 0 1 0 -12 0",
+          "color": "green",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t28",
+        "forms": [
+         {
+          "d": "M142 103Q150 88 158 92Q168 85 178 103Z",
+          "color": "brown",
+          "tone": "deep"
+         },
+         {
+          "d": "M154 96H166V100H154Z",
+          "color": "gray",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M142 103Q150 88 158 92Q168 85 178 103",
+          "color": "brown",
+          "width": "thin"
+         },
+         {
+          "d": "M154 96H166V100H154Z M156 100V102 M164 100V102",
+          "color": "gray",
+          "width": "thin"
+         },
+         {
+          "d": "M156 103L150 112 M164 103L170 112 M153 107H167",
+          "color": "gray",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t27",
+        "forms": [
+         {
+          "d": "M0 140H92V226H0Z M228 140H320V226H228Z",
+          "color": "brown",
+          "tone": "mid"
+         },
+         {
+          "d": "M-5 142L20 105H85L100 142Z M220 142L235 105H300L325 142Z",
+          "color": "umber",
+          "tone": "deep"
+         },
+         {
+          "d": "M92 130H120V190H92Z M200 130H228V190H200Z M128 112H142V140H128Z M178 112H192V140H178Z",
+          "color": "brown",
+          "tone": "deep"
+         },
+         {
+          "d": "M87 132L99 112H117L127 132Z M193 132L203 112H221L233 132Z M125 113L131 104H140L145 113Z M175 113L180 104H189L195 113Z",
+          "color": "umber",
+          "tone": "deep"
+         },
+         {
+          "d": "M60 200H84V226H60Z M236 200H260V226H236Z",
+          "color": "umber",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M0 140H92V226H0 M228 140H320V226H228",
+          "color": "umber",
+          "width": "bold"
+         },
+         {
+          "d": "M-5 142L20 105H85L100 142Z M220 142L235 105H300L325 142Z",
+          "color": "umber",
+          "width": "bold"
+         },
+         {
+          "d": "M92 130H120V190H92Z M200 130H228V190H200Z M128 112H142V140H128Z M178 112H192V140H178Z",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M87 132L99 112H117L127 132Z M193 132L203 112H221L233 132Z M125 113L131 104H140L145 113Z M175 113L180 104H189L195 113Z",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M10 118H95 M5 128H97 M228 118H305 M224 128H315",
+          "color": "night",
+          "width": "thin"
+         },
+         {
+          "d": "M60 200H84V226 M72 200V226 M236 200H260V226 M248 200V226",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M15 165H40V190H15Z M55 165H78V190H55Z M242 165H265V190H242Z M280 165H305V190H280Z M27 165V190 M66 165V190 M253 165V190 M292 165V190",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t26",
+        "forms": [
+         {
+          "d": "M92 196L112 240H140L120 200Z M228 196L208 240H180L200 200Z",
+          "color": "orange",
+          "tone": "pale"
+         },
+         {
+          "d": "M15 165H40V190H15Z M55 165H78V190H55Z M242 165H265V190H242Z M280 165H305V190H280Z M100 150H114V168H100Z M206 150H220V168H206Z M132 120H139V128H132Z M181 120H188V128H181Z",
+          "color": "lemon",
+          "tone": "mid"
+         },
+         {
+          "d": "M70 150L130 230L110 238Z M250 150L190 230L210 238Z",
+          "color": "orange",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M90 142V146 M230 142V146",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M90 150L118 200 M90 150L135 190 M90 150L104 210 M230 150L202 200 M230 150L185 190 M230 150L216 210",
+          "color": "lemon",
+          "width": "thin"
+         },
+         {
+          "d": "M100 150H114V168H100Z M206 150H220V168H206Z M107 150V168 M213 150V168",
+          "color": "orange",
+          "width": "thin"
+         },
+         {
+          "d": "M86 150a4 4 0 1 0 8 0a4 4 0 1 0 -8 0 M226 150a4 4 0 1 0 8 0a4 4 0 1 0 -8 0",
+          "color": "orange",
+          "width": "mid"
+         }
+        ],
+        "light": [
+         {
+          "d": "M86 150a4 4 0 1 0 8 0a4 4 0 1 0 -8 0Z M226 150a4 4 0 1 0 8 0a4 4 0 1 0 -8 0Z",
+          "color": "lemon"
+         },
+         {
+          "d": "M15 165H40V190H15Z M55 165H78V190H55Z M242 165H265V190H242Z M280 165H305V190H280Z",
+          "color": "orange"
+         },
+         {
+          "d": "M100 150H114V168H100Z M206 150H220V168H206Z M132 120H139V128H132Z M181 120H188V128H181Z",
+          "color": "orange"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    10,
+    11
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "claude-sonnet-5-5",
+    "effort": "medium",
+    "served_model": "claude-sonnet-5-5",
+    "ms": 6547,
+    "usage": {
+     "input_tokens": 1646,
+     "output_tokens": 802,
+     "cache_creation_input_tokens": 0,
+     "cache_read_input_tokens": 6031
+    },
+    "stop_reason": "end_turn",
+    "request_id": "req_011CgQi9pZ9yKvdKFeXapdUx",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "良平は喘ぎ喘ぎ走り、声をかける村人に答えず、明るい家々の前を走り過ぎた",
+       "quote": "良平が喘ぎ喘ぎ走るのを見ては"
+      },
+      {
+       "text": "家の門口に駆けこむと大声で泣き出し、父母や近所の女衆が集まって泣く訳を尋ねた",
+       "quote": "良平はとうとう大声に、わっと泣き出さずにはいられなかった"
+      },
+      {
+       "text": "良平は何と云われても泣き続け、遠い道を走り通した心細さを振り返った",
+       "quote": "啜り上げ啜り上げ泣き続けた"
+      },
+      {
+       "text": "二十六の年に東京へ出た良平は雑誌社で校正をし、疲れると薄暗い藪や坂のある路を思い出す",
+       "quote": "今では或雑誌社の二階に、校正の朱筆を握っている"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "same",
+       "place": "良平の家の門口",
+       "place_quote": "薄暗い門口へ集って来た",
+       "time": "night",
+       "time_quote": "薄暗い門口",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "sad",
+       "mood_quote": "啜り上げ啜り上げ泣き続けた",
+       "keep": [],
+       "things": [
+        {
+         "name": "門口",
+         "look": "薄暗い家の入口",
+         "quote": "薄暗い門口",
+         "main": true
+        },
+        {
+         "name": "井戸",
+         "look": "村の道端の井戸",
+         "quote": "井戸端",
+         "main": false
+        },
+        {
+         "name": "雑貨屋と床屋",
+         "look": "明るい灯のともる店先",
+         "quote": "雑貨屋だの床屋だの、明るい家",
+         "main": false
+        }
+       ],
+       "changes": []
+      },
+      {
+       "change": "new",
+       "place": "東京の雑誌社の二階",
+       "place_quote": "或雑誌社の二階",
+       "time": "unknown",
+       "time_quote": "",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "sad",
+       "mood_quote": "塵労に疲れた",
+       "keep": [],
+       "things": [
+        {
+         "name": "朱筆",
+         "look": "校正に使う赤い筆",
+         "quote": "校正の朱筆",
+         "main": false
+        },
+        {
+         "name": "薄暗い藪と坂の路",
+         "look": "薄暗い藪や坂を細く一すじ続く路",
+         "quote": "薄暗い藪や坂のある路が、細細と一すじ断続している",
+         "main": true
+        }
+       ],
+       "changes": []
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "claude-opus-5-5",
+     "effort": "medium",
+     "served_model": "claude-opus-5-5",
+     "ms": 23416,
+     "usage": {
+      "input_tokens": 4329,
+      "output_tokens": 2037,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 5460
+     },
+     "stop_reason": "end_turn",
+     "request_id": "req_011CgQiAJrzdeMpnK4DqEHuK",
+     "data": {
+      "ground": [],
+      "things": [
+       {
+        "id": "t30",
+        "forms": [
+         {
+          "d": "M234 150H304V240H234Z",
+          "color": "brown",
+          "tone": "deep"
+         },
+         {
+          "d": "M244 156H294V240H244Z",
+          "color": "umber",
+          "tone": "deep"
+         },
+         {
+          "d": "M226 152L240 134H298L312 152Z",
+          "color": "umber",
+          "tone": "deep"
+         },
+         {
+          "d": "M244 228H294V240H244Z",
+          "color": "gray",
+          "tone": "mid"
+         },
+         {
+          "d": "M250 200H262V228H250Z",
+          "color": "night",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M234 240V150H304V240",
+          "color": "umber",
+          "width": "bold"
+         },
+         {
+          "d": "M226 152L240 134H298L312 152Z",
+          "color": "umber",
+          "width": "bold"
+         },
+         {
+          "d": "M244 240V156H294V240",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M236 140H302 M231 146H307",
+          "color": "night",
+          "width": "thin"
+         },
+         {
+          "d": "M244 228H294",
+          "color": "gray",
+          "width": "mid"
+         },
+         {
+          "d": "M269 156V228 M248 170H290 M248 186H290",
+          "color": "night",
+          "width": "thin"
+         },
+         {
+          "d": "M238 160V236 M300 160V236",
+          "color": "brown",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t31",
+        "forms": [
+         {
+          "d": "M86 208H112V226H86Z",
+          "color": "gray",
+          "tone": "mid"
+         },
+         {
+          "d": "M84 206H114V210H84Z",
+          "color": "gray",
+          "tone": "deep"
+         },
+         {
+          "d": "M84 186L99 178L114 186Z",
+          "color": "brown",
+          "tone": "deep"
+         },
+         {
+          "d": "M96 196H102V203H96Z",
+          "color": "brown",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M86 208H112V226H86Z M84 206H114V210H84Z",
+          "color": "gray",
+          "width": "mid"
+         },
+         {
+          "d": "M88 206V186 M110 206V186 M84 186L99 178L114 186Z",
+          "color": "brown",
+          "width": "mid"
+         },
+         {
+          "d": "M99 186V196 M96 196H102V203H96Z",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M86 216H112 M95 208V226 M104 208V226",
+          "color": "night",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t32",
+        "forms": [
+         {
+          "d": "M92 160L122 156V162L92 166Z M200 160L230 164V170L200 166Z",
+          "color": "red",
+          "tone": "mid"
+         },
+         {
+          "d": "M94 168H118V186H94Z M202 170H226V188H202Z",
+          "color": "orange",
+          "tone": "mid"
+         },
+         {
+          "d": "M196 150H199V184H196Z",
+          "color": "white",
+          "tone": "pale"
+         },
+         {
+          "d": "M196 154L199 158V162L196 158Z M196 166L199 170V174L196 170Z",
+          "color": "red",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M92 160L122 156V162L92 166Z M200 160L230 164V170L200 166Z",
+          "color": "red",
+          "width": "mid"
+         },
+         {
+          "d": "M94 168H118V186H94Z M202 170H226V188H202Z",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M98 176H114 M100 172V186 M108 172V186",
+          "color": "brown",
+          "width": "thin"
+         },
+         {
+          "d": "M196 150H199V184H196Z M196 154L199 158 M196 166L199 170 M196 178L199 182",
+          "color": "red",
+          "width": "thin"
+         },
+         {
+          "d": "M206 180H222 M214 172V188",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": [
+         {
+          "d": "M94 168H118V186H94Z M202 170H226V188H202Z",
+          "color": "orange"
+         },
+         {
+          "d": "M197 147a2 2 0 1 0 4 0a2 2 0 1 0 -4 0Z",
+          "color": "lemon"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  }
+ ]
+}

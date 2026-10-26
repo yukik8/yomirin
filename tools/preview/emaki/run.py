@@ -1,4 +1,5 @@
 """章の絵巻の試作(#51): 本を1ページずつ読み進め、端末が決めた回に Claude を呼び、記録を runs/ に書く。
+絵巻は読んだ話を演じる(場面が移ると次の区画へ流れ、物が所から所へ動き、灯る)。
 
     server/.venv/bin/python tools/preview/emaki/run.py --book torokko                  # 下調べあり・読み取り Sonnet・描く Opus
     server/.venv/bin/python tools/preview/emaki/run.py --book torokko --no-brief       # 下調べなし(比べる)
@@ -26,6 +27,7 @@ import anthropic
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 RUNS = HERE / "runs"
+FORMAT = 2  # 記録の形の版。2 は、所(spots)と動き(beats)を描く係に返させる形(1 は、描き足すだけで物が動かない形)
 
 # 端末の画風に任せる部分は、#50 の generate.py と同じ言い方にそろえる
 BRIEF_SYSTEM = (
@@ -39,8 +41,8 @@ BRIEF_SYSTEM = (
 
 READ_SYSTEM = (
     "あなたは読書アプリの読み取り係。読者がいま読み終えたページ(<新しく読んだ段落>)を受け取り、"
-    "余白の挿絵(章ごとの絵巻。場面ごとに区画が増え、新しく出た物が描き足されていく)のための場面メモを書く。"
-    "メモは読者には見せず、描く係に渡す。\n"
+    "余白の挿絵のための場面メモを書く。挿絵は章ごとの絵巻で、読んだ話を演じる: 場面が移ると次の区画へ流れ、"
+    "同じ場面のうちは物が動く・現れる・去る・灯る・日が暮れる。メモは読者には見せず、描く係と端末に渡す。\n"
     "ネタバレの決まり(いちばん大事):\n"
     "- <下調べ> はこの本の全体(結末まで)。誰が・どこで・何が起きているかを読み違えないためだけに使う。\n"
     "- 書いてよいのは、<新しく読んだ段落> と、それより前に読んだこと(<ここまでの話>)から分かることだけ。"
@@ -54,29 +56,39 @@ READ_SYSTEM = (
     "- events: <新しく読んだ段落> で起きたこと(順に・4つまで・各60字まで)。\n"
     "- scenes: 段落の中の場面を、読んだ順に2つまで。段落の最後の場面は必ず入れる。"
     "段落の中で場面が三つ以上あるときは、話の上でいちばん大事な場面と、最後の場面にする。\n"
-    "  - change: 一つ前の場面(最初は <いまの場面>)から、場所が大きく移った・時が大きく飛んだ・夢や回想に入ったときだけ new。"
-    "同じ場所の続きや、道のりの途中で景色が少し変わるだけなら same。<いまの場面> が無ければ new。\n"
-    "  - time・weather・mood は決まった語から選び、根拠の語句を写す。本文から分からなければ unknown にし、語句は空。\n"
+    "  - change: 一つ前の場面(最初は <いまの場面>)から、場所が移った・時が大きく飛んだ・夢や回想に入ったら new(絵巻が流れて次の区画へ進む)。"
+    "道のりでも、見えている景色の主な物(畑・林・海・店など)が替わったら new。同じ場所で物が動く・増える・灯る・日が暮れるだけなら same。"
+    "<いまの場面> が無ければ new。\n"
+    "  - time・weather・mood は決まった語から選び、根拠の語句を写す。本文から分からなければ unknown にし、語句は空。"
+    "same の場面で時刻が移ったら(日が暮れた・夜が明けた)、新しい時刻を書く。\n"
     "  - keep: new のときだけ。一つ前の場面の物のうち、この場面にも続けて見える物の名前(名前はそのまま)。\n"
     "  - things: この場面に新しく出てきた、絵に描ける物(物・建物・乗り物・道・植物・動物・空や水・光)。"
-    "一つ前の場面の物や keep に有る物は入れない。人は入れない(人の姿・顔・手・影も)。主な物から順に。\n"
-    "  - changes: この場面の物の見た目が変わったとき(灯がともる・積み上がる・壊れる・暗くなる)。名前はそのまま。"
+    "一つ前の場面の物や keep に有る物は入れない。人は入れない(人の姿・顔・手・影も)。主な物から順に、場面の絵に要る物だけ(keep と合わせて6つほどまで)。\n"
+    "  - changes: この場面の物の形が変わったとき(積み上がる・壊れる)。描き直す。名前はそのまま。\n"
+    "  - beats: same のときだけ。<いまの場面の物> が動いた(所へ)・去った・灯った・消えたことを、読んだ順に。"
+    "move の to は <いまの場面の所> の名前から選ぶ(合う所が無ければ書かない)。人が押す・乗る・運ぶ物も、物の動きとして書く。"
 )
 
 DRAW_SYSTEM = (
-    "あなたは読書アプリの挿絵描き。読者が読み進めている本の、章ごとの絵巻の一区画(いまの場面)を描く。"
+    "あなたは読書アプリの挿絵描きで、演出家。読者が読み進めている本の、章ごとの絵巻の一区画(いまの場面)を描く。"
+    "絵は読んだ話を演じる: 物は、話に沿って区画の中の所(spots)を動き、去り、灯る。"
     "絵は形のデータで返す。SVG の path の d を、決まった層に分けて書く。キャンバスは横320・縦240(viewBox 0 0 320 240)。"
-    "画風(色鉛筆の線の揺れ・水彩のにじみ・紙の質感・光の輪)は表示する側が付けるので、形と色の名前だけを決める。\n"
+    "画風(色鉛筆の線の揺れ・水彩のにじみ・紙の質感・光の輪)と動き(所から所への移り)は表示する側が付けるので、形・色の名前・所・動きだけを決める。\n"
     "- 描くのは <物> の一覧の物と、場所の地(空・地面・壁・水面)だけ。一覧に無い物を足さない。物は id ごとに返す(一覧に無い id は捨てられる)。\n"
     "- <ここまでの話> は、構図と色を話に沿わせるために使う(いまの場面が話の中でどんな時かを、置き方・大きさ・明るさ・色で表す)。"
     "話の出来事そのものや人物は描かない。\n"
     "- 人物は描かない(人の姿・顔・手・影も)。文字・数字・記号・吹き出し・題は描かない。\n"
-    "- mode が new: 新しい区画。地(ground)と、一覧の物をすべて描く。\n"
-    "- mode が add: <いまの絵> はそのまま残る。「描く」の付いた物だけを返す(新しく出た物と、見た目が変わった物。変わった物は前の形と置き換わる)。"
-    "いまの構図を崩さず、空いている所か、話に合う所に置く。地は返さない(空の配列)。\n"
-    "層: forms は物の面(奥から手前の順)。lines は色鉛筆の線で、物の輪郭は面とは別に必ず線でも描く"
-    "(描き足した物は、最初は線だけで見せるので、線だけで何か分かるように)。陰影・模様・細部の線も足す。"
-    "light は光るものそのものの形(灯り・星・光る物・水面のきらめき)。章の終わりに灯る。\n"
+    "- spots: 物が居られる所・動いて行ける所を、名前と座標で決める(坂の上・坂の下・茶店の前・画面の外の左など)。"
+    "y は物の足もとが来る高さ。scale は、その所での物の大きさ(奥は小さく、手前は大きく)。"
+    "動く物(乗り物・持ち運べる物・動物・日や月)が、話の中で行き来しそうな所を用意する。\n"
+    "- 物ごとに、at(足もとの点)・spot(いま居る所。動かない物は空)・lit(灯りがいま灯っているか)を書く。"
+    "物は spot の所に、at がその所の座標に来るように描く。\n"
+    "- mode が new: 新しい区画。地と、一覧の物をすべて描き、所を決める。物は <この回の出来事> の最初の出来事の前の様子で描き、"
+    "beats に、出来事に沿った動き(どの出来事で、どの物が、どこへ動く・去る・灯る・消える)を順に書く。\n"
+    "- mode が add: <いまの絵> と所はそのまま残る。「描く」の付いた物だけを返す(新しく出た物と、形が変わった物。変わった物は前の形と置き換わる)。"
+    "いまの構図を崩さず、空いている所か、話に合う所に置く。地は返さない。所は、足す所だけ。beats は空。\n"
+    "層: forms は物の面(奥から手前の順)。lines は色鉛筆の線で、物の輪郭は面とは別に必ず線でも描く。陰影・模様・細部の線も足す。"
+    "light は光るものそのものの形(灯り・星・光る物・水面のきらめき)。\n"
     "d はコマンド(M L H V C S Q T A Z と小文字)と数字だけ。同じ色の小さな形は、一つの d に複数の M でまとめる。"
     "主役を大きく、はっきり描き、小さく表示しても何の場面か分かる構図にする。"
 )
@@ -188,11 +200,16 @@ def brief_text(brief: dict | None) -> str:
 
 
 def read_message(req: dict) -> str:
-    things = "\n".join(f"{t['name']}({t['look']})" for t in req["things"]) or "(無い)"
+    def thing(t: dict) -> str:
+        state = [f"所: {t['spot']}" if t["spot"] else "", "" if t["shown"] else "去った", "" if t["lit"] else "灯っていない"]
+        return f"{t['name']}({t['look']}){'・'.join(x for x in state if x)}"
+
+    things = "\n".join(thing(t) for t in req["things"]) or "(無い)"
     return (
         f"<ここまでの話>\n{story_text(req['story'])}\n</ここまでの話>\n"
         f"<いまの場面>{scene_text(req['scene'])}</いまの場面>\n"
         f"<いまの場面の物>\n{things}\n</いまの場面の物>\n"
+        f"<いまの場面の所>{'・'.join(req['spots']) or '(無い)'}</いまの場面の所>\n"
         f"<新しく読んだ段落>\n{req['text']}\n</新しく読んだ段落>\n"
         f"seed: {'頼む' if req['seed'] else '頼まない'}"
     )
@@ -200,7 +217,7 @@ def read_message(req: dict) -> str:
 
 def draw_message(req: dict) -> str:
     def thing(t: dict) -> str:
-        marks = [m for m, on in (("主役", t["main"]), ("描く", t["draw"])) if on]
+        marks = [m for m, on in (("主役", t["main"]), ("描く", t["draw"]), (f"所: {t['spot']}", t["spot"])) if on]
         return f"{t['id']} {t['name']}({t['look']}){'・'.join(marks)}"
 
     text = (
@@ -209,15 +226,23 @@ def draw_message(req: dict) -> str:
         f"<場面>{scene_text(req['scene'])}</場面>\n"
         f"<物>\n" + "\n".join(thing(t) for t in req["things"]) + "\n</物>"
     )
+    if req["mode"] == "new":
+        events = "\n".join(f"{i} {e}" for i, e in enumerate(req["events"])) or "(無い)"
+        text += f"\n<この回の出来事>\n{events}\n</この回の出来事>"
     if req["current"]:
+        text += f"\n<所>\n{json.dumps(req['spots'], ensure_ascii=False)}\n</所>"
         text += f"\n<いまの絵>\n{json.dumps(req['current'], ensure_ascii=False)}\n</いまの絵>"
     return text
 
 
 def judge_message(req: dict) -> str:
     rows = []
+    def state(x: dict) -> str:
+        marks = ["描いた" if x["drawn"] else "", f"所: {x['spot']}" if x["spot"] else "", "" if x["shown"] else "去った", "" if x["lit"] else "灯っていない"]
+        return "・".join(m for m in marks if m)
+
     for t in req["ticks"]:
-        things = "、".join(f"{x['name']}({x['look']}){'・描いた' if x['drawn'] else ''}" for x in t["things"]) or "(無い)"
+        things = "、".join(f"{x['name']}({x['look']}){state(x)}" for x in t["things"]) or "(無い)"
         rows.append(f"回 {t['tick']}: {t['read_to_page']}ページまで読んだ\n  ここまでの話: {story_text(t['story'])}\n  場面: {scene_text(t['scene'])}\n  物: {things}")
     return f"<本文>\n{req['text']}\n</本文>\n<回ごと>\n" + "\n".join(rows) + "\n</回ごと>"
 
@@ -291,12 +316,15 @@ def main() -> int:
 
     path = RUNS / f"{label(args)}.json"
     run = json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+    if run and run.get("format") != FORMAT:
+        print(f"{path.name}: 前の形の記録なので続きから回せない(名前を変えるか消すと、新しく作る)", file=sys.stderr)
+        return 1
     if run and run.get("finished"):
         print(f"{path.name}: もうある(消すと作り直す)")
         return 0
     if not run:
         settings = {**book["settings"], "start": max(args.start - 1, 0), "chapters": args.chapters or None}
-        run = {"book": args.book, "label": path.stem, "settings": settings, "models": {"brief": args.brief_model if args.brief else None, "reader": args.reader, "drawer": args.drawer, "summary": args.reader, "judge": args.judge_model}, "brief": None, "ticks": []}
+        run = {"format": FORMAT, "book": args.book, "label": path.stem, "settings": settings, "models": {"brief": args.brief_model if args.brief else None, "reader": args.reader, "drawer": args.drawer, "summary": args.reader, "judge": args.judge_model}, "brief": None, "ticks": []}
         if args.brief:
             # 書名と著者だけを渡す(本文は渡さない)
             run["brief"] = call(client, args.brief_model, args.effort, cached(BRIEF_SYSTEM), f"書名: {book['title']}\n著者: {book['author']}", schemas["brief"], 4000)

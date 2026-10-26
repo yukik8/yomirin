@@ -1,25 +1,33 @@
-// 章の絵巻(#51 → #34)。読み進めた話を踏まえて場面を読み取り、余白の絵が話とともに育つ。
-// 端末の側の決まりをここに集める: いつ何を送るか・返ってきたものの検め方・本ごとに残すもの・絵の組み立て。
+// 章の絵巻(#51 → #34)。読み進めた話を踏まえて場面を読み取り、余白の絵が話を演じる。
+// 場面が移ると絵巻が流れて次の区画へ進み、同じ場面のうちは、物が動く・現れる・去る・灯る・日が暮れる。
+// どれも、読み終えた所の出来事を、次のめくりから1ページずつ追いかけて演じる(読んでいる間は止まっている)。
+//
+// 端末の側の決まりをここに集める: いつ何を送るか・返ってきたものの検め方・本ごとに残すもの・絵の組み立てと動き。
 // サーバの側(Claude への指示)は run.py。試写室(preview.js)・check.mjs・device.mjs(run.py が呼ぶ)で使う。
 // 見込みが立てば extension/src/content/ へ移す。
 //
 // ネタバレの守り(端末の側):
 // - 本に足すのは、今回送った段落にそのまま有る語句を付けたものだけ(found)。下調べで先を知っている読み取り係が「先」を書いても、ここで止まる
+// - 動き(beat)も同じ。読み取りの動きには語句を、描く係の動きには、語句で確かめたこの回の出来事の番号を付けさせる
 // - 描く係に渡すのは、ここまでの話と、語句で確かめた場面と物だけ(drawRequest)。書名と下調べは渡さない
 // - 描く係が返した形は、頼んだ物の id のものだけを受け取る(applyDrawing)
-import { checkShape, paint, frame, sceneSchema } from '../scene/scene.js';
+import { VIEW, checkShape, paint, frame, layer, sceneSchema } from '../scene/scene.js';
 
 export const TIMES = { morning: '朝', day: '昼', evening: '夕方', night: '夜', unknown: '分からない' };
 export const WEATHERS = { clear: '晴れ', cloudy: '曇り', rain: '雨', snow: '雪', fog: '霧', unknown: '分からない' };
 // #42(めくりの演出)と同じ7つ
 export const MOODS = { calm: '穏やか', warm: 'あたたかい', sad: 'しんみり', tense: '緊迫', eerie: '不思議・不穏', joyful: 'うれしい', wonder: '発見・驚き', unknown: '分からない' };
+// 物の動き。move は区画の「所」(spot)へ動く。leave は見えなくなる。light と dark は灯りがともる・消える
+export const ACTS = { move: '所へ動く', leave: '去る', light: '灯る', dark: '消える' };
 export const EMAKI = {
   every: 700, // 読み終えた本文がこれだけたまったら読み取る(字。試写室ではおよそ2ページ)。章の終わりでは足りなくても読み取る
   pageSize: 400, // 試写室の1ページ(字)
   panels: 8, // 1章の区画の上限
-  things: 12, // 1区画の物の上限
+  things: 12, // 1区画の物の上限(指示は6つほど。上限を変えると、前の記録をたどったときに id がずれる)
+  spots: 8, // 1区画の所の上限
   events: 4, // 1回の読み取りで足す出来事の上限
   scenes: 2, // 1回の読み取りで当てる場面の上限(2ページの間に場面が二つ過ぎることがある)
+  beats: 6, // 1回の動きの上限
   recent: 30, // 送る「この章の出来事」の上限(新しい方から)
   event: 60, quote: 40, look: 40, name: 20, seed: 300, summary: 200, // 字数の上限
   shapes: { forms: 16, lines: 24, light: 8 }, // 1つの物の形の上限
@@ -31,6 +39,7 @@ const flat = (s) => String(s ?? '').replace(/\s+/g, '');
 const cut = (s, n) => String(s ?? '').trim().slice(0, n);
 const list = (v) => (Array.isArray(v) ? v : []);
 const choice = (table, v) => (typeof v === 'string' && Object.hasOwn(table, v) ? v : 'unknown');
+const num = (v, lo, hi) => (typeof v === 'number' && Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : null);
 
 /** 語句が本文にそのまま有るか(空白と改行は無視する。2字より短いものは数えない) */
 export function found(quote, text) {
@@ -71,7 +80,7 @@ export function paginate(book, size = EMAKI.pageSize) {
 
 /**
  * 読み取りの区切り: start ページから読み始め、読み終えた本文が every 字たまるか章の終わりで1回。[[最初のページ, 最後のページ], …]
- * 試写室では、その回の答えは最後のページの次のめくりで見える
+ * その回の答えは、最後のページの次のめくりから、1ページずつ追いかけて演じる
  */
 export function ticksOf(pages, { start = 0, every = EMAKI.every, chapters = null } = {}) {
   const ticks = [];
@@ -87,6 +96,20 @@ export function ticksOf(pages, { start = 0, every = EMAKI.every, chapters = null
 }
 
 const textOf = (pages, [a, b]) => pages.slice(a, b + 1).map((p) => p.text).join('\n');
+
+/** 語句が、回のページ [a, b] のどのページに有るか(ページをまたぐ語句は、終わるページ)。見つからなければ a */
+export function pageOf(quote, pages, [a, b]) {
+  const q = flat(quote);
+  const all = flat(textOf(pages, [a, b]));
+  const at = q ? all.indexOf(q) : -1;
+  if (at < 0) return a;
+  let end = 0;
+  for (let p = a; p <= b; p += 1) {
+    end += flat(pages[p].text).length;
+    if (at + q.length <= end) return p;
+  }
+  return b;
+}
 
 // ---- 下調べ(本ごとに一度。書名から。画面に出さず、エクスポートにも入れない) ----
 
@@ -119,6 +142,7 @@ const storyOf = (book) => ({
 });
 const blank = (book) => !book.story.seed && !book.story.chapters.length && !book.story.events.length;
 const current = (book) => book.emaki.panels.at(-1) ?? null;
+const sceneOf = (panel) => ({ place: panel.place.name, time: panel.time, weather: panel.weather, mood: panel.mood });
 
 /** 新しい章に入った。絵巻は新しくする(持ち越さない)。ここまでの話は持ち越す */
 export function startChapter(book, chapter) {
@@ -133,8 +157,9 @@ export function readRequest(book, text) {
   return {
     brief: book.brief,
     story: storyOf(book),
-    scene: panel && { place: panel.place.name, time: panel.time, weather: panel.weather, mood: panel.mood },
-    things: panel ? panel.things.map((t) => ({ name: t.name, look: t.look })) : [],
+    scene: panel && sceneOf(panel),
+    spots: panel ? panel.spots.map((s) => s.name) : [],
+    things: panel ? panel.things.map((t) => ({ name: t.name, look: t.look, spot: t.pos ?? '', shown: t.shown, lit: t.lit })) : [],
     seed: blank(book) && !!book.brief,
     text,
   };
@@ -156,7 +181,11 @@ export function readSchema() {
         mood: pick(MOODS, '雰囲気(いま読んだ所の。この先を先取りしない)'), mood_quote: quote,
         keep: { type: 'array', description: 'new のときだけ: 一つ前の場面の物のうち、この場面にも続けて見える物の名前', items: str('物の名前') },
         things: { type: 'array', description: 'この場面に新しく出てきた、描ける物(人は入れない)', items: obj({ name: str(`${EMAKI.name}字まで`), look: str(`いまどう見えるか(${EMAKI.look}字まで)`), quote, main: { type: 'boolean', description: '場面の主役' } }) },
-        changes: { type: 'array', description: 'この場面の物の見た目が変わったとき(灯がともる・積み上がる・壊れる)', items: obj({ name: str('物の名前'), look: str(`${EMAKI.look}字まで`), quote }) },
+        changes: { type: 'array', description: 'この場面の物の見た目が変わったとき(積み上がる・壊れる。描き直す)', items: obj({ name: str('物の名前'), look: str(`${EMAKI.look}字まで`), quote }) },
+        beats: {
+          type: 'array', description: `same のときだけ: <いまの場面の物> が動いた・去った・灯った・消えたことを、読んだ順に(${EMAKI.beats}つまで)`,
+          items: obj({ name: str('物の名前'), act: pick(ACTS, '動き'), to: str('act が move のとき: <いまの場面の所> の名前。ほかは空'), quote }),
+        },
       }),
     },
   });
@@ -164,13 +193,14 @@ export function readSchema() {
 
 /**
  * 読み取りの答えを、今回の段落 text と照らし合わせてから本に足す(book を書き換える)。
- * 返すもの: { dropped: [{ kind, what, quote, why }], draws: [{ panel, mode: 'new' | 'add', ids }] }(描く順)
- * why は quote(語句が段落に無い)・limit(上限)・name(知らない物の名前)。
+ * 返すもの: { dropped: [{ kind, what, quote, why }], draws: [{ panel, mode, ids, tick }](描く順), cues: 演じること }
+ * cues は { kind: 'panel' | 'appear' | 'beat' | 'time', panel, id?, act?, to?, quote }。絵を演じる順と時刻は、語句の有るページで決める(timeline)
+ * why は quote(語句が段落に無い)・limit(上限)・name(知らない物や所の名前)。
  */
 export function applyReading(book, data, text, tick) {
   const dropped = [];
   const drop = (kind, what, quote, why = 'quote') => dropped.push({ kind, what: cut(what, 40), quote: cut(quote, 80), why });
-  if (!data || typeof data !== 'object') return { dropped, draws: [], error: 'not_object' };
+  if (!data || typeof data !== 'object') return { dropped, draws: [], cues: [], error: 'not_object' };
   const ok = (quote) => found(quote, text);
   if (blank(book) && book.brief && typeof data.seed === 'string') book.story.seed = cut(data.seed, EMAKI.seed);
   for (const [i, e] of list(data.events).entries()) {
@@ -178,16 +208,16 @@ export function applyReading(book, data, text, tick) {
     else if (typeof e?.text === 'string' && e.text.trim() && ok(e.quote)) book.story.events.push({ text: cut(e.text, EMAKI.event), quote: cut(e.quote, EMAKI.quote), tick });
     else drop('event', e?.text, e?.quote);
   }
-  const draws = [];
+  const draws = [], cues = [];
   for (const [i, s] of list(data.scenes).entries()) {
     if (i >= EMAKI.scenes) { drop('scene', s?.place, s?.place_quote, 'limit'); continue; }
-    scene(book, s && typeof s === 'object' ? s : {}, { ok, drop, draws, tick });
+    scene(book, s && typeof s === 'object' ? s : {}, { ok, drop, draws, cues, tick });
   }
-  return { dropped, draws };
+  return { dropped, draws, cues };
 }
 
-// 場面を1つ当てる。時刻・天気・雰囲気・場所・物は、語句が確かめられたものだけ
-function scene(book, s, { ok, drop, draws, tick }) {
+// 場面を1つ当てる。時刻・天気・雰囲気・場所・物・動きは、語句が確かめられたものだけ
+function scene(book, s, { ok, drop, draws, cues, tick }) {
   const attr = (table, key) => {
     const v = choice(table, s[key]);
     if (v === 'unknown' || ok(s[`${key}_quote`])) return v;
@@ -203,17 +233,19 @@ function scene(book, s, { ok, drop, draws, tick }) {
   const fresh = !before || (s.change === 'new' && (place.name || time !== 'unknown') && book.emaki.panels.length < EMAKI.panels);
   let panel = before;
   if (fresh) {
-    panel = { id: `p${book.next++}`, tick, place, time, weather, mood, ground: [], things: [] };
-    // 前の場面から続けて見える物(語句は前に確かめてある)
+    panel = { id: `p${book.next++}`, tick, place, time, weather, mood, time0: time, ground: [], spots: [], things: [] };
+    // 前の場面から続けて見える物(語句は前に確かめてある)。形と所は新しい区画で描き直す
     for (const name of list(s.keep)) {
       const t = before?.things.find((x) => x.name === name);
       if (!t) drop('keep', name, '', 'name');
       else if (panel.things.length >= EMAKI.things) drop('keep', name, '', 'limit');
-      else panel.things.push({ ...t, id: `t${book.next++}`, tick, shapes: null, drawn: null });
+      else panel.things.push(carry(book, t, tick));
     }
   } else {
-    // 同じ場面の続き: 分からなかったものだけ埋める
-    for (const [k, v] of Object.entries({ time, weather, mood })) if (panel[k] === 'unknown') panel[k] = v;
+    // 同じ場面の続き: 分からなかったものは埋め、時刻が移ったら日が暮れる(明ける)のを演じる
+    for (const [k, v] of Object.entries({ weather, mood })) if (panel[k] === 'unknown') panel[k] = v;
+    if (panel.time === 'unknown') { panel.time = time; panel.time0 = time; }
+    else if (time !== 'unknown' && time !== panel.time) { panel.time = time; cues.push({ kind: 'time', panel: panel.id, to: time, quote: s.time_quote }); }
     if (!panel.place.name) panel.place = place;
   }
 
@@ -229,85 +261,150 @@ function scene(book, s, { ok, drop, draws, tick }) {
     if (!name || !ok(t.quote)) { drop('thing', t?.name, t?.quote); continue; }
     if (panel.things.some((x) => x.name === name)) continue; // もう有る
     if (panel.things.length >= EMAKI.things) { drop('thing', name, t.quote, 'limit'); continue; }
-    const thing = { id: `t${book.next++}`, name, look: cut(t.look, EMAKI.look), quote: cut(t.quote, EMAKI.quote), main: t.main === true, tick, shapes: null, drawn: null };
+    const thing = { id: `t${book.next++}`, name, look: cut(t.look, EMAKI.look), quote: cut(t.quote, EMAKI.quote), main: t.main === true, tick, late: !fresh, ...unplaced() };
     panel.things.push(thing);
     ids.push(thing.id);
+    if (!fresh) cues.push({ kind: 'appear', panel: panel.id, id: thing.id, quote: thing.quote });
+  }
+  if (!fresh) {
+    for (const [i, b] of list(s.beats).entries()) {
+      if (i >= EMAKI.beats) { drop('beat', b?.name, b?.quote, 'limit'); continue; }
+      const thing = panel.things.find((t) => t.name === b?.name);
+      if (!thing) { drop('beat', b?.name, b?.quote, 'name'); continue; }
+      if (!ok(b.quote)) { drop('beat', `${thing.name} ${b.act}`, b.quote); continue; }
+      const cue = act(panel, thing, b.act, b.to, b.quote);
+      if (cue) cues.push(cue);
+      else drop('beat', `${thing.name} ${b.act} ${b.to ?? ''}`, b.quote, 'name');
+    }
   }
 
   if (fresh) {
     if (!panel.things.length && !panel.place.name) return; // 描くものが無い
     book.emaki.panels.push(panel);
-    draws.push({ panel: panel.id, mode: 'new', ids: panel.things.map((t) => t.id) });
+    cues.push({ kind: 'panel', panel: panel.id, quote: place.quote || s.time_quote || '' });
+    draws.push({ panel: panel.id, mode: 'new', ids: panel.things.map((t) => t.id), tick });
     return;
   }
   if (!ids.length) return;
   // この回に描く区画なら、そこへまとめる
   const same = draws.find((d) => d.panel === panel.id);
   if (same) same.ids.push(...ids.filter((id) => !same.ids.includes(id)));
-  else draws.push({ panel: panel.id, mode: 'add', ids: [...new Set(ids)] });
+  else draws.push({ panel: panel.id, mode: 'add', ids: [...new Set(ids)], tick });
 }
 
-// ---- 描く(新しい場面か、描き足す物があるときだけ) ----
+// まだ描いていない物の、置き場所と灯り(描く係が決める)
+const unplaced = () => ({ shapes: null, drawn: null, at: null, spot: null, pos: null, lit0: true, lit: true, shown: true });
+// 前の場面から続けて見える物を、新しい区画へ写す
+const carry = (book, t, tick) => ({ ...t, id: `t${book.next++}`, tick, late: false, changed: undefined, ...unplaced() });
 
-/** 描く係へ送るもの。書名と下調べは入れない(描く係が知っているのは、ここまでの話と、語句で確かめた場面と物だけ) */
+// 物を1つ動かす(本を書き換える)。読めない動き・知らない所は null
+function act(panel, thing, verb, to, quote) {
+  if (verb === 'move') {
+    const spot = panel.spots.find((s) => s.name === to);
+    if (!spot) return null;
+    thing.pos = spot.name;
+    thing.shown = true;
+  } else if (verb === 'leave') thing.shown = false;
+  else if (verb === 'light') thing.lit = true;
+  else if (verb === 'dark') thing.lit = false;
+  else return null;
+  return { kind: 'beat', panel: panel.id, id: thing.id, act: verb, to: verb === 'move' ? to : '', quote: cut(quote, 80) };
+}
+
+// ---- 描く(新しい区画か、描き足す物があるときだけ) ----
+
+/**
+ * 描く係へ送るもの。書名と下調べは入れない(描く係が知っているのは、ここまでの話と、語句で確かめた場面と物だけ)。
+ * new のときは、この回の出来事に番号を付けて渡し、出来事に沿った動き(beats)を返させる
+ */
 export function drawRequest(book, draw) {
   const panel = book.emaki.panels.find((p) => p.id === draw.panel);
   return {
     mode: draw.mode,
     story: storyOf(book),
-    scene: { place: panel.place.name, time: panel.time, weather: panel.weather, mood: panel.mood },
-    things: panel.things.map((t) => ({ id: t.id, name: t.name, look: t.look, main: t.main, draw: draw.ids.includes(t.id) })),
-    current: draw.mode === 'add' ? { ground: panel.ground, things: panel.things.filter((t) => t.shapes).map((t) => ({ id: t.id, ...t.shapes })) } : null,
+    events: draw.mode === 'new' ? book.story.events.filter((e) => e.tick === draw.tick).map((e) => e.text) : [],
+    scene: sceneOf(panel),
+    things: panel.things.map((t) => ({ id: t.id, name: t.name, look: t.look, main: t.main, draw: draw.ids.includes(t.id), spot: t.pos ?? '' })),
+    spots: draw.mode === 'add' ? panel.spots : [],
+    current: draw.mode === 'add' ? { ground: panel.ground, things: panel.things.filter((t) => t.shapes).map((t) => ({ id: t.id, at: t.at, ...t.shapes })) } : null,
   };
 }
 
 export function drawSchema() {
   const { ground, forms, lines, light } = sceneSchema().properties;
+  const n = (description) => ({ type: 'number', description });
   return obj({
     ground: { type: 'array', description: `地。空・地面・壁・水面など、奥の大きな面(${EMAKI.ground}まで)。mode が add なら空`, items: ground.items },
+    spots: {
+      type: 'array', description: `この場面で物が居られる所・動いて行ける所(${EMAKI.spots}まで)。地面や線路の上の点で、画面の外(x が 0 より小さい・320 より大きい)も使える。add のときは、足す所だけ`,
+      items: obj({ name: str(`所の名前(${EMAKI.name}字まで。例: 坂の上・茶店の前・画面の外の左)`), x: n('x'), y: n('y。物の足もとが来る高さ'), scale: n('その所での物の大きさ(手前は大きく、奥は小さく。1 が描いた大きさ)') }),
+    },
     things: {
       type: 'array', description: '物ごとの形。id は <物> の一覧の id',
       items: obj({
         id: str('<物> の id'),
+        at: obj({ x: n('物の足もと(置いてある点)の x'), y: n('物の足もとの y') }),
+        spot: str('いま居る所の名前(spots の名前)。所に居ない物(空・山・建物など動かない物)は空'),
+        lit: { type: 'boolean', description: '光る物が、いま灯っているか(灯っていない灯り・まだ昇っていない月は false。光らない物は true)' },
         forms: { type: 'array', description: `物の面(${EMAKI.shapes.forms}まで)`, items: forms.items },
         lines: { type: 'array', description: `色鉛筆の線。輪郭は必ず描く(${EMAKI.shapes.lines}まで)`, items: lines.items },
-        light: { type: 'array', description: `光るものそのものの形。章の終わりに灯る(${EMAKI.shapes.light}まで)`, items: light.items },
+        light: { type: 'array', description: `光るものそのものの形(${EMAKI.shapes.light}まで)`, items: light.items },
       }),
+    },
+    beats: {
+      type: 'array', description: `mode が new のときだけ: <この回の出来事> に沿って、物が動く・去る・灯る・消えることを順に(${EMAKI.beats}つまで)。物は、最初の動きの前の様子で描く`,
+      items: obj({ event: { type: 'integer', description: '<この回の出来事> の番号' }, id: str('物の id'), act: { type: 'string', enum: Object.keys(ACTS), description: Object.entries(ACTS).map(([k, v]) => `${k}=${v}`).join(' / ') }, to: str('act が move のとき: spots の名前。ほかは空') }),
     },
   });
 }
 
 /**
  * 描く係の答えを区画に当てる(book を書き換える)。頼んだ id のほかの物は捨てる。add のときは地を描き直さない。
- * 返すもの: { dropped: 捨てた形の数, strangers: 頼んでいない id, missed: 頼んだのに形が来なかった id }
+ * 返すもの: { dropped: 捨てた形・所・動きの数, strangers: 頼んでいない id, missed: 頼んだのに形が来なかった id, cues: 演じること }
  */
 export function applyDrawing(book, data, draw, tick) {
   const panel = book.emaki.panels.find((p) => p.id === draw.panel);
-  const result = { dropped: 0, strangers: [], missed: [] };
+  const result = { dropped: 0, strangers: [], missed: [], cues: [] };
   if (!panel || !data || typeof data !== 'object') return { ...result, missed: draw.ids, error: 'not_object' };
   const redraw = new Set(list(data.things).map((t) => t?.id).filter((id) => draw.ids.includes(id)));
   let total = (draw.mode === 'new' ? 0 : length(panel.ground)) + panel.things.filter((t) => t.shapes && !redraw.has(t.id)).reduce((n, t) => n + length(Object.values(t.shapes).flat()), 0);
-  const take = (layer, shapes, max) => {
+  const take = (kind, shapes, max) => {
     const kept = [];
     for (const s of list(shapes)) {
-      const shape = checkShape(layer, s);
+      const shape = checkShape(kind, s);
       if (!shape || kept.length >= max || total + shape.d.length > EMAKI.total) { result.dropped += 1; continue; }
       total += shape.d.length;
       kept.push(shape);
     }
     return kept;
   };
-  if (draw.mode === 'new') panel.ground = take('ground', data.ground, EMAKI.ground);
+  if (draw.mode === 'new') { panel.ground = take('ground', data.ground, EMAKI.ground); panel.spots = []; }
   else result.dropped += list(data.ground).length;
+  for (const s of list(data.spots)) {
+    const name = typeof s?.name === 'string' ? cut(s.name, EMAKI.name) : '';
+    const x = num(s?.x, -320, 640), y = num(s?.y, -240, 480), scale = num(s?.scale, .3, 3);
+    if (!name || x == null || y == null || scale == null || panel.spots.length >= EMAKI.spots || panel.spots.some((p) => p.name === name)) { result.dropped += 1; continue; }
+    panel.spots.push({ name, x, y, scale });
+  }
   for (const t of list(data.things)) {
     const thing = redraw.has(t?.id) && panel.things.find((x) => x.id === t.id);
     if (!thing) { result.strangers.push(cut(t?.id, 20)); continue; }
     const shapes = { forms: take('forms', t.forms, EMAKI.shapes.forms), lines: take('lines', t.lines, EMAKI.shapes.lines), light: take('light', t.light, EMAKI.shapes.light) };
     if (!shapes.forms.length && !shapes.lines.length && !shapes.light.length) continue;
-    thing.shapes = shapes;
-    thing.drawn = tick;
+    const x = num(t.at?.x, -320, 640), y = num(t.at?.y, -240, 480);
+    const spot = panel.spots.find((s) => s.name === t.spot)?.name ?? null;
+    Object.assign(thing, { shapes, drawn: tick, at: x == null || y == null ? null : { x, y }, spot, pos: spot, lit0: t.lit !== false, lit: t.lit !== false });
   }
   result.missed = draw.ids.filter((id) => panel.things.find((t) => t.id === id)?.drawn !== tick);
+  // 出来事に沿った動き(new のときだけ)。出来事は語句で確かめてあるので、その語句で演じる時刻を決める
+  const events = book.story.events.filter((e) => e.tick === draw.tick);
+  for (const [i, b] of list(data.beats).entries()) {
+    const thing = panel.things.find((t) => t.id === b?.id && t.shapes);
+    const event = Number.isInteger(b?.event) ? events[b.event] : null;
+    const cue = draw.mode === 'new' && i < EMAKI.beats && thing && event ? act(panel, thing, b.act, b.to, event.quote) : null;
+    if (cue) result.cues.push(cue);
+    else result.dropped += 1;
+  }
   return result;
 }
 const length = (shapes) => shapes.reduce((n, s) => n + s.d.length, 0);
@@ -332,7 +429,7 @@ export function applySummary(book, data) {
 // ---- 記録をたどる(試写室・check.mjs・device.mjs) ----
 
 /**
- * run.py の記録を、端末と同じ決まりでたどる。upTo 回目まで当てた本と、回ごとの記録(落としたもの・描いたか)を返す。
+ * run.py の記録を、端末と同じ決まりでたどる。upTo 回目まで当てた本と、回ごとの記録を返す。
  * 回の中身: { pages: [a, b], chapter, reader: { data }, drawers: [{ data }](描く順), summary: { data } | null }
  */
 export function replay(run, pages, upTo = run.ticks.length) {
@@ -378,27 +475,125 @@ export function next(run, pages) {
   return { op: 'read', tick: { pages: [a, b], chapter: pages[a].chapter }, request: readRequest(book, textOf(pages, [a, b])) };
 }
 
-// ---- 絵 ----
+// ---- 演じる(試写室・本番の余白) ----
 
 /**
- * 区画の絵の断片。sketch の物は線だけを鉛筆の色で描く(描き足した直後)。sketchAll は区画ごと下描き(新しい場面の直後・地も描かない)。
- * light: 'soft'(読んでいる間)・'glow'(章の終わり)
+ * 回ごとの cues を、演じる順に並べ、めくり(turn・そのページを開いたときのページの番号)と段(step)を付ける。
+ * - 回 [a, b] の答えは、b の次のめくりから、その回のページ数ぶんのめくりで演じる(読んでいるページを、1回分遅れて追いかける)
+ * - 語句の有るページごとに一まとまりにし、新しい区画はそれだけで一まとまりにする(区画が現れてから、その中の物が動く)
+ * - まとまりは、めくり1回に一つ。足りなければ、めくり1回の中で二段まで続けて演じる(0.9 秒ずつ)。それでも余れば最後の段にまとめる
  */
-export function panelArt(panel, { sketch = new Set(), sketchAll = false, light = 'soft', styled = true } = {}) {
-  const drawn = panel.things.filter((t) => t.shapes);
-  const rough = (t) => sketchAll || sketch.has(t.id);
-  const colored = drawn.filter((t) => !rough(t));
-  return paint({
-    ground: sketchAll ? [] : panel.ground,
-    forms: colored.flatMap((t) => t.shapes.forms),
-    lines: drawn.flatMap((t) => (rough(t) ? t.shapes.lines.map((s) => ({ ...s, sketch: true })) : t.shapes.lines)),
-    light: colored.flatMap((t) => t.shapes.light),
-  }, { light, styled });
+export function timeline(run, pages, logs) {
+  const out = [];
+  for (const log of logs) {
+    const tick = run.ticks[log.tick];
+    const [a, b] = tick.pages;
+    const text = flat(textOf(pages, [a, b]));
+    const cues = [...log.read.cues, ...log.drawn.flatMap((d) => d?.cues ?? [])].map((cue) => ({ ...cue, tick: log.tick, chapter: tick.chapter, page: pageOf(cue.quote, pages, [a, b]), at: Math.max(0, text.indexOf(flat(cue.quote))) }));
+    // この回にできた区画の中の動きは、区画より後に回す
+    for (const panel of cues.filter((c) => c.kind === 'panel')) {
+      for (const c of cues) if (c !== panel && c.panel === panel.panel && (c.page < panel.page || (c.page === panel.page && c.at <= panel.at))) { c.page = panel.page; c.at = panel.at + .5; }
+    }
+    cues.sort((x, y) => x.page - y.page || x.at - y.at || order(x) - order(y));
+    const groups = [];
+    for (const cue of cues) {
+      const prev = groups.at(-1);
+      if (!prev || prev.page !== cue.page || cue.kind === 'panel' || prev.cues[0].kind === 'panel') groups.push({ page: cue.page, cues: [cue] });
+      else prev.cues.push(cue);
+    }
+    const turns = b - a + 1;
+    const doubled = Math.min(Math.max(groups.length - turns, 0), turns); // 二段で演じるめくりの数(前から)
+    const slots = [];
+    for (let i = 0; i < turns; i += 1) slots.push(...(i < doubled ? [[i, 0], [i, 1]] : [[i, 0]]));
+    groups.forEach((group, i) => {
+      const [turn, step] = slots[Math.min(i, slots.length - 1)];
+      for (const cue of group.cues) out.push({ ...cue, turn: b + 1 + turn, step });
+    });
+  }
+  return out;
+}
+const order = (cue) => (cue.kind === 'panel' ? 0 : 1);
+
+/**
+ * ページ turn を開いたときの、章の絵巻の様子(step=0 は、そのめくりの一段目を演じ終えたところ)。book は、そのめくりまでに届いた回をたどった本(形・所が入っている)。
+ * 返すもの: { panels: [{ id, time, things: { id: { pos, shown, lit } } }], current: いま余白に出す区画の id }
+ */
+export function stageAt(book, cues, turn, chapter, step = 1) {
+  const panels = [];
+  for (const cue of cues) {
+    if (cue.turn > turn || (cue.turn === turn && cue.step > step) || cue.chapter !== chapter) continue;
+    const panel = book.emaki.panels.find((p) => p.id === cue.panel);
+    if (!panel) continue;
+    if (cue.kind === 'panel') {
+      if (!drawable(panel)) continue;
+      const things = {};
+      for (const t of panel.things) if (!t.late) things[t.id] = { pos: t.spot, shown: true, lit: t.lit0 };
+      panels.push({ id: panel.id, time: panel.time0, things });
+      continue;
+    }
+    const shown = panels.find((p) => p.id === cue.panel);
+    if (!shown) continue;
+    if (cue.kind === 'time') shown.time = cue.to;
+    else if (cue.kind === 'appear') { const t = panel.things.find((x) => x.id === cue.id); if (t) shown.things[cue.id] = { pos: t.spot, shown: true, lit: t.lit0 }; }
+    else {
+      const state = shown.things[cue.id];
+      if (!state) continue;
+      if (cue.act === 'move') { state.pos = cue.to; state.shown = true; }
+      else if (cue.act === 'leave') state.shown = false;
+      else state.lit = cue.act === 'light';
+    }
+  }
+  return { panels, current: panels.at(-1)?.id ?? null };
+}
+
+/** 物を、いまの所へ置く動かし方。描いた所(spot)から、いまの所(pos)へ。所の大きさの比で大きさも変える */
+export function placement(panel, thing, pos) {
+  const to = panel.spots.find((s) => s.name === pos);
+  if (!to || !thing.at) return { dx: 0, dy: 0, scale: 1 };
+  const from = panel.spots.find((s) => s.name === thing.spot);
+  return { dx: to.x - thing.at.x, dy: to.y - thing.at.y, scale: +(to.scale / (from?.scale ?? 1)).toFixed(3) };
+}
+
+// 時刻が描いた時より進んだぶんだけ、上から色を重ねる(日が暮れる・夜になる)。描いた時刻の色は描く係が付けている
+const DUSK = { morning: 0, day: 0, evening: 1, night: 2, unknown: 0 };
+export function tint(panel, time) {
+  const step = DUSK[time] - DUSK[panel.time0];
+  if (step <= 0) return null;
+  return time === 'night' ? { color: '#2b3566', opacity: step === 2 ? .5 : .38 } : { color: '#e8935f', opacity: .26 };
+}
+
+/** 区画の地(紙と地の面)。物と縁は別の層 */
+export function groundSvg(panel, { styled = true } = {}) {
+  return frame([paint({ ground: panel.ground }, { styled })], { styled, fade: false });
+}
+
+/** 物1つの層(透明)。lit=false の灯りは淡い色を置くだけ */
+export function thingSvg(thing, { lit = true, styled = true } = {}) {
+  return layer(paint({ forms: thing.shapes.forms, lines: thing.shapes.lines, light: thing.shapes.light }, { light: lit ? 'glow' : 'soft', styled }), { styled });
+}
+
+/**
+ * 区画を1枚の絵にする(章の終わりの絵巻・一覧)。物は state の所に置き、灯りは state のとおり(glow=true なら全部ともす)。
+ * state が無ければ、本に残っているいまの様子
+ */
+export function panelArt(panel, { state = null, glow = false, styled = true } = {}) {
+  const parts = [paint({ ground: panel.ground }, { styled })];
+  for (const t of panel.things) {
+    if (!t.shapes) continue;
+    const s = state ? state.things[t.id] : { pos: t.pos, shown: t.shown, lit: t.lit };
+    if (!s || !s.shown) continue;
+    const art = paint(t.shapes, { light: glow || s.lit ? 'glow' : 'soft', styled });
+    const { dx, dy, scale } = placement(panel, t, s.pos);
+    parts.push(dx || dy || scale !== 1 ? `<g transform="translate(${+(t.at.x + dx).toFixed(1)} ${+(t.at.y + dy).toFixed(1)}) scale(${scale}) translate(${-t.at.x} ${-t.at.y})">${art}</g>` : art);
+  }
+  const shade = tint(panel, state ? state.time : panel.time);
+  if (shade) parts.push(`<rect width="${VIEW.width}" height="${VIEW.height}" fill="${shade.color}" opacity="${shade.opacity}" style="mix-blend-mode:multiply"/>`);
+  return parts.join('');
 }
 
 export const panelSvg = (panel, opts = {}) => frame([panelArt(panel, opts)], opts);
 /** 章の絵巻: 区画を順に横へ並べ、灯りをともす */
-export const scrollSvg = (panels, opts = {}) => frame(panels.map((p) => panelArt(p, { ...opts, light: 'glow' })), opts);
+export const scrollSvg = (panels, opts = {}) => frame(panels.map((p) => panelArt(p, { ...opts, glow: true })), opts);
 export const drawable = (panel) => !!panel && (panel.ground.length > 0 || panel.things.some((t) => t.shapes));
 
 // ---- 判定役(試写室での検査だけ。本番には無い) ----
@@ -412,8 +607,8 @@ export function judgeRequest(run, pages) {
       tick: i,
       read_to_page: tick.pages[1] + 1,
       story: storyOf(book),
-      scene: panel && { place: panel.place.name, time: panel.time, weather: panel.weather, mood: panel.mood },
-      things: panel ? panel.things.map((t) => ({ name: t.name, look: t.look, drawn: !!t.shapes })) : [],
+      scene: panel && sceneOf(panel),
+      things: panel ? panel.things.map((t) => ({ name: t.name, look: t.look, drawn: !!t.shapes, spot: t.pos ?? '', shown: t.shown, lit: t.lit })) : [],
     };
   });
   return { text: pages.map((p) => `〔${p.index + 1}ページ〕\n${p.text}`).join('\n'), ticks };

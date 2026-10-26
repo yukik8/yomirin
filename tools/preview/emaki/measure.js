@@ -11,6 +11,7 @@ export const CRITERIA = {
   perThousand: .07, // 1,000字あたりの費用の中央値($)。1日 5,000字で月 $10 ほど
 };
 export const SAMPLE = 'sample'; // Claude Code が手で書いた見本。計測が無く、判定に入れない
+export const FORMAT = 2; // 記録の形の版(run.py と同じ)。ほかの版は判定に入れない
 
 /** 1回の費用($)。キャッシュの書き込みは入力の 1.25 倍、読み出しは 0.1 倍。単価が分からない・usage が無いときは null */
 export function cost(record) {
@@ -69,6 +70,7 @@ export function measure(run, logs, book, pages) {
     scenes: scored ? agree / scored : null, scored,
     panels: logs.reduce((n, l) => n + l.read.draws.filter((d) => d.mode === 'new').length, 0),
     adds: logs.reduce((n, l) => n + l.read.draws.filter((d) => d.mode === 'add').length, 0),
+    cues: logs.reduce((n, l) => n + [...l.read.cues, ...l.drawn.flatMap((d) => d?.cues ?? [])].filter((c) => c.kind !== 'panel').length, 0), // 動き(現れる・動く・去る・灯る・時が移る)
     strangers: logs.reduce((n, l) => n + l.drawn.reduce((m, d) => m + (d?.strangers.length ?? 0), 0), 0),
     shapesDropped: logs.reduce((n, l) => n + l.drawn.reduce((m, d) => m + (d?.dropped ?? 0), 0), 0),
     medianMs: median(ticks.map((t) => t.ms)), maxMs: ticks.some((t) => Number.isFinite(t.ms)) ? Math.max(...ticks.map((t) => t.ms).filter(Number.isFinite)) : null,
@@ -90,6 +92,7 @@ function quoted(data) {
 /** runs/ の1件の表に出す名前 */
 export function label(run) {
   if (run.model === SAMPLE) return '見本(Claude Code・計測なし)';
+  if (run.format !== FORMAT) return `前の形(物が動かない)・${run.finished ? '' : '途中で止まった・'}${run.label}`;
   const short = (m) => m?.replace(/^claude-/, '').replace(/-\d.*$/, '') ?? '—';
   const parts = [run.brief ? '下調べあり' : '下調べなし', `読み取り ${short(run.models.reader)}・描く ${short(run.models.drawer)}`];
   if (run.settings.start) parts.push(`${run.settings.start + 1}ページ目から`);

@@ -106,12 +106,13 @@ const AREA = `filterUnits="userSpaceOnUse" x="0" y="0" width="${VIEW.width}" hei
 const ALPHA = (a, b) => `0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 ${a} ${b}`;
 // 水彩の縁の揺れ。物の下に敷く紙(under)も同じ揺れにして、縁をそろえる
 const WARP = '<feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="3" result="warp"/><feDisplacementMap in="SourceGraphic" in2="warp" scale="5" xChannelSelector="R" yChannelSelector="G" result="shape"/>';
-const DEFS = '<defs>'
-  // 紙の目(paper.css と同じ茶のノイズを少し濃く)
-  + `<filter id="paper" ${AREA}><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .31 0 0 0 0 .23 0 0 0 0 .17 0 0 0 .07 0"/></filter>`
-  // 絵の縁: 紙の内側で、揺れながらぼけて紙に溶ける
-  + `<filter id="edge" ${AREA}><feTurbulence type="fractalNoise" baseFrequency=".022" numOctaves="2" seed="21" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="22" xChannelSelector="R" yChannelSelector="G" result="r"/><feGaussianBlur in="r" stdDeviation="2.4"/></filter>`
-  + `<mask id="fade" maskUnits="userSpaceOnUse" x="0" y="0" width="${VIEW.width}" height="${VIEW.height}"><rect x="13" y="11" width="${VIEW.width - 26}" height="${VIEW.height - 22}" fill="#fff" filter="url(#edge)"/></mask>`
+// 紙の目(paper.css と同じ茶のノイズを少し濃く)
+const PAPER_NOISE = `<filter id="paper" ${AREA}><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 .31 0 0 0 0 .23 0 0 0 0 .17 0 0 0 .07 0"/></filter>`;
+// 絵の縁: 紙の内側で、揺れながらぼけて紙に溶ける
+const EDGE = `<filter id="edge" ${AREA}><feTurbulence type="fractalNoise" baseFrequency=".022" numOctaves="2" seed="21" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="22" xChannelSelector="R" yChannelSelector="G" result="r"/><feGaussianBlur in="r" stdDeviation="2.4"/></filter>`;
+const FADE = `<rect x="13" y="11" width="${VIEW.width - 26}" height="${VIEW.height - 22}"`; // 絵の内側(fill と filter="url(#edge)" を足して使う)
+const DEFS = '<defs>' + PAPER_NOISE + EDGE
+  + `<mask id="fade" maskUnits="userSpaceOnUse" x="0" y="0" width="${VIEW.width}" height="${VIEW.height}">${FADE} fill="#fff" filter="url(#edge)"/></mask>`
   // 水彩: 縁を揺らす → 顔料のむら(細かい粒×大きなむら)→ 縁に溜まる色
   + `<filter id="wash" ${AREA}>${WARP}`
   + `<feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" seed="8"/><feColorMatrix values="${ALPHA(-.7, 1.28)}" result="grain"/>`
@@ -161,15 +162,28 @@ export function paint({ ground = [], forms = [], lines = [], light = [] }, { was
   return art.join('');
 }
 
-/** paint の断片を、紙を敷き、縁を紙に溶かした SVG にする。断片が複数なら横に並べる(章の絵巻) */
-export function frame(arts, { styled = true } = {}) {
+/** paint の断片を、紙を敷き、縁を紙に溶かした SVG にする。断片が複数なら横に並べる(章の絵巻)。fade=false は縁を溶かさない(上に縁の紙 edgeSvg を重ねるとき) */
+export function frame(arts, { styled = true, fade = true } = {}) {
   const { width: w, height: h } = VIEW;
   const total = w * arts.length;
   const panels = arts.map((art, i) => {
-    const body = (styled ? `<rect width="${w}" height="${h}" filter="url(#paper)"/><g mask="url(#fade)">${art}</g>` : art);
+    const body = styled ? `<rect width="${w}" height="${h}" filter="url(#paper)"/>${fade ? `<g mask="url(#fade)">${art}</g>` : art}` : art;
     return i ? `<g transform="translate(${w * i} 0)">${body}</g>` : body;
   });
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${total} ${h}" width="${total}" height="${h}">${styled ? DEFS : ''}<rect width="${total}" height="${h}" fill="${PAPER}"/>${panels.join('')}</svg>`;
+}
+
+/** paint の断片を、紙も縁も付けない透明な SVG にする(層に分けて重ね、層ごとに動かすとき) */
+export function layer(art, { styled = true } = {}) {
+  const { width: w, height: h } = VIEW;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${styled ? DEFS : ''}${art}</svg>`;
+}
+
+/** 縁の紙: 層を重ねた絵のいちばん上に置く覆い。縁を揺らしながら紙に溶かし、内側は透ける */
+export function edgeSvg() {
+  const { width: w, height: h } = VIEW;
+  const rim = `<mask id="rim" maskUnits="userSpaceOnUse" x="0" y="0" width="${w}" height="${h}"><rect width="${w}" height="${h}" fill="#fff"/>${FADE} fill="#000" filter="url(#edge)"/></mask>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"><defs>${PAPER_NOISE}${EDGE}${rim}</defs><g mask="url(#rim)"><rect width="${w}" height="${h}" fill="${PAPER}"/><rect width="${w}" height="${h}" filter="url(#paper)"/></g></svg>`;
 }
 
 /** 段 stage(0〜LAST)の SVG の文字列。styled=false は画風を付けない(Claude が書いたままの形) */
