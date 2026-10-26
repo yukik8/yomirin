@@ -1,0 +1,1447 @@
+{
+ "book": "torokko",
+ "label": "torokko.sample",
+ "model": "sample",
+ "settings": {
+  "start": 0,
+  "pageSize": 400,
+  "every": 700,
+  "chapters": null
+ },
+ "models": {
+  "brief": "sample",
+  "reader": "sample",
+  "drawer": "sample",
+  "summary": "sample",
+  "judge": null
+ },
+ "brief": {
+  "model": "sample",
+  "data": {
+   "known": "yes",
+   "work": "芥川龍之介「トロッコ」",
+   "whole": "小田原熱海間の軽便鉄道の工事を見物する八つの良平は、トロッコに乗りたいと思っている。夕方、弟たちと土工のいないトロッコを押して乗るが、土工に怒鳴られて逃げる。十日余り後、若い二人の土工のトロッコを押させてもらい、蜜柑畑や雑木林を抜けて海の見える所まで行く。茶店で休むうちに日が暮れかかり、土工たちは向う泊りだから帰れと言う。良平は一人で、暗くなる線路伝いを泣きそうになりながら走って帰り、家の門口で大声に泣き出す。二十六になり東京の雑誌社で校正をする良平は、今もときどき、その時の薄暗い藪や坂のある路を思い出す。",
+   "world": "大正のころの、小田原と熱海の間の山あいの村。二月の初め。軽便鉄道の工事場・土工・藁屋根の茶店・蜜柑畑・竹藪・海の見える崖。"
+  }
+ },
+ "ticks": [
+  {
+   "pages": [
+    0,
+    1
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "sample",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "軽便鉄道の工事が始まり、良平は毎日村外れへトロッコを見に行く",
+       "quote": "良平は毎日村外れへ、その工事を見物に行った"
+      },
+      {
+       "text": "或夕方、弟たちと、土工のいないトロッコを押して線路を登る",
+       "quote": "三人の子供は恐る恐る、一番端にあるトロッコを押した"
+      },
+      {
+       "text": "勾配が急になり、良平は乗ろうと合図する",
+       "quote": "良平はもう好いと思ったから、年下の二人に合図をした"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "new",
+       "place": "夕方の村外れ",
+       "place_quote": "トロッコの置いてある村外れへ行った",
+       "time": "evening",
+       "time_quote": "或夕方",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "tense",
+       "mood_quote": "三人の子供は恐る恐る",
+       "keep": [],
+       "changes": [],
+       "things": [
+        {
+         "name": "トロッコ",
+         "look": "泥だらけの台車が薄明るい中に並ぶ",
+         "quote": "トロッコは泥だらけになったまま、薄明るい中に並んでいる",
+         "main": true
+        },
+        {
+         "name": "線路",
+         "look": "山の方へ細く登っていき、だんだん急になる",
+         "quote": "線路の勾配が急になり出した",
+         "main": false
+        },
+        {
+         "name": "山",
+         "look": "線路の先の山",
+         "quote": "もと来た山の方へ登り始める",
+         "main": false
+        },
+        {
+         "name": "土の山",
+         "look": "線路の終点にぶちまけた土",
+         "quote": "その線路の終点へ車の土をぶちまける",
+         "main": false
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "sample",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0 H320 V150 H0 Z",
+        "color": "violet",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 104 C80 96 240 96 320 104 V150 H0 Z",
+        "color": "orange",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 150 C90 142 220 140 320 148 V240 H0 Z",
+        "color": "sand",
+        "tone": "mid"
+       }
+      ],
+      "things": [
+       {
+        "id": "t4",
+        "forms": [
+         {
+          "d": "M150 150 C180 95 215 70 250 62 C280 70 305 95 320 110 V150 Z",
+          "color": "green",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M150 150 C180 95 215 70 250 62 C280 70 305 95 320 110",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M200 110 C215 100 228 96 240 98 M262 92 C276 96 288 104 298 114",
+          "color": "green",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t3",
+        "forms": [],
+        "lines": [
+         {
+          "d": "M10 236 L250 122 M44 240 L262 126",
+          "color": "gray",
+          "width": "bold"
+         },
+         {
+          "d": "M24 232 l26 5 M56 216 l24 5 M88 201 l22 4 M120 186 l20 4 M150 172 l18 3 M180 158 l16 3 M208 145 l14 3 M234 133 l11 2",
+          "color": "brown",
+          "width": "mid"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t2",
+        "forms": [
+         {
+          "d": "M40 178 L118 170 L122 196 L46 204 Z M130 158 L184 153 L187 171 L134 176 Z",
+          "color": "brown",
+          "tone": "deep"
+         },
+         {
+          "d": "M50 190 l20 -2 l-4 8 l-14 1 Z M88 186 l18 -2 l-2 6 l-14 2 Z M140 164 l14 -1 l-2 5 l-11 1 Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M59 206 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M97 202 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M137 178 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M167 175 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0",
+          "color": "umber",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M40 178 L118 170 L122 196 L46 204 Z M130 158 L184 153 L187 171 L134 176 Z",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M44 188 L120 181 M132 165 L185 161",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M59 206 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M97 202 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M137 178 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M167 175 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t5",
+        "forms": [
+         {
+          "d": "M262 150 C270 132 292 128 306 140 C312 146 316 150 318 152 Z",
+          "color": "brown",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M262 150 C270 132 292 128 306 140 C312 146 316 150 318 152",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M276 140 l6 -3 M292 138 l5 2",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    2,
+    3
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "sample",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "三人はトロッコに飛び乗って線路を下り、良平は有頂天になる",
+       "quote": "良平は殆ど有頂天になった"
+      },
+      {
+       "text": "背の高い土工に怒鳴られ、三人は逃げ出す",
+       "quote": "誰に断ってトロに触った？"
+      },
+      {
+       "text": "十日余り後、良平は一人で午過ぎの工事場にいる",
+       "quote": "その後十日余りたってから"
+      },
+      {
+       "text": "枕木を積んだトロッコを押す若い二人に、押そうかと声をかける",
+       "quote": "おじさん。押してやろうか？"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "new",
+       "place": "午過ぎの工事場",
+       "place_quote": "午過ぎの工事場に佇みながら",
+       "time": "day",
+       "time_quote": "午過ぎの工事場",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "warm",
+       "mood_quote": "何だか親しみ易いような気がした",
+       "keep": [
+        "山"
+       ],
+       "changes": [],
+       "things": [
+        {
+         "name": "枕木を積んだトロッコ",
+         "look": "枕木を積んだ一輛の台車",
+         "quote": "枕木を積んだトロッコが一輛",
+         "main": true
+        },
+        {
+         "name": "太い線路",
+         "look": "本線になる太い線路が山へ登る",
+         "quote": "本線になる筈の、太い線路を登って来た",
+         "main": false
+        },
+        {
+         "name": "土を積んだトロッコ",
+         "look": "土を積んだ台車",
+         "quote": "土を積んだトロッコの外に",
+         "main": false
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "sample",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0 H320 V140 H0 Z",
+        "color": "sky",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 140 C100 134 220 132 320 138 V240 H0 Z",
+        "color": "sand",
+        "tone": "mid"
+       }
+      ],
+      "things": [
+       {
+        "id": "t7",
+        "forms": [
+         {
+          "d": "M0 140 C40 100 90 80 130 84 C170 90 200 112 220 140 Z",
+          "color": "green",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M0 140 C40 100 90 80 130 84 C170 90 200 112 220 140",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M60 112 C76 102 92 98 108 100",
+          "color": "green",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t9",
+        "forms": [],
+        "lines": [
+         {
+          "d": "M0 214 C90 196 200 170 320 150 M0 236 C95 216 205 186 320 162",
+          "color": "gray",
+          "width": "bold"
+         },
+         {
+          "d": "M20 213 l4 20 M60 205 l4 19 M100 196 l4 18 M140 188 l4 17 M180 179 l3 16 M220 170 l3 15 M260 161 l3 14 M300 153 l2 12",
+          "color": "brown",
+          "width": "mid"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t10",
+        "forms": [
+         {
+          "d": "M250 140 L292 136 L294 152 L252 156 Z",
+          "color": "brown",
+          "tone": "mid"
+         },
+         {
+          "d": "M252 140 C262 128 282 126 292 136 Z",
+          "color": "umber",
+          "tone": "pale"
+         },
+         {
+          "d": "M258 158 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M280 155 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0",
+          "color": "umber",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M250 140 L292 136 L294 152 L252 156 Z M252 140 C262 128 282 126 292 136",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t8",
+        "forms": [
+         {
+          "d": "M120 160 L210 150 L214 178 L124 188 Z",
+          "color": "brown",
+          "tone": "deep"
+         },
+         {
+          "d": "M126 160 L206 151 L206 143 L126 152 Z M128 150 L204 142 L204 134 L128 142 Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M138 190 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 M184 185 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0",
+          "color": "umber",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M120 160 L210 150 L214 178 L124 188 Z",
+          "color": "umber",
+          "width": "bold"
+         },
+         {
+          "d": "M126 160 L206 151 L206 143 L126 152 Z M128 150 L204 142 L204 134 L128 142 Z",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M138 190 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 M184 185 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0",
+          "color": "umber",
+          "width": "mid"
+         }
+        ],
+        "light": []
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    4,
+    5
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "sample",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "若い二人の土工とトロッコを押し、優しい人たちだと思う",
+       "quote": "良平は「優しい人たちだ」と思った"
+      },
+      {
+       "text": "蜜柑畑の間を登りつめ、下りではトロッコに乗って走る",
+       "quote": "蜜柑畑の間を登りつめると、急に線路は下りになった"
+      },
+      {
+       "text": "竹藪から雑木林を抜け、崖の向うに海が開ける",
+       "quote": "高い崖の向うに、広広と薄ら寒い海が開けた"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "new",
+       "place": "雑木林の崖の上",
+       "place_quote": "今度は高い崖の向うに",
+       "time": "unknown",
+       "time_quote": "",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "wonder",
+       "mood_quote": "広広と薄ら寒い海が開けた",
+       "keep": [
+        "枕木を積んだトロッコ",
+        "太い線路"
+       ],
+       "changes": [
+        {
+         "name": "太い線路",
+         "look": "落葉に埋もれかけた赤錆の線路",
+         "quote": "赤錆の線路も見えない程"
+        }
+       ],
+       "things": [
+        {
+         "name": "海",
+         "look": "崖の向うに広広と開けた、薄ら寒い海",
+         "quote": "広広と薄ら寒い海が開けた",
+         "main": true
+        },
+        {
+         "name": "雑木林",
+         "look": "竹藪から続く雑木の林",
+         "quote": "竹藪は何時か雑木林になった",
+         "main": false
+        },
+        {
+         "name": "落葉",
+         "look": "線路の上にたまった落葉",
+         "quote": "落葉のたまっている場所もあった",
+         "main": false
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "sample",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0 H320 V118 H0 Z",
+        "color": "sky",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 128 C70 122 140 124 190 132 L210 240 H0 Z",
+        "color": "sand",
+        "tone": "mid"
+       }
+      ],
+      "things": [
+       {
+        "id": "t14",
+        "forms": [
+         {
+          "d": "M150 118 H320 V240 H210 L190 132 C175 126 160 120 150 118 Z",
+          "color": "blue",
+          "tone": "mid"
+         },
+         {
+          "d": "M150 118 H320 V132 C260 128 200 126 150 118 Z",
+          "color": "sky",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M150 118 H320",
+          "color": "blue",
+          "width": "thin"
+         },
+         {
+          "d": "M190 132 L210 240",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M230 160 q8 -4 16 0 M262 182 q8 -4 16 0 M240 206 q8 -4 16 0 M285 146 q6 -3 12 0",
+          "color": "blue",
+          "width": "thin"
+         }
+        ],
+        "light": [
+         {
+          "d": "M252 150 l3 -2 l3 2 l-3 2 Z M276 172 l3 -2 l3 2 l-3 2 Z M228 192 l3 -2 l3 2 l-3 2 Z",
+          "color": "white"
+         }
+        ]
+       },
+       {
+        "id": "t15",
+        "forms": [
+         {
+          "d": "M0 0 H90 C84 30 70 56 40 64 C20 70 8 70 0 70 Z",
+          "color": "green",
+          "tone": "mid"
+         },
+         {
+          "d": "M0 70 C20 60 50 64 60 90 C40 100 20 104 0 104 Z",
+          "color": "leaf",
+          "tone": "mid"
+         },
+         {
+          "d": "M88 34 C108 24 130 34 132 56 C126 72 100 76 88 62 Z",
+          "color": "green",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M30 70 L34 130 M62 88 L64 128 M108 70 L110 124",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M0 70 C20 60 50 64 60 90 M90 0 C84 30 70 56 40 64",
+          "color": "green",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t13",
+        "forms": [],
+        "lines": [
+         {
+          "d": "M10 240 C60 200 110 170 170 150 M40 240 C88 204 132 176 184 158",
+          "color": "brown",
+          "width": "bold"
+         },
+         {
+          "d": "M24 228 l20 6 M50 207 l18 5 M76 190 l16 5 M104 176 l14 4 M134 164 l12 4",
+          "color": "umber",
+          "width": "mid"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t16",
+        "forms": [
+         {
+          "d": "M20 180 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z M70 196 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z M150 172 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z M152 210 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z M40 220 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z M110 226 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z",
+          "color": "orange",
+          "tone": "mid"
+         },
+         {
+          "d": "M60 170 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z M130 200 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z",
+          "color": "red",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M22 182 l6 1 M72 198 l6 1 M152 174 l6 1",
+          "color": "brown",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t12",
+        "forms": [
+         {
+          "d": "M70 178 L130 168 L134 190 L74 200 Z",
+          "color": "brown",
+          "tone": "deep"
+         },
+         {
+          "d": "M74 176 L128 167 L128 160 L74 169 Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M84 202 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M116 197 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0",
+          "color": "umber",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M70 178 L130 168 L134 190 L74 200 Z M74 176 L128 167 L128 160 L74 169 Z",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M84 202 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M116 197 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    6,
+    7
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "sample",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "遠く来過ぎたと感じ、良平はもう帰ってほしいと念じる",
+       "quote": "「もう帰ってくれれば好い」"
+      },
+      {
+       "text": "藁屋根の茶店で土工たちが茶を飲み、良平は駄菓子をもらう",
+       "quote": "新聞紙に包んだ駄菓子をくれた"
+      },
+      {
+       "text": "二つ目の茶店の前で、日が暮れるのを気にする",
+       "quote": "「もう日が暮れる」"
+      },
+      {
+       "text": "土工たちは、向う泊りだから帰れと言う",
+       "quote": "おれたちは今日は向う泊りだから"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "new",
+       "place": "二つ目の茶店の前",
+       "place_quote": "又同じような茶店があった",
+       "time": "evening",
+       "time_quote": "西日の光が消えかかっている",
+       "weather": "clear",
+       "weather_quote": "西日の光",
+       "mood": "tense",
+       "mood_quote": "帰る事ばかり気にしていた",
+       "keep": [
+        "枕木を積んだトロッコ"
+       ],
+       "changes": [],
+       "things": [
+        {
+         "name": "茶店",
+         "look": "山を背負った藁屋根の茶店",
+         "quote": "又同じような茶店があった",
+         "main": true
+        },
+        {
+         "name": "梅",
+         "look": "花の咲いた梅の木",
+         "quote": "茶店の前には花のさいた梅に",
+         "main": false
+        },
+        {
+         "name": "西日",
+         "look": "消えかかる西日の光",
+         "quote": "西日の光が消えかかっている",
+         "main": false
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "sample",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0 H320 V140 H0 Z",
+        "color": "orange",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 0 H320 V58 C220 70 100 70 0 58 Z",
+        "color": "violet",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 140 H320 V240 H0 Z",
+        "color": "sand",
+        "tone": "mid"
+       }
+      ],
+      "things": [
+       {
+        "id": "t21",
+        "forms": [],
+        "lines": [],
+        "light": [
+         {
+          "d": "M282 126 a15 15 0 1 0 30 0 a15 15 0 1 0 -30 0",
+          "color": "orange"
+         }
+        ]
+       },
+       {
+        "id": "t19",
+        "forms": [
+         {
+          "d": "M118 140 C140 84 200 62 256 70 C286 78 306 108 316 140 Z",
+          "color": "green",
+          "tone": "mid"
+         },
+         {
+          "d": "M142 116 H258 V172 H142 Z",
+          "color": "sand",
+          "tone": "mid"
+         },
+         {
+          "d": "M128 112 L200 72 L272 112 L264 120 L136 120 Z",
+          "color": "brown",
+          "tone": "mid"
+         },
+         {
+          "d": "M186 132 H214 V172 H186 Z",
+          "color": "umber",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M128 112 L200 72 L272 112 L264 120 L136 120 Z M142 120 V172 H258 V120 M186 172 V132 H214 V172",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M150 108 l10 -6 M170 97 l10 -6 M190 86 l8 -5 M212 86 l8 5 M232 97 l10 6 M252 108 l8 5",
+          "color": "brown",
+          "width": "thin"
+         },
+         {
+          "d": "M118 140 C140 84 200 62 256 70 C286 78 306 108 316 140",
+          "color": "green",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t20",
+        "forms": [
+         {
+          "d": "M29 128 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M45 118 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M61 124 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M37 140 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M73 132 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M53 108 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M21 146 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0",
+          "color": "pink",
+          "tone": "mid"
+         },
+         {
+          "d": "M36 120 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M68 114 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M82 128 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0",
+          "color": "white",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M58 210 C56 178 62 156 54 132 M56 166 C44 156 38 146 32 136 M60 156 C72 146 80 138 88 128",
+          "color": "umber",
+          "width": "bold"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t18",
+        "forms": [
+         {
+          "d": "M86 190 L168 182 L172 210 L90 218 Z",
+          "color": "brown",
+          "tone": "deep"
+         },
+         {
+          "d": "M92 190 L164 183 L164 175 L92 182 Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M102 220 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0 M144 215 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0",
+          "color": "umber",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M86 190 L168 182 L172 210 L90 218 Z M92 190 L164 183 L164 175 L92 182 Z",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M102 220 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0 M144 215 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    8,
+    9
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "sample",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "一人で歩いて帰らねばならないと分かり、良平は線路伝いに走り出す",
+       "quote": "どんどん線路伝いに走り出した"
+      },
+      {
+       "text": "菓子包みと板草履、羽織を路側に捨てて走り続ける",
+       "quote": "羽織を路側へ脱いで捨てた"
+      },
+      {
+       "text": "夕闇の中に村外れの工事場が見え、村に入ると家々に電燈がともっている",
+       "quote": "電燈の光がさし合っていた"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "new",
+       "place": "夕暮れの線路",
+       "place_quote": "良平は少時無我夢中に線路の側を走り続けた",
+       "time": "evening",
+       "time_quote": "夕焼けのした日金山の空も、もう火照りが消えかかっていた",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "tense",
+       "mood_quote": "「命さえ助かれば――」",
+       "keep": [],
+       "changes": [],
+       "things": [
+        {
+         "name": "線路",
+         "look": "暮れていく中を一すじ続く線路",
+         "quote": "線路の側を走り続けた",
+         "main": true
+        },
+        {
+         "name": "日金山の空",
+         "look": "火照りが消えかかる夕焼けの山の空",
+         "quote": "夕焼けのした日金山の空",
+         "main": false
+        },
+        {
+         "name": "海",
+         "look": "左手に暗くなっていく海",
+         "quote": "彼は左に海を感じながら",
+         "main": false
+        },
+        {
+         "name": "竹藪",
+         "look": "線路の側の竹藪",
+         "quote": "竹藪の側を駈け抜けると",
+         "main": false
+        },
+        {
+         "name": "板草履",
+         "look": "路側に脱ぎ捨てた板草履",
+         "quote": "板草履も其処へ脱ぎ捨ててしまった",
+         "main": false
+        },
+        {
+         "name": "羽織",
+         "look": "路側に脱ぎ捨てた羽織",
+         "quote": "羽織を路側へ脱いで捨てた",
+         "main": false
+        }
+       ]
+      },
+      {
+       "change": "new",
+       "place": "村の家並み",
+       "place_quote": "彼の村へはいって見ると",
+       "time": "night",
+       "time_quote": "遠い夕闇の中に",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "sad",
+       "mood_quote": "一思いに泣きたくなった",
+       "keep": [],
+       "changes": [],
+       "things": [
+        {
+         "name": "家家",
+         "look": "両側に並ぶ村の家々",
+         "quote": "もう両側の家家には",
+         "main": true
+        },
+        {
+         "name": "電燈",
+         "look": "家々にともる電燈の光",
+         "quote": "電燈の光がさし合っていた",
+         "main": false
+        },
+        {
+         "name": "工事場",
+         "look": "夕闇の向うの村外れの工事場",
+         "quote": "村外れの工事場が見えた",
+         "main": false
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "sample",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0 H320 V130 H0 Z",
+        "color": "violet",
+        "tone": "mid"
+       },
+       {
+        "d": "M0 92 C100 84 220 84 320 92 V130 H0 Z",
+        "color": "orange",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 130 C120 126 220 126 320 132 V240 H0 Z",
+        "color": "umber",
+        "tone": "pale"
+       }
+      ],
+      "things": [
+       {
+        "id": "t24",
+        "forms": [
+         {
+          "d": "M120 130 C150 96 180 84 210 86 C236 92 252 110 262 130 Z",
+          "color": "night",
+          "tone": "mid"
+         },
+         {
+          "d": "M126 100 C160 72 220 70 262 92 V102 C220 86 168 88 126 108 Z",
+          "color": "orange",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M120 130 C150 96 180 84 210 86 C236 92 252 110 262 130",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t25",
+        "forms": [
+         {
+          "d": "M0 118 C40 116 80 118 112 124 L92 150 C60 146 30 144 0 146 Z",
+          "color": "blue",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M0 118 C40 116 80 118 112 124",
+          "color": "night",
+          "width": "thin"
+         },
+         {
+          "d": "M14 132 q6 -3 12 0 M50 136 q6 -3 12 0",
+          "color": "blue",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t26",
+        "forms": [
+         {
+          "d": "M244 40 l14 -6 l-6 10 Z M262 58 l14 -6 l-6 10 Z M278 34 l14 -6 l-6 10 Z M296 50 l14 -6 l-6 10 Z M248 90 l14 -6 l-6 10 Z M286 96 l14 -6 l-6 10 Z",
+          "color": "green",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M250 20 C252 80 254 130 256 176 M266 12 C268 80 270 130 272 180 M282 26 C284 90 286 130 288 176 M298 16 C300 80 302 130 304 172",
+          "color": "green",
+          "width": "mid"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t23",
+        "forms": [],
+        "lines": [
+         {
+          "d": "M320 236 C240 200 180 170 130 140 M282 240 C214 204 164 174 122 142",
+          "color": "gray",
+          "width": "bold"
+         },
+         {
+          "d": "M300 228 l-26 9 M262 208 l-22 8 M228 190 l-18 6 M200 175 l-15 5 M176 162 l-12 4 M154 151 l-9 3",
+          "color": "umber",
+          "width": "mid"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t27",
+        "forms": [
+         {
+          "d": "M64 206 c10 -6 26 -6 30 0 c-4 6 -20 8 -30 0 Z M86 218 c10 -6 26 -6 30 0 c-4 6 -20 8 -30 0 Z",
+          "color": "brown",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M64 206 c10 -6 26 -6 30 0 c-4 6 -20 8 -30 0 Z M86 218 c10 -6 26 -6 30 0 c-4 6 -20 8 -30 0 Z",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M74 202 l6 4 l6 -4 M96 214 l6 4 l6 -4",
+          "color": "red",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t28",
+        "forms": [
+         {
+          "d": "M150 214 C160 200 190 198 204 206 C210 214 200 226 182 228 C166 228 152 224 150 214 Z",
+          "color": "umber",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M150 214 C160 200 190 198 204 206 C210 214 200 226 182 228 C166 228 152 224 150 214 Z",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M160 214 C172 210 186 210 198 214",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       }
+      ]
+     }
+    },
+    {
+     "model": "sample",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0 H320 V120 H0 Z",
+        "color": "night",
+        "tone": "deep"
+       },
+       {
+        "d": "M0 120 H320 V240 H0 Z",
+        "color": "umber",
+        "tone": "mid"
+       },
+       {
+        "d": "M120 240 L160 120 H176 L230 240 Z",
+        "color": "brown",
+        "tone": "pale"
+       }
+      ],
+      "things": [
+       {
+        "id": "t32",
+        "forms": [
+         {
+          "d": "M150 116 L170 114 L171 120 L151 122 Z",
+          "color": "brown",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M144 122 L190 122",
+          "color": "gray",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t30",
+        "forms": [
+         {
+          "d": "M0 90 L40 70 L80 90 V170 H0 Z M80 100 L110 84 L140 100 V160 H80 Z",
+          "color": "umber",
+          "tone": "deep"
+         },
+         {
+          "d": "M196 100 L226 84 L256 100 V160 H196 Z M256 90 L290 72 L320 88 V170 H256 Z",
+          "color": "umber",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M0 90 L40 70 L80 90 V170 M80 100 L110 84 L140 100 V160 M196 160 V100 L226 84 L256 100 M256 90 L290 72 L320 88",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t31",
+        "forms": [],
+        "lines": [],
+        "light": [
+         {
+          "d": "M20 110 h14 v12 h-14 Z M50 122 h12 v10 h-12 Z M96 116 h12 v10 h-12 Z M212 116 h12 v10 h-12 Z M276 110 h12 v12 h-12 Z M300 128 h10 v10 h-10 Z",
+          "color": "orange"
+         },
+         {
+          "d": "M164 104 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0",
+          "color": "lemon"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    10,
+    11
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "sample",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "良平は雑貨屋や床屋の前を走り過ぎ、家の門口で大声に泣き出す",
+       "quote": "わっと泣き出さずにはいられなかった"
+      },
+      {
+       "text": "二十六の良平は東京の雑誌社で校正をしている",
+       "quote": "校正の朱筆を握っている"
+      },
+      {
+       "text": "今もときどき、その時の薄暗い藪や坂のある路を思い出す",
+       "quote": "薄暗い藪や坂のある路が"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "same",
+       "place": "村の家並み",
+       "place_quote": "彼の家の門口へ駈けこんだ時",
+       "time": "unknown",
+       "time_quote": "",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "sad",
+       "mood_quote": "啜り上げ啜り上げ泣き続けた",
+       "keep": [],
+       "changes": [],
+       "things": [
+        {
+         "name": "門口",
+         "look": "薄暗い家の門口",
+         "quote": "薄暗い門口へ集って来た",
+         "main": false
+        },
+        {
+         "name": "雑貨屋",
+         "look": "明るい雑貨屋の店先",
+         "quote": "雑貨屋だの床屋だの、明るい家の前",
+         "main": false
+        }
+       ]
+      },
+      {
+       "change": "new",
+       "place": "雑誌社の二階",
+       "place_quote": "今では或雑誌社の二階に",
+       "time": "unknown",
+       "time_quote": "",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "sad",
+       "mood_quote": "塵労に疲れた彼の前には",
+       "keep": [],
+       "changes": [],
+       "things": [
+        {
+         "name": "朱筆",
+         "look": "校正刷りの上の赤い筆",
+         "quote": "校正の朱筆を握っている",
+         "main": true
+        },
+        {
+         "name": "藪や坂のある路",
+         "look": "薄暗い藪と坂の路が細く一すじ続く(思い出)",
+         "quote": "薄暗い藪や坂のある路が、細細と一すじ断続している",
+         "main": false
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "sample",
+     "data": {
+      "ground": [],
+      "things": [
+       {
+        "id": "t33",
+        "forms": [
+         {
+          "d": "M232 150 h8 v90 h-8 Z M288 150 h8 v90 h-8 Z M226 146 H302 V154 H226 Z",
+          "color": "umber",
+          "tone": "deep"
+         },
+         {
+          "d": "M240 158 H288 V240 H240 Z",
+          "color": "night",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M226 146 H302 V154 H226 Z M232 154 V240 M296 154 V240",
+          "color": "umber",
+          "width": "mid"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t34",
+        "forms": [
+         {
+          "d": "M10 170 H90 V232 H10 Z",
+          "color": "sand",
+          "tone": "mid"
+         },
+         {
+          "d": "M6 164 H94 L88 176 H12 Z",
+          "color": "red",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M10 176 V232 H90 V176 M6 164 H94 L88 176 H12 Z",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": [
+         {
+          "d": "M20 186 H80 V214 H20 Z",
+          "color": "lemon"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "model": "sample",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0 H320 V150 H0 Z",
+        "color": "gray",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 150 H320 V240 H0 Z",
+        "color": "brown",
+        "tone": "mid"
+       }
+      ],
+      "things": [
+       {
+        "id": "t37",
+        "forms": [
+         {
+          "d": "M30 130 C80 90 140 70 210 60 C250 56 280 60 300 70 V130 Z",
+          "color": "green",
+          "tone": "pale"
+         },
+         {
+          "d": "M60 130 C100 108 150 92 200 80 C230 74 260 72 290 74 L292 80 C262 80 232 84 204 90 C156 102 110 118 72 132 Z",
+          "color": "sand",
+          "tone": "pale"
+         },
+         {
+          "d": "M40 60 C60 40 90 44 100 70 C80 84 52 84 40 60 Z",
+          "color": "green",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M60 130 C100 108 150 92 200 80 C230 74 260 72 290 74",
+          "color": "brown",
+          "width": "thin"
+         },
+         {
+          "d": "M56 40 L60 96 M70 36 L72 96 M84 44 L86 96",
+          "color": "green",
+          "width": "thin"
+         }
+        ],
+        "light": []
+       },
+       {
+        "id": "t36",
+        "forms": [
+         {
+          "d": "M70 172 L230 162 L240 216 L80 228 Z",
+          "color": "white",
+          "tone": "mid"
+         },
+         {
+          "d": "M150 200 L250 150 L254 154 L156 206 Z",
+          "color": "umber",
+          "tone": "deep"
+         },
+         {
+          "d": "M150 200 l-10 7 l4 -11 Z",
+          "color": "red",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M70 172 L230 162 L240 216 L80 228 Z",
+          "color": "gray",
+          "width": "thin"
+         },
+         {
+          "d": "M150 200 L250 150 L254 154 L156 206 Z",
+          "color": "umber",
+          "width": "mid"
+         }
+        ],
+        "light": []
+       }
+      ]
+     }
+    }
+   ],
+   "summary": {
+    "model": "sample",
+    "data": {
+     "summary": "トロッコに乗りたかった八つの良平は、若い二人の土工と遠くまで押して行ったが、日暮れに一人で帰れと言われ、暗くなる線路を走って帰り、家の門口で泣き出した。大人になった今も、その時の藪や坂のある路を思い出す。"
+    }
+   }
+  }
+ ],
+ "judge": null,
+ "finished": true
+}

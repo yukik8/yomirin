@@ -1,7 +1,8 @@
 // 場面の絵の試作(#50 → #34)。Claude が返す「形のデータ」を検め、段ごとの SVG を組み立てる。
 // Claude が決めるのは形(path の d)と色の名前だけ。線の揺れ・水彩のにじみ・紙の質感は、ここの決まった値で付ける。
 // 文字列は SVG に入れない(items は試写室で根拠を見るためだけ)。組み立てた SVG は <img> に載せる(スクリプトも外部の読み込みも動かない)。
-// 試写室(index.html)と check.mjs(検査・集計・schema)で使う。見込みが立てば extension/src/content/scene.js へ移す。
+// 試写室(index.html)と check.mjs(検査・集計・schema)で使う。章の絵巻(../emaki/)も、形の検査と画風をここから使う。
+// 見込みが立てば extension/src/content/scene.js へ移す。
 export const VIEW = { width: 320, height: 240 };
 export const STAGES = ['まだ無い', '下描き', '淡い色', '色が濃くなる', '仕上がり'];
 export const LAST = STAGES.length - 1; // 章の終わりで出す段。#34 ではその手前で待つ
@@ -54,7 +55,8 @@ export function sceneSchema() {
   };
 }
 
-function cleanShape(layer, s) {
+/** 形を1つ検める。layer は ground / forms / lines / light。読めない形は null */
+export function checkShape(layer, s) {
   if (!s || typeof s !== 'object') return null;
   const d = typeof s.d === 'string' ? s.d.trim() : '';
   if (!d || d.length > LIMITS.d || !PATH.test(d)) return null;
@@ -77,7 +79,7 @@ export function checkScene(data) {
     if (!Array.isArray(data[layer])) return { scene: null, dropped, error: `no_${layer}` };
     scene[layer] = [];
     for (const s of data[layer]) {
-      const shape = cleanShape(layer, s);
+      const shape = checkShape(layer, s);
       if (!shape || scene[layer].length >= LIMITS[layer] || total + shape.d.length > LIMITS.total) { dropped += 1; continue; }
       total += shape.d.length;
       scene[layer].push(shape);
@@ -125,34 +127,55 @@ const DEFS = '<defs>'
   + `<filter id="glow" ${AREA}><feGaussianBlur in="SourceGraphic" stdDeviation="7" result="far"/><feGaussianBlur in="SourceGraphic" stdDeviation="2" result="near"/><feMerge><feMergeNode in="far"/><feMergeNode in="near"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`
   + '</defs>';
 
-/** 段 stage(0〜LAST)の SVG の文字列。styled=false は画風を付けない(Claude が書いたままの形) */
-export function buildSvg(scene, stage, { styled = true } = {}) {
-  const { width: w, height: h } = VIEW;
-  const at = Math.max(0, Math.min(LAST, Math.round(stage)));
+/**
+ * 層の形を、決まった画風で描いた断片にする(frame で SVG にする)。
+ * - wash: 水彩の濃さ(tone に掛ける)。0 なら地と物を描かない
+ * - line: 線の不透明度。colored=false なら線を鉛筆の色で描く。形に sketch: true があれば、その線だけ鉛筆の色
+ * - light: 'none'(描かない)・'soft'(淡い色で置くだけ)・'glow'(光の輪を付ける)
+ */
+export function paint({ ground = [], forms = [], lines = [], light = [] }, { wash = 1, line = .9, colored = true, light: glow = 'glow', styled = true } = {}) {
   const art = [];
-  if (WASH[at] > 0) {
-    for (const s of [...scene.ground, ...scene.forms]) {
-      const a = +(TONES[s.tone] * WASH[at]).toFixed(3);
-      if (styled && scene.forms.includes(s)) art.push(`<path d="${s.d}" fill="${PAPER}" filter="url(#under)"/>`);
+  if (wash > 0) {
+    for (const s of [...ground, ...forms]) {
+      const a = +(TONES[s.tone] * wash).toFixed(3);
+      const form = forms.includes(s);
+      if (styled && form) art.push(`<path d="${s.d}" fill="${PAPER}" filter="url(#under)"/>`);
       // 物だけ multiply で重ねる。地まで multiply にすると、暗い地の上の明るい地(夜空の天の川)が消える
-      const blend = scene.forms.includes(s) ? ' style="mix-blend-mode:multiply"' : '';
+      const blend = form ? ' style="mix-blend-mode:multiply"' : '';
       art.push(`<path d="${s.d}" fill="${COLORS[s.color][0]}" fill-opacity="${a}"${styled ? ` filter="url(#wash)"${blend}` : ''}/>`);
     }
   }
-  if (LINE[at] > 0 && scene.lines.length) {
-    const colored = at >= 3;
-    const lines = scene.lines.map((s) => `<path d="${s.d}" stroke="${colored ? COLORS[s.color][0] : GRAPHITE}" stroke-width="${WIDTHS[s.width]}"/>`).join('');
-    const g = (extra) => `<g fill="none" stroke-linecap="round" stroke-linejoin="round" ${extra}>${lines}</g>`;
-    if (styled) art.push(g(`opacity="${LINE[at]}" filter="url(#pencil0)"`), g(`opacity="${+(LINE[at] * .4).toFixed(2)}" transform="translate(.6 .45)" filter="url(#pencil1)"`));
-    else art.push(g(`opacity="${LINE[at]}"`));
+  if (line > 0 && lines.length) {
+    const paths = lines.map((s) => `<path d="${s.d}" stroke="${colored && !s.sketch ? COLORS[s.color][0] : GRAPHITE}" stroke-width="${WIDTHS[s.width]}"/>`).join('');
+    const g = (extra) => `<g fill="none" stroke-linecap="round" stroke-linejoin="round" ${extra}>${paths}</g>`;
+    if (styled) art.push(g(`opacity="${line}" filter="url(#pencil0)"`), g(`opacity="${+(line * .4).toFixed(2)}" transform="translate(.6 .45)" filter="url(#pencil1)"`));
+    else art.push(g(`opacity="${line}"`));
   }
-  if (at === LAST && scene.light.length) {
-    const light = scene.light.map((s) => `<path d="${s.d}" fill="${COLORS[s.color][0]}"/>`).join('');
-    art.push(styled ? `<g opacity=".85" filter="url(#glow)" style="mix-blend-mode:screen">${light}</g>` : `<g opacity=".85">${light}</g>`);
+  if (glow === 'soft' && light.length) {
+    art.push(light.map((s) => `<path d="${s.d}" fill="${COLORS[s.color][0]}" fill-opacity=".5"${styled ? ' filter="url(#wash)"' : ''}/>`).join(''));
   }
-  const paper = `<rect width="${w}" height="${h}" fill="${PAPER}"/>` + (styled ? `<rect width="${w}" height="${h}" filter="url(#paper)"/>` : '');
-  const body = styled ? `<g mask="url(#fade)">${art.join('')}</g>` : art.join('');
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${styled ? DEFS : ''}${paper}${body}</svg>`;
+  if (glow === 'glow' && light.length) {
+    const paths = light.map((s) => `<path d="${s.d}" fill="${COLORS[s.color][0]}"/>`).join('');
+    art.push(styled ? `<g opacity=".85" filter="url(#glow)" style="mix-blend-mode:screen">${paths}</g>` : `<g opacity=".85">${paths}</g>`);
+  }
+  return art.join('');
+}
+
+/** paint の断片を、紙を敷き、縁を紙に溶かした SVG にする。断片が複数なら横に並べる(章の絵巻) */
+export function frame(arts, { styled = true } = {}) {
+  const { width: w, height: h } = VIEW;
+  const total = w * arts.length;
+  const panels = arts.map((art, i) => {
+    const body = (styled ? `<rect width="${w}" height="${h}" filter="url(#paper)"/><g mask="url(#fade)">${art}</g>` : art);
+    return i ? `<g transform="translate(${w * i} 0)">${body}</g>` : body;
+  });
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${total} ${h}" width="${total}" height="${h}">${styled ? DEFS : ''}<rect width="${total}" height="${h}" fill="${PAPER}"/>${panels.join('')}</svg>`;
+}
+
+/** 段 stage(0〜LAST)の SVG の文字列。styled=false は画風を付けない(Claude が書いたままの形) */
+export function buildSvg(scene, stage, { styled = true } = {}) {
+  const at = Math.max(0, Math.min(LAST, Math.round(stage)));
+  return frame([paint(scene, { wash: WASH[at], line: LINE[at], colored: at >= 3, light: at === LAST ? 'glow' : 'none', styled })], { styled });
 }
 
 export const svgUrl = (svg) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);

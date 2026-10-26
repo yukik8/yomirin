@@ -69,6 +69,7 @@ Markdown の表を出す(#50 の「結果」に貼る)。
   - `checkScene`: 形のデータを検める
   - `grounded`: 根拠の語句を数える
   - `buildSvg`: 段ごとの SVG を組み立てる
+  - `paint`・`frame`: 層の形を画風で描き、紙に載せる。`buildSvg` も章の絵巻(`../emaki/`・#51)もこれを使う
 - **形のデータ:**
   - `ground`(奥の大きな面)
   - `forms`(物の面。奥から手前の順)
