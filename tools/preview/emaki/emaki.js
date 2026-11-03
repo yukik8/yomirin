@@ -43,6 +43,7 @@ export const EMAKI = {
   event: 60, quote: 40, look: 40, name: 20, seed: 300, summary: 200, // 字数の上限
   shapes: { forms: 16, lines: 24, light: 8 }, // 1つの物の形の上限
   ground: 16,
+  depth: 9, // 重なりの奥行きの段(0 がいちばん奥。数の大きい物が前に重なる。決めていない物は真ん中)
   total: 40000, // 1区画の d の長さの合計の上限
 };
 
@@ -308,7 +309,7 @@ function scene(book, s, { ok, drop, draws, cues, tick }) {
 }
 
 // まだ描いていない物の、置き場所と灯り(描く係が決める)。pos0・shown0・lit0 は区画が現れたときの様子
-const unplaced = () => ({ shapes: null, drawn: null, at: null, spot: null, pos0: null, pos: null, shown0: true, shown: true, lit0: true, lit: true, loop: 'none' });
+const unplaced = () => ({ shapes: null, drawn: null, at: null, depth: null, spot: null, pos0: null, pos: null, shown0: true, shown: true, lit0: true, lit: true, loop: 'none' });
 // 前の場面から続けて見える物を、新しい区画へ写す
 const carry = (book, t, tick) => ({ ...t, id: `t${book.next++}`, tick, late: false, changed: undefined, ...unplaced() });
 
@@ -343,7 +344,7 @@ export function drawRequest(book, draw) {
     things: panel.things.map((t) => ({ id: t.id, name: t.name, look: t.look, main: t.main, draw: draw.ids.includes(t.id), spot: t.pos ?? '' })),
     spots: draw.mode === 'add' ? panel.spots : [],
     routes: draw.mode === 'add' ? panel.routes : [],
-    current: draw.mode === 'add' ? { ground: panel.ground, things: panel.things.filter((t) => t.shapes).map((t) => ({ id: t.id, at: t.at, ...t.shapes })) } : null,
+    current: draw.mode === 'add' ? { ground: panel.ground, things: panel.things.filter((t) => t.shapes).map((t) => ({ id: t.id, at: t.at, depth: depthOf(t), ...t.shapes })) } : null,
   };
 }
 
@@ -365,6 +366,7 @@ export function drawSchema() {
       items: obj({
         id: str('<物> の id'),
         at: obj({ x: n('物の足もと(置いてある点)の x'), y: n('物の足もとの y') }),
+        depth: { type: 'integer', description: `重なりの奥行き(0〜${EMAKI.depth})。0 がいちばん奥(空・遠い山・海原)で、数の大きい物が前に重なる。動く物は、通る地面・線路・道と、その脇の物より大きく` },
         spot: str('描いた所の名前(spots の名前)。所に居ない物(空・山・建物など動かない物)は空。動く物は、いちばん大きく見える所で描く'),
         start: str('最初に居る所の名前(spots の名前)。描いた所と同じなら空'),
         hidden: { type: 'boolean', description: '最初は見えない(出来事で現れる)なら true' },
@@ -431,9 +433,14 @@ export function applyDrawing(book, data, draw, tick) {
     const spot = panel.spots.find((s) => s.name === t.spot)?.name ?? null;
     const start = panel.spots.find((s) => s.name === t.start)?.name ?? spot;
     const shown = t.hidden !== true, lit = t.lit !== false;
-    Object.assign(thing, { shapes, drawn: tick, at: x == null || y == null ? null : { x, y }, spot, pos0: start, pos: start, shown0: shown, shown, lit0: lit, lit, loop: choice(LOOPS, t.loop) === 'unknown' ? 'none' : t.loop });
+    const depth = num(t.depth, 0, EMAKI.depth);
+    Object.assign(thing, { shapes, drawn: tick, at: x == null || y == null ? null : { x, y }, depth: depth == null ? null : Math.round(depth), spot, pos0: start, pos: start, shown0: shown, shown, lit0: lit, lit, loop: choice(LOOPS, t.loop) === 'unknown' ? 'none' : t.loop });
   }
   result.missed = draw.ids.filter((id) => panel.things.find((t) => t.id === id)?.drawn !== tick);
+  // 重なり: 奥行きの順に並べ直す(数の大きい物が前)。同じ奥行きなら、この答えの物は答えの順に、前からの物の前へ
+  const rank = new Map();
+  list(data.things).forEach((t, i) => { if (redraw.has(t?.id) && !rank.has(t.id)) rank.set(t.id, i); });
+  panel.things.sort((a, b) => depthOf(a) - depthOf(b) || (rank.get(a.id) ?? -1) - (rank.get(b.id) ?? -1));
   // 出来事に沿った動き(new のときだけ)。出来事は語句で確かめてあるので、その語句で演じる時刻を決める
   const events = book.story.events.filter((e) => e.tick === draw.tick);
   for (const [i, b] of list(data.beats).entries()) {
@@ -446,6 +453,7 @@ export function applyDrawing(book, data, draw, tick) {
   return result;
 }
 const length = (shapes) => shapes.reduce((n, s) => n + s.d.length, 0);
+const depthOf = (t) => t.depth ?? Math.ceil(EMAKI.depth / 2);
 
 // ---- 章のまとめ(章の終わりに一度。下調べは渡さない) ----
 

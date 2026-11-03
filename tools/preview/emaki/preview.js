@@ -99,6 +99,8 @@ function addThings(node) {
     node.el.insertBefore(mover, node.shade);
     node.things.set(t.id, { mover, lit, dark, thing: t, drawn: t.drawn });
   }
+  // 重なりは区画の物の順(描く係が決めた奥行きの順)。描き足した物も、その順の所へ入れる
+  for (const t of node.panel.things) { const item = node.things.get(t.id); if (item) node.el.insertBefore(item.mover, node.shade); }
 }
 
 // 区画の DOM を用意する(state に出てくる区画すべて)
@@ -119,23 +121,27 @@ function ensure(state, bookState) {
 const moveOf = (panel, t, pos) => { const { dx, dy, scale } = placement(panel, t, pos); return `translate(${dx}px, ${dy}px) scale(${scale})`; };
 const indexOf = (state, id) => Math.max(0, state.panels.findIndex((p) => p.id === id));
 
+// 区画1つの物と色を、その様子のとおりに置く
+function put(node, shown) {
+  for (const [id, { mover, lit, dark, thing }] of node.things) {
+    const s = shown.things[id];
+    mover.style.transform = s ? moveOf(node.panel, thing, s.pos) : '';
+    const visible = !!s && s.shown;
+    mover.style.opacity = visible ? 1 : 0;
+    lit.style.opacity = !dark || s?.lit ? 1 : 0;
+    if (dark) dark.style.opacity = s?.lit ? 0 : 1;
+  }
+  const shade = tint(node.panel, shown.time);
+  node.shade.style.backgroundColor = shade?.color ?? 'transparent';
+  node.shade.style.opacity = shade?.opacity ?? 0;
+}
+
 // 様子を、動かさずにそのまま置く
 function place(state) {
   for (const anim of document.getAnimations().filter((a) => a.effect?.target?.closest?.('#card'))) anim.cancel();
   state.panels.forEach((shown) => {
     const node = built.panels.get(shown.id);
-    if (!node) return;
-    for (const [id, { mover, lit, dark, thing }] of node.things) {
-      const s = shown.things[id];
-      mover.style.transform = s ? moveOf(node.panel, thing, s.pos) : '';
-      const visible = !!s && s.shown;
-      mover.style.opacity = visible ? 1 : 0;
-      lit.style.opacity = !dark || s?.lit ? 1 : 0;
-      if (dark) dark.style.opacity = s?.lit ? 0 : 1;
-    }
-    const shade = tint(node.panel, shown.time);
-    node.shade.style.backgroundColor = shade?.color ?? 'transparent';
-    node.shade.style.opacity = shade?.opacity ?? 0;
+    if (node) put(node, shown);
   });
   $('strip').style.transform = `translateX(${-indexOf(state, state.current) * VIEW.width}px)`;
   $('card').style.opacity = state.panels.length ? 1 : 0;
@@ -182,6 +188,12 @@ const LOOPS = {
 function play(bookState, before, after, cues) {
   ensure(after, bookState);
   place(before);
+  // この場面で現れる区画は、動き出すまで、現れたときの様子(最初に居る所・見えるか・灯り)で待たせる
+  for (const shown of after.panels) {
+    if (before.panels.some((p) => p.id === shown.id)) continue;
+    const node = built.panels.get(shown.id);
+    if (node) put(node, { time: node.panel.time0, things: stageInit(node.panel) });
+  }
   if (!cues.length || calm()) { place(after); return 0; }
   const end = Math.max(...cues.map((c) => c.start + c.dur));
   const state = structuredClone(before);
@@ -301,7 +313,7 @@ function facts(run, pages, p, { bookState, logs, cues, final }) {
   const panel = shown && bookState.emaki.panels.find((x) => x.id === shown.id);
   const things = panel ? [li(sceneLine(panel)), ...panel.things.filter((t) => shown.things[t.id]).map((t) => {
     const s = shown.things[t.id];
-    const where = [s.pos ? `所: ${s.pos}` : '', s.shown ? '' : '見えない', t.shapes?.light.length ? (s.lit ? '灯っている' : '灯っていない') : '', t.loop && t.loop !== 'none' ? { sway: '揺れる', bob: '浮き沈み', flicker: 'ゆらぐ', drift: 'ただよう' }[t.loop] : ''].filter(Boolean).join('・');
+    const where = [t.depth != null ? `奥行き ${t.depth}` : '', s.pos ? `所: ${s.pos}` : '', s.shown ? '' : '見えない', t.shapes?.light.length ? (s.lit ? '灯っている' : '灯っていない') : '', t.loop && t.loop !== 'none' ? { sway: '揺れる', bob: '浮き沈み', flicker: 'ゆらぐ', drift: 'ただよう' }[t.loop] : ''].filter(Boolean).join('・');
     return li(`${t.main ? '★' : '・'}${t.name}${where ? `[${where}]` : ''} — ${t.look}`, '', t.quote);
   })] : [li('まだ無い(この章の最初のページを読み終えるのを待っている)')];
   $('things').replaceChildren(...things);

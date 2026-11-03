@@ -218,6 +218,28 @@ test('描く: 所は名前が重ならず座標の読めるものだけ。道は
   assert.equal(routeOf(panel, '坂の上', '海'), null);
 });
 
+test('重なり: 描く係の奥行きの順に重ねる(数の大きい物が前)。同じ奥行きなら答えの順。描き足した物も奥行きの所へ入る', () => {
+  const book = fresh();
+  // 読み取り係は トロッコ・線路・海 の順に挙げる(前から続く物が先に来る)
+  const first = applyReading(book, { seed: '', events: [], scenes: [scene({ things: [thing('トロッコ', '泥だらけ', true), thing('線路', '一番端'), thing('海', '薄明るい中に')] })] }, TEXT, 0).draws[0];
+  const [cart, rails, sea] = first.ids;
+  const panel = book.emaki.panels[0];
+  const names = () => panel.things.map((t) => t.name);
+  applyDrawing(book, { ground: [], things: [{ id: cart, depth: 6, ...shape() }, { id: sea, depth: 1, ...shape() }, { id: rails, depth: 3.4, ...shape() }] }, first, 0);
+  assert.deepEqual(names(), ['海', '線路', 'トロッコ'], '海が動く物の上に重ならない');
+  assert.equal(panel.things[1].depth, 3);
+  const add = applyReading(book, { seed: '', events: [], scenes: [scene({ change: 'same', things: [thing('空', '三人の子供'), thing('灯', '薄明るい')] })] }, TEXT, 1).draws[0];
+  const [sky, lamp] = add.ids;
+  assert.deepEqual(drawRequest(book, add).current.things.map((t) => t.depth), [1, 3, 6], '描き足すときは、いまの物の奥行きを渡す');
+  applyDrawing(book, { ground: [], things: [{ id: lamp, depth: 6, ...shape() }, { id: sky, depth: 0, ...shape() }] }, add, 1);
+  assert.deepEqual(names(), ['空', '海', '線路', 'トロッコ', '灯'], '同じ奥行きなら、あとから描いた物が前');
+  // 奥行きの無い答え(前の形の記録)は真ん中に置き、答えの順のまま
+  const old = fresh();
+  const draw = applyReading(old, { seed: '', events: [], scenes: [scene({ things: [thing('トロッコ', '泥だらけ', true), thing('線路', '一番端')] })] }, TEXT, 0).draws[0];
+  applyDrawing(old, { ground: [], things: [{ id: draw.ids[1], ...shape() }, { id: draw.ids[0], ...shape() }] }, draw, 0);
+  assert.deepEqual([old.emaki.panels[0].things.map((t) => t.name), old.emaki.panels[0].things.map((t) => t.depth)], [['線路', 'トロッコ'], [null, null]]);
+});
+
 test('読み取りの動き: 同じ場面のときだけ。語句が段落に無い・知らない物や所の動きは捨て、時刻が移れば日が暮れるのを演じる', () => {
   const { book, panel, cart, lamp } = staged();
   const req = readRequest(book, TEXT);
