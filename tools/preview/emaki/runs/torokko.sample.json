@@ -1,12 +1,12 @@
 {
- "format": 2,
+ "format": 3,
  "book": "torokko",
  "label": "torokko.sample",
  "model": "sample",
  "settings": {
   "start": 0,
   "pageSize": 400,
-  "every": 700,
+  "every": 1,
   "chapters": null
  },
  "models": {
@@ -29,7 +29,7 @@
   {
    "pages": [
     0,
-    1
+    0
    ],
    "chapter": 0,
    "reader": {
@@ -41,6 +41,266 @@
        "text": "軽便鉄道の工事が始まり、良平は毎日村外れへトロッコを見に行く",
        "quote": "良平は毎日村外れへ、その工事を見物に行った"
       },
+      {
+       "text": "トロッコが山を下って来て、村外れの平地で止まる",
+       "quote": "トロッコは村外れの平地へ来ると、自然と其処に止まってしまう"
+      },
+      {
+       "text": "土工たちは終点に土をぶちまけ、トロッコを押して山へ登っていく",
+       "quote": "その線路の終点へ車の土をぶちまける"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "new",
+       "place": "村外れの工事場",
+       "place_quote": "トロッコは村外れの平地へ来ると",
+       "time": "unknown",
+       "time_quote": "",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "joyful",
+       "mood_quote": "それが面白さに見に行ったのである",
+       "keep": [],
+       "things": [
+        {
+         "name": "トロッコ",
+         "look": "土を積んだ台車",
+         "quote": "トロッコで土を運搬する",
+         "main": true
+        },
+        {
+         "name": "線路",
+         "look": "山から村外れへ下る細い線路",
+         "quote": "細い線路がしなったり",
+         "main": false
+        },
+        {
+         "name": "山",
+         "look": "線路の先の山",
+         "quote": "トロッコは山を下るのだから",
+         "main": false
+        },
+        {
+         "name": "土の山",
+         "look": "終点にぶちまけた土",
+         "quote": "その線路の終点へ車の土をぶちまける",
+         "main": false
+        }
+       ],
+       "changes": [],
+       "beats": []
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "sample",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0 H320 V150 H0 Z",
+        "color": "sky",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 150 C90 142 220 140 320 148 V240 H0 Z",
+        "color": "sand",
+        "tone": "mid"
+       }
+      ],
+      "spots": [
+       {
+        "name": "終点",
+        "x": 78,
+        "y": 206,
+        "scale": 1
+       },
+       {
+        "name": "山の上",
+        "x": 222,
+        "y": 140,
+        "scale": 0.45
+       }
+      ],
+      "routes": [],
+      "things": [
+       {
+        "id": "t4",
+        "forms": [
+         {
+          "d": "M150 150 C180 95 215 70 250 62 C280 70 305 95 320 110 V150 Z",
+          "color": "green",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M150 150 C180 95 215 70 250 62 C280 70 305 95 320 110",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 160,
+         "y": 120
+        },
+        "spot": "",
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
+       },
+       {
+        "id": "t3",
+        "forms": [],
+        "lines": [
+         {
+          "d": "M10 236 L250 122 M44 240 L262 126",
+          "color": "gray",
+          "width": "bold"
+         },
+         {
+          "d": "M24 232 l26 5 M56 216 l24 5 M88 201 l22 4 M120 186 l20 4 M150 172 l18 3 M180 158 l16 3 M208 145 l14 3 M234 133 l11 2",
+          "color": "brown",
+          "width": "mid"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 160,
+         "y": 120
+        },
+        "spot": "",
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
+       },
+       {
+        "id": "t5",
+        "forms": [
+         {
+          "d": "M6 218 C14 200 36 196 50 208 C54 212 56 216 58 220 Z",
+          "color": "brown",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M6 218 C14 200 36 196 50 208 C54 212 56 216 58 220",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 32,
+         "y": 218
+        },
+        "spot": "",
+        "start": "",
+        "hidden": true,
+        "lit": true,
+        "loop": "none"
+       },
+       {
+        "id": "t2",
+        "forms": [
+         {
+          "d": "M46 176 L104 170 L108 194 L50 200 Z",
+          "color": "brown",
+          "tone": "deep"
+         },
+         {
+          "d": "M56 188 l20 -2 l-4 8 l-14 1 Z M84 184 l16 -2 l-2 6 l-12 2 Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M55 200 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M87 196 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0",
+          "color": "umber",
+          "tone": "deep"
+         },
+         {
+          "d": "M50 178 C62 164 92 160 104 172 Z",
+          "color": "brown",
+          "tone": "pale"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M46 176 L104 170 L108 194 L50 200 Z",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M50 186 L106 180",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M55 200 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M87 196 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 78,
+         "y": 206
+        },
+        "spot": "終点",
+        "start": "山の上",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
+       }
+      ],
+      "beats": [
+       {
+        "event": 1,
+        "act": "move",
+        "to": "終点",
+        "speed": "fast",
+        "fx": "bob",
+        "id": "t2"
+       },
+       {
+        "event": 2,
+        "act": "appear",
+        "to": "",
+        "speed": "mid",
+        "fx": "none",
+        "id": "t5"
+       },
+       {
+        "event": 2,
+        "act": "move",
+        "to": "山の上",
+        "speed": "slow",
+        "fx": "bob",
+        "id": "t2"
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    1,
+    1
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "sample",
+    "data": {
+     "seed": "",
+     "events": [
       {
        "text": "或夕方、弟たちと、土工のいないトロッコを押して線路を登る",
        "quote": "三人の子供は恐る恐る、一番端にあるトロッコを押した"
@@ -61,31 +321,16 @@
        "weather_quote": "",
        "mood": "tense",
        "mood_quote": "三人の子供は恐る恐る",
-       "keep": [],
+       "keep": [
+        "線路",
+        "山"
+       ],
        "things": [
         {
-         "name": "トロッコ",
+         "name": "泥だらけのトロッコ",
          "look": "泥だらけの台車",
          "quote": "トロッコは泥だらけになったまま、薄明るい中に並んでいる",
          "main": true
-        },
-        {
-         "name": "線路",
-         "look": "山の方へ細く登っていき、だんだん急になる",
-         "quote": "線路の勾配が急になり出した",
-         "main": false
-        },
-        {
-         "name": "山",
-         "look": "線路の先の山",
-         "quote": "もと来た山の方へ登り始める",
-         "main": false
-        },
-        {
-         "name": "土の山",
-         "look": "線路の終点にぶちまけた土",
-         "quote": "その線路の終点へ車の土をぶちまける",
-         "main": false
         }
        ],
        "changes": [],
@@ -135,9 +380,10 @@
         "scale": 0.6
        }
       ],
+      "routes": [],
       "things": [
        {
-        "id": "t4",
+        "id": "t8",
         "forms": [
          {
           "d": "M150 150 C180 95 215 70 250 62 C280 70 305 95 320 110 V150 Z",
@@ -150,11 +396,6 @@
           "d": "M150 150 C180 95 215 70 250 62 C280 70 305 95 320 110",
           "color": "umber",
           "width": "thin"
-         },
-         {
-          "d": "M200 110 C215 100 228 96 240 98 M262 92 C276 96 288 104 298 114",
-          "color": "green",
-          "width": "thin"
          }
         ],
         "light": [],
@@ -163,10 +404,13 @@
          "y": 120
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        },
        {
-        "id": "t3",
+        "id": "t7",
         "forms": [],
         "lines": [
          {
@@ -186,39 +430,13 @@
          "y": 120
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        },
        {
-        "id": "t5",
-        "forms": [
-         {
-          "d": "M262 150 C270 132 292 128 306 140 C312 146 316 150 318 152 Z",
-          "color": "brown",
-          "tone": "mid"
-         }
-        ],
-        "lines": [
-         {
-          "d": "M262 150 C270 132 292 128 306 140 C312 146 316 150 318 152",
-          "color": "umber",
-          "width": "thin"
-         },
-         {
-          "d": "M276 140 l6 -3 M292 138 l5 2",
-          "color": "umber",
-          "width": "thin"
-         }
-        ],
-        "light": [],
-        "at": {
-         "x": 160,
-         "y": 120
-        },
-        "spot": "",
-        "lit": true
-       },
-       {
-        "id": "t2",
+        "id": "t9",
         "forms": [
          {
           "d": "M46 176 L104 170 L108 194 L50 200 Z",
@@ -259,15 +477,20 @@
          "y": 206
         },
         "spot": "線路の下",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        }
       ],
       "beats": [
        {
-        "event": 1,
+        "event": 0,
         "act": "move",
         "to": "坂の途中",
-        "id": "t2"
+        "speed": "slow",
+        "fx": "bob",
+        "id": "t9"
        }
       ]
      }
@@ -278,7 +501,7 @@
   {
    "pages": [
     2,
-    3
+    2
    ],
    "chapter": 0,
    "reader": {
@@ -293,14 +516,6 @@
       {
        "text": "背の高い土工に怒鳴られ、三人は逃げ出す",
        "quote": "誰に断ってトロに触った？"
-      },
-      {
-       "text": "十日余り後、良平は一人で午過ぎの工事場にいる",
-       "quote": "その後十日余りたってから"
-      },
-      {
-       "text": "枕木を積んだトロッコを押す若い二人に、押そうかと声をかける",
-       "quote": "おじさん。押してやろうか？"
       }
      ],
      "scenes": [
@@ -312,20 +527,53 @@
        "time_quote": "",
        "weather": "unknown",
        "weather_quote": "",
-       "mood": "unknown",
-       "mood_quote": "",
+       "mood": "joyful",
+       "mood_quote": "良平は殆ど有頂天になった",
        "keep": [],
        "things": [],
        "changes": [],
        "beats": [
         {
-         "name": "トロッコ",
+         "name": "泥だらけのトロッコ",
          "act": "move",
          "to": "線路の下",
+         "speed": "fast",
+         "fx": "bob",
          "quote": "一息に線路を下り出した"
         }
        ]
+      }
+     ]
+    }
+   },
+   "drawers": [],
+   "summary": null
+  },
+  {
+   "pages": [
+    3,
+    3
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "sample",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "十日余り後、良平は一人で午過ぎの工事場にいる",
+       "quote": "その後十日余りたってから"
       },
+      {
+       "text": "枕木を積んだトロッコが、太い線路を登って来る",
+       "quote": "太い線路を登って来た"
+      },
+      {
+       "text": "押している若い二人に、押そうかと声をかける",
+       "quote": "おじさん。押してやろうか？"
+      }
+     ],
+     "scenes": [
       {
        "change": "new",
        "place": "午過ぎの工事場",
@@ -348,7 +596,7 @@
         },
         {
          "name": "太い線路",
-         "look": "本線になる太い線路が山へ登る",
+         "look": "本線になる太い線路",
          "quote": "本線になる筈の、太い線路を登って来た",
          "main": false
         },
@@ -383,27 +631,39 @@
       ],
       "spots": [
        {
+        "name": "画面の外の左",
+        "x": -50,
+        "y": 232,
+        "scale": 1.1
+       },
+       {
         "name": "線路の中ほど",
         "x": 167,
         "y": 196,
         "scale": 1
        },
        {
-        "name": "線路の手前",
-        "x": 96,
-        "y": 214,
-        "scale": 1.15
+        "name": "線路の奥",
+        "x": 286,
+        "y": 160,
+        "scale": 0.55
+       }
+      ],
+      "routes": [
+       {
+        "from": "画面の外の左",
+        "to": "線路の中ほど",
+        "d": "M-50 232 C20 222 100 206 167 196"
        },
        {
-        "name": "線路の奥",
-        "x": 272,
-        "y": 160,
-        "scale": 0.6
+        "from": "線路の中ほど",
+        "to": "線路の奥",
+        "d": "M167 196 C210 184 250 170 286 160"
        }
       ],
       "things": [
        {
-        "id": "t7",
+        "id": "t11",
         "forms": [
          {
           "d": "M0 140 C40 100 90 80 130 84 C170 90 200 112 220 140 Z",
@@ -416,11 +676,6 @@
           "d": "M0 140 C40 100 90 80 130 84 C170 90 200 112 220 140",
           "color": "umber",
           "width": "thin"
-         },
-         {
-          "d": "M60 112 C76 102 92 98 108 100",
-          "color": "green",
-          "width": "thin"
          }
         ],
         "light": [],
@@ -429,10 +684,13 @@
          "y": 120
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        },
        {
-        "id": "t9",
+        "id": "t13",
         "forms": [],
         "lines": [
          {
@@ -452,44 +710,50 @@
          "y": 120
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        },
        {
-        "id": "t10",
+        "id": "t14",
         "forms": [
          {
-          "d": "M250 140 L292 136 L294 152 L252 156 Z",
+          "d": "M20 160 L62 156 L64 172 L22 176 Z",
           "color": "brown",
           "tone": "mid"
          },
          {
-          "d": "M252 140 C262 128 282 126 292 136 Z",
+          "d": "M22 160 C32 148 52 146 62 156 Z",
           "color": "umber",
           "tone": "pale"
          },
          {
-          "d": "M258 158 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M280 155 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0",
+          "d": "M28 178 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M50 175 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0",
           "color": "umber",
           "tone": "deep"
          }
         ],
         "lines": [
          {
-          "d": "M250 140 L292 136 L294 152 L252 156 Z M252 140 C262 128 282 126 292 136",
+          "d": "M20 160 L62 156 L64 172 L22 176 Z M22 160 C32 148 52 146 62 156",
           "color": "umber",
           "width": "thin"
          }
         ],
         "light": [],
         "at": {
-         "x": 272,
-         "y": 160
+         "x": 42,
+         "y": 180
         },
-        "spot": "線路の奥",
-        "lit": true
+        "spot": "",
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        },
        {
-        "id": "t8",
+        "id": "t12",
         "forms": [
          {
           "d": "M124 162 L208 153 L212 180 L128 189 Z",
@@ -530,15 +794,20 @@
          "y": 196
         },
         "spot": "線路の中ほど",
-        "lit": true
+        "start": "画面の外の左",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        }
       ],
       "beats": [
        {
-        "event": 3,
+        "event": 1,
         "act": "move",
-        "to": "線路の手前",
-        "id": "t8"
+        "to": "線路の中ほど",
+        "speed": "slow",
+        "fx": "bob",
+        "id": "t12"
        }
       ]
      }
@@ -549,7 +818,7 @@
   {
    "pages": [
     4,
-    5
+    4
    ],
    "chapter": 0,
    "reader": {
@@ -558,19 +827,43 @@
      "seed": "",
      "events": [
       {
-       "text": "若い二人の土工とトロッコを押し、優しい人たちだと思う",
+       "text": "良平は若い二人の間に入り、力一杯トロッコを押す",
+       "quote": "力一杯押し始めた"
+      },
+      {
+       "text": "優しい人たちだと思う",
        "quote": "良平は「優しい人たちだ」と思った"
       },
       {
-       "text": "蜜柑畑の間を登りつめ、下りではトロッコに乗って走る",
-       "quote": "蜜柑畑の間を登りつめると、急に線路は下りになった"
-      },
-      {
-       "text": "竹藪から雑木林を抜け、崖の向うに海が開ける",
-       "quote": "高い崖の向うに、広広と薄ら寒い海が開けた"
+       "text": "線路がまた急勾配になり、両側に蜜柑畑が見える",
+       "quote": "線路はもう一度急勾配になった"
       }
      ],
      "scenes": [
+      {
+       "change": "same",
+       "place": "",
+       "place_quote": "",
+       "time": "unknown",
+       "time_quote": "",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "unknown",
+       "mood_quote": "",
+       "keep": [],
+       "things": [],
+       "changes": [],
+       "beats": [
+        {
+         "name": "枕木を積んだトロッコ",
+         "act": "move",
+         "to": "線路の奥",
+         "speed": "mid",
+         "fx": "bob",
+         "quote": "力一杯押し始めた"
+        }
+       ]
+      },
       {
        "change": "new",
        "place": "蜜柑畑の登り路",
@@ -579,8 +872,8 @@
        "time_quote": "黄色い実がいくつも日を受けている",
        "weather": "clear",
        "weather_quote": "日を受けている",
-       "mood": "joyful",
-       "mood_quote": "押すよりも乗る方がずっと好い",
+       "mood": "warm",
+       "mood_quote": "良平は「優しい人たちだ」と思った",
        "keep": [
         "枕木を積んだトロッコ",
         "太い線路"
@@ -595,6 +888,216 @@
        ],
        "changes": [],
        "beats": []
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "sample",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0 H320 V112 H0 Z",
+        "color": "sky",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 112 H320 V240 H0 Z",
+        "color": "leaf",
+        "tone": "pale"
+       }
+      ],
+      "spots": [
+       {
+        "name": "畑の下",
+        "x": 160,
+        "y": 226,
+        "scale": 1
+       },
+       {
+        "name": "登りつめた所",
+        "x": 175,
+        "y": 122,
+        "scale": 0.42
+       },
+       {
+        "name": "峠の向こう",
+        "x": 176,
+        "y": 104,
+        "scale": 0.3
+       }
+      ],
+      "routes": [],
+      "things": [
+       {
+        "id": "t17",
+        "forms": [],
+        "lines": [
+         {
+          "d": "M126 240 L168 114 M200 240 L182 114",
+          "color": "gray",
+          "width": "bold"
+         },
+         {
+          "d": "M132 226 h62 M140 200 h50 M148 176 h40 M155 154 h32 M161 136 h24 M166 122 h16",
+          "color": "brown",
+          "width": "mid"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 160,
+         "y": 120
+        },
+        "spot": "",
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
+       },
+       {
+        "id": "t18",
+        "forms": [
+         {
+          "d": "M0 120 C30 112 70 116 120 130 L110 240 H0 Z M320 120 C290 112 250 116 212 130 L222 240 H320 Z",
+          "color": "green",
+          "tone": "mid"
+         },
+         {
+          "d": "M20 150 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M58 170 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M32 196 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M82 210 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M10 226 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M66 138 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M292 150 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M254 170 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M280 196 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M232 214 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M302 226 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M246 138 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0",
+          "color": "orange",
+          "tone": "deep"
+         },
+         {
+          "d": "M43 160 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0 M93 186 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0 M273 160 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0 M223 190 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0",
+          "color": "lemon",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M0 120 C30 112 70 116 120 130 M320 120 C290 112 250 116 212 130",
+          "color": "green",
+          "width": "thin"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 160,
+         "y": 240
+        },
+        "spot": "",
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "sway"
+       },
+       {
+        "id": "t16",
+        "forms": [
+         {
+          "d": "M124 196 H196 V216 H124 Z",
+          "color": "brown",
+          "tone": "deep"
+         },
+         {
+          "d": "M128 186 H192 V196 H128 Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M130 220 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0 M178 220 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0",
+          "color": "umber",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M124 196 H196 V216 H124 Z M128 186 H192 V196 H128 Z",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M130 220 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0 M178 220 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 160,
+         "y": 226
+        },
+        "spot": "畑の下",
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
+       }
+      ],
+      "beats": []
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    5,
+    5
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "sample",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "蜜柑畑の間を登りつめ、下りではトロッコに乗って走る",
+       "quote": "ひた辷りに線路を走り出した"
+      },
+      {
+       "text": "竹藪で止まり、また重いトロッコを押す",
+       "quote": "重いトロッコを押し始めた"
+      },
+      {
+       "text": "雑木林を登り切ると、崖の向うに海が開ける",
+       "quote": "高い崖の向うに、広広と薄ら寒い海が開けた"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "same",
+       "place": "",
+       "place_quote": "",
+       "time": "unknown",
+       "time_quote": "",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "joyful",
+       "mood_quote": "押すよりも乗る方がずっと好い",
+       "keep": [],
+       "things": [],
+       "changes": [],
+       "beats": [
+        {
+         "name": "枕木を積んだトロッコ",
+         "act": "move",
+         "to": "登りつめた所",
+         "speed": "slow",
+         "fx": "bob",
+         "quote": "蜜柑畑の間を登りつめると"
+        },
+        {
+         "name": "枕木を積んだトロッコ",
+         "act": "leave",
+         "to": "峠の向こう",
+         "speed": "fast",
+         "fx": "bob",
+         "quote": "ひた辷りに線路を走り出した"
+        }
+       ]
       },
       {
        "change": "new",
@@ -648,143 +1151,6 @@
      "data": {
       "ground": [
        {
-        "d": "M0 0 H320 V112 H0 Z",
-        "color": "sky",
-        "tone": "pale"
-       },
-       {
-        "d": "M0 112 H320 V240 H0 Z",
-        "color": "leaf",
-        "tone": "pale"
-       }
-      ],
-      "spots": [
-       {
-        "name": "畑の下",
-        "x": 160,
-        "y": 226,
-        "scale": 1
-       },
-       {
-        "name": "登りつめた所",
-        "x": 175,
-        "y": 122,
-        "scale": 0.42
-       }
-      ],
-      "things": [
-       {
-        "id": "t13",
-        "forms": [],
-        "lines": [
-         {
-          "d": "M126 240 L168 114 M200 240 L182 114",
-          "color": "gray",
-          "width": "bold"
-         },
-         {
-          "d": "M132 226 h62 M140 200 h50 M148 176 h40 M155 154 h32 M161 136 h24 M166 122 h16",
-          "color": "brown",
-          "width": "mid"
-         }
-        ],
-        "light": [],
-        "at": {
-         "x": 160,
-         "y": 120
-        },
-        "spot": "",
-        "lit": true
-       },
-       {
-        "id": "t14",
-        "forms": [
-         {
-          "d": "M0 120 C30 112 70 116 120 130 L110 240 H0 Z M320 120 C290 112 250 116 212 130 L222 240 H320 Z",
-          "color": "green",
-          "tone": "mid"
-         },
-         {
-          "d": "M20 150 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M58 170 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M32 196 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M82 210 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M10 226 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M66 138 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M292 150 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M254 170 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M280 196 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M232 214 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M302 226 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0 M246 138 a4 4 0 1 0 8 0 a4 4 0 1 0 -8 0",
-          "color": "orange",
-          "tone": "deep"
-         },
-         {
-          "d": "M43 160 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0 M93 186 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0 M273 160 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0 M223 190 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0",
-          "color": "lemon",
-          "tone": "deep"
-         }
-        ],
-        "lines": [
-         {
-          "d": "M0 120 C30 112 70 116 120 130 M320 120 C290 112 250 116 212 130",
-          "color": "green",
-          "width": "thin"
-         }
-        ],
-        "light": [],
-        "at": {
-         "x": 160,
-         "y": 120
-        },
-        "spot": "",
-        "lit": true
-       },
-       {
-        "id": "t12",
-        "forms": [
-         {
-          "d": "M124 196 H196 V216 H124 Z",
-          "color": "brown",
-          "tone": "deep"
-         },
-         {
-          "d": "M128 186 H192 V196 H128 Z",
-          "color": "umber",
-          "tone": "mid"
-         },
-         {
-          "d": "M130 220 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0 M178 220 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0",
-          "color": "umber",
-          "tone": "deep"
-         }
-        ],
-        "lines": [
-         {
-          "d": "M124 196 H196 V216 H124 Z M128 186 H192 V196 H128 Z",
-          "color": "umber",
-          "width": "mid"
-         },
-         {
-          "d": "M130 220 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0 M178 220 a6 6 0 1 0 12 0 a6 6 0 1 0 -12 0",
-          "color": "umber",
-          "width": "thin"
-         }
-        ],
-        "light": [],
-        "at": {
-         "x": 160,
-         "y": 226
-        },
-        "spot": "畑の下",
-        "lit": true
-       }
-      ],
-      "beats": [
-       {
-        "event": 1,
-        "act": "move",
-        "to": "登りつめた所",
-        "id": "t12"
-       }
-      ]
-     }
-    },
-    {
-     "model": "sample",
-     "data": {
-      "ground": [
-       {
         "d": "M0 0 H320 V118 H0 Z",
         "color": "sky",
         "tone": "pale"
@@ -797,6 +1163,12 @@
       ],
       "spots": [
        {
+        "name": "林の下",
+        "x": 20,
+        "y": 238,
+        "scale": 1.15
+       },
+       {
         "name": "林の中",
         "x": 104,
         "y": 206,
@@ -807,11 +1179,29 @@
         "x": 168,
         "y": 160,
         "scale": 0.7
+       },
+       {
+        "name": "海沿いの先",
+        "x": 360,
+        "y": 150,
+        "scale": 0.55
+       }
+      ],
+      "routes": [
+       {
+        "from": "林の下",
+        "to": "林の中",
+        "d": "M20 238 C50 226 80 214 104 206"
+       },
+       {
+        "from": "林の中",
+        "to": "崖の上",
+        "d": "M104 206 C126 192 148 172 168 160"
        }
       ],
       "things": [
        {
-        "id": "t18",
+        "id": "t22",
         "forms": [
          {
           "d": "M150 118 H320 V240 H210 L190 132 C175 126 160 120 150 118 Z",
@@ -848,14 +1238,17 @@
          }
         ],
         "at": {
-         "x": 160,
-         "y": 120
+         "x": 240,
+         "y": 240
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "bob"
        },
        {
-        "id": "t19",
+        "id": "t23",
         "forms": [
          {
           "d": "M0 0 H90 C84 30 70 56 40 64 C20 70 8 70 0 70 Z",
@@ -887,14 +1280,17 @@
         ],
         "light": [],
         "at": {
-         "x": 160,
-         "y": 120
+         "x": 60,
+         "y": 130
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "sway"
        },
        {
-        "id": "t17",
+        "id": "t21",
         "forms": [],
         "lines": [
          {
@@ -914,10 +1310,13 @@
          "y": 120
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        },
        {
-        "id": "t20",
+        "id": "t24",
         "forms": [
          {
           "d": "M20 180 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z M70 196 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z M150 172 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z M152 210 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z M40 220 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z M110 226 c6 -3 10 0 6 4 c-4 3 -10 1 -6 -4 Z",
@@ -939,14 +1338,17 @@
         ],
         "light": [],
         "at": {
-         "x": 160,
-         "y": 120
+         "x": 90,
+         "y": 230
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "drift"
        },
        {
-        "id": "t16",
+        "id": "t20",
         "forms": [
          {
           "d": "M74 180 L134 170 L138 192 L78 202 Z",
@@ -982,15 +1384,28 @@
          "y": 206
         },
         "spot": "林の中",
-        "lit": true
+        "start": "林の下",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        }
       ],
       "beats": [
        {
+        "event": 1,
+        "act": "move",
+        "to": "林の中",
+        "speed": "slow",
+        "fx": "bob",
+        "id": "t20"
+       },
+       {
         "event": 2,
         "act": "move",
         "to": "崖の上",
-        "id": "t16"
+        "speed": "mid",
+        "fx": "bob",
+        "id": "t20"
        }
       ]
      }
@@ -1001,7 +1416,7 @@
   {
    "pages": [
     6,
-    7
+    6
    ],
    "chapter": 0,
    "reader": {
@@ -1014,8 +1429,269 @@
        "quote": "「もう帰ってくれれば好い」"
       },
       {
-       "text": "藁屋根の茶店で土工たちが茶を飲み、良平は駄菓子をもらう",
+       "text": "藁屋根の茶店の前で止まり、土工たちは茶を飲む",
+       "quote": "藁屋根の茶店の前だった"
+      },
+      {
+       "text": "良平は新聞紙に包んだ駄菓子をもらう",
        "quote": "新聞紙に包んだ駄菓子をくれた"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "same",
+       "place": "",
+       "place_quote": "",
+       "time": "unknown",
+       "time_quote": "",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "unknown",
+       "mood_quote": "",
+       "keep": [],
+       "things": [],
+       "changes": [],
+       "beats": [
+        {
+         "name": "枕木を積んだトロッコ",
+         "act": "leave",
+         "to": "海沿いの先",
+         "speed": "mid",
+         "fx": "bob",
+         "quote": "車は海を右にしながら、雑木の枝の下を走って行った"
+        }
+       ]
+      },
+      {
+       "change": "new",
+       "place": "藁屋根の茶店の前",
+       "place_quote": "藁屋根の茶店の前だった",
+       "time": "unknown",
+       "time_quote": "",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "tense",
+       "mood_quote": "良平は独りいらいらしながら",
+       "keep": [
+        "枕木を積んだトロッコ"
+       ],
+       "things": [
+        {
+         "name": "茶店",
+         "look": "切崩した山を背負った藁屋根の茶店",
+         "quote": "切崩した山を背負っている",
+         "main": true
+        },
+        {
+         "name": "駄菓子",
+         "look": "新聞紙に包んだ駄菓子",
+         "quote": "新聞紙に包んだ駄菓子をくれた",
+         "main": false
+        }
+       ],
+       "changes": [],
+       "beats": []
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "sample",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0 H320 V140 H0 Z",
+        "color": "sky",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 140 H320 V240 H0 Z",
+        "color": "sand",
+        "tone": "mid"
+       }
+      ],
+      "spots": [
+       {
+        "name": "画面の外の左",
+        "x": -60,
+        "y": 222,
+        "scale": 1
+       },
+       {
+        "name": "茶店の前",
+        "x": 130,
+        "y": 226,
+        "scale": 1
+       },
+       {
+        "name": "坂の上",
+        "x": 340,
+        "y": 176,
+        "scale": 0.7
+       }
+      ],
+      "routes": [],
+      "things": [
+       {
+        "id": "t27",
+        "forms": [
+         {
+          "d": "M118 140 C140 84 200 62 256 70 C286 78 306 108 316 140 Z",
+          "color": "green",
+          "tone": "mid"
+         },
+         {
+          "d": "M142 116 H258 V172 H142 Z",
+          "color": "sand",
+          "tone": "mid"
+         },
+         {
+          "d": "M128 112 L200 72 L272 112 L264 120 L136 120 Z",
+          "color": "brown",
+          "tone": "mid"
+         },
+         {
+          "d": "M186 132 H214 V172 H186 Z",
+          "color": "umber",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M128 112 L200 72 L272 112 L264 120 L136 120 Z M142 120 V172 H258 V120 M186 172 V132 H214 V172",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M150 108 l10 -6 M170 97 l10 -6 M190 86 l8 -5 M212 86 l8 5 M232 97 l10 6 M252 108 l8 5",
+          "color": "brown",
+          "width": "thin"
+         },
+         {
+          "d": "M118 140 C140 84 200 62 256 70 C286 78 306 108 316 140",
+          "color": "green",
+          "width": "thin"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 160,
+         "y": 120
+        },
+        "spot": "",
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
+       },
+       {
+        "id": "t26",
+        "forms": [
+         {
+          "d": "M90 192 L170 184 L174 212 L94 220 Z",
+          "color": "brown",
+          "tone": "deep"
+         },
+         {
+          "d": "M96 192 L166 185 L166 177 L96 184 Z",
+          "color": "umber",
+          "tone": "mid"
+         },
+         {
+          "d": "M104 222 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0 M146 217 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0",
+          "color": "umber",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M90 192 L170 184 L174 212 L94 220 Z M96 192 L166 185 L166 177 L96 184 Z",
+          "color": "umber",
+          "width": "mid"
+         },
+         {
+          "d": "M104 222 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0 M146 217 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 130,
+         "y": 226
+        },
+        "spot": "茶店の前",
+        "start": "画面の外の左",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
+       },
+       {
+        "id": "t28",
+        "forms": [
+         {
+          "d": "M182 212 l18 -4 l4 10 l-18 4 Z",
+          "color": "white",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M182 212 l18 -4 l4 10 l-18 4 Z M186 214 l14 -3",
+          "color": "gray",
+          "width": "thin"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 192,
+         "y": 222
+        },
+        "spot": "",
+        "start": "",
+        "hidden": true,
+        "lit": true,
+        "loop": "none"
+       }
+      ],
+      "beats": [
+       {
+        "event": 1,
+        "act": "move",
+        "to": "茶店の前",
+        "speed": "mid",
+        "fx": "bob",
+        "id": "t26"
+       },
+       {
+        "event": 2,
+        "act": "appear",
+        "to": "",
+        "speed": "mid",
+        "fx": "none",
+        "id": "t28"
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    7,
+    7
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "sample",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "三人はトロッコを押して緩い坂を登る",
+       "quote": "緩い傾斜を登って行った"
       },
       {
        "text": "二つ目の茶店の前で、日が暮れるのを気にする",
@@ -1027,6 +1703,30 @@
       }
      ],
      "scenes": [
+      {
+       "change": "same",
+       "place": "",
+       "place_quote": "",
+       "time": "unknown",
+       "time_quote": "",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "unknown",
+       "mood_quote": "",
+       "keep": [],
+       "things": [],
+       "changes": [],
+       "beats": [
+        {
+         "name": "枕木を積んだトロッコ",
+         "act": "leave",
+         "to": "坂の上",
+         "speed": "slow",
+         "fx": "bob",
+         "quote": "緩い傾斜を登って行った"
+        }
+       ]
+      },
       {
        "change": "new",
        "place": "二つ目の茶店の前",
@@ -1089,6 +1789,18 @@
       ],
       "spots": [
        {
+        "name": "空の低い所",
+        "x": 297,
+        "y": 126,
+        "scale": 1
+       },
+       {
+        "name": "山の端",
+        "x": 297,
+        "y": 146,
+        "scale": 1
+       },
+       {
         "name": "茶店の前",
         "x": 130,
         "y": 226,
@@ -1101,9 +1813,10 @@
         "scale": 0.9
        }
       ],
+      "routes": [],
       "things": [
        {
-        "id": "t25",
+        "id": "t33",
         "forms": [],
         "lines": [],
         "light": [
@@ -1113,14 +1826,17 @@
          }
         ],
         "at": {
-         "x": 160,
-         "y": 120
+         "x": 297,
+         "y": 126
         },
-        "spot": "",
-        "lit": true
+        "spot": "空の低い所",
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "flicker"
        },
        {
-        "id": "t23",
+        "id": "t31",
         "forms": [
          {
           "d": "M118 140 C140 84 200 62 256 70 C286 78 306 108 316 140 Z",
@@ -1166,10 +1882,13 @@
          "y": 120
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        },
        {
-        "id": "t24",
+        "id": "t32",
         "forms": [
          {
           "d": "M29 128 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M45 118 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M61 124 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M37 140 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M73 132 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M53 108 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 M21 146 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0",
@@ -1191,14 +1910,17 @@
         ],
         "light": [],
         "at": {
-         "x": 160,
-         "y": 120
+         "x": 58,
+         "y": 210
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "sway"
        },
        {
-        "id": "t22",
+        "id": "t30",
         "forms": [
          {
           "d": "M90 192 L170 184 L174 212 L94 220 Z",
@@ -1234,21 +1956,36 @@
          "y": 226
         },
         "spot": "茶店の前",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        }
       ],
       "beats": [
        {
-        "event": 2,
-        "act": "dark",
-        "to": "",
-        "id": "t25"
+        "event": 1,
+        "act": "move",
+        "to": "山の端",
+        "speed": "slow",
+        "fx": "none",
+        "id": "t33"
        },
        {
-        "event": 3,
-        "act": "move",
+        "event": 1,
+        "act": "dark",
+        "to": "",
+        "speed": "slow",
+        "fx": "none",
+        "id": "t33"
+       },
+       {
+        "event": 2,
+        "act": "leave",
         "to": "道の先",
-        "id": "t22"
+        "speed": "mid",
+        "fx": "bob",
+        "id": "t30"
        }
       ]
      }
@@ -1259,7 +1996,7 @@
   {
    "pages": [
     8,
-    9
+    8
    ],
    "chapter": 0,
    "reader": {
@@ -1272,12 +2009,12 @@
        "quote": "どんどん線路伝いに走り出した"
       },
       {
-       "text": "菓子包みと板草履、羽織を路側に捨てて走り続ける",
-       "quote": "羽織を路側へ脱いで捨てた"
+       "text": "菓子包みと板草履を路側に捨てる",
+       "quote": "板草履も其処へ脱ぎ捨ててしまった"
       },
       {
-       "text": "夕闇の中に村外れの工事場が見え、村に入ると家々に電燈がともっている",
-       "quote": "電燈の光がさし合っていた"
+       "text": "左に海を感じながら、急な坂路を駈け登る",
+       "quote": "急な坂路を駈け登った"
       }
      ],
      "scenes": [
@@ -1286,24 +2023,18 @@
        "place": "夕暮れの線路",
        "place_quote": "良平は少時無我夢中に線路の側を走り続けた",
        "time": "evening",
-       "time_quote": "夕焼けのした日金山の空も、もう火照りが消えかかっていた",
+       "time_quote": "もうかれこれ暗くなる事",
        "weather": "unknown",
        "weather_quote": "",
        "mood": "tense",
-       "mood_quote": "「命さえ助かれば――」",
+       "mood_quote": "良平は殆ど泣きそうになった",
        "keep": [],
        "things": [
         {
          "name": "線路",
          "look": "暮れていく中を一すじ続く線路",
-         "quote": "線路の側を走り続けた",
+         "quote": "どんどん線路伝いに走り出した",
          "main": true
-        },
-        {
-         "name": "日金山の空",
-         "look": "火照りが消えかかる夕焼けの山の空",
-         "quote": "夕焼けのした日金山の空",
-         "main": false
         },
         {
          "name": "海",
@@ -1312,15 +2043,236 @@
          "main": false
         },
         {
-         "name": "竹藪",
-         "look": "線路の側の竹藪",
-         "quote": "竹藪の側を駈け抜けると",
+         "name": "菓子包み",
+         "look": "路側に抛り出した菓子包み",
+         "quote": "懐の菓子包み",
          "main": false
         },
         {
          "name": "板草履",
          "look": "路側に脱ぎ捨てた板草履",
          "quote": "板草履も其処へ脱ぎ捨ててしまった",
+         "main": false
+        }
+       ],
+       "changes": [],
+       "beats": []
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "sample",
+     "data": {
+      "ground": [
+       {
+        "d": "M0 0 H320 V130 H0 Z",
+        "color": "violet",
+        "tone": "mid"
+       },
+       {
+        "d": "M0 92 C100 84 220 84 320 92 V130 H0 Z",
+        "color": "orange",
+        "tone": "pale"
+       },
+       {
+        "d": "M0 130 C120 126 220 126 320 132 V240 H0 Z",
+        "color": "umber",
+        "tone": "pale"
+       }
+      ],
+      "spots": [],
+      "routes": [],
+      "things": [
+       {
+        "id": "t36",
+        "forms": [
+         {
+          "d": "M0 118 C40 116 80 118 112 124 L92 150 C60 146 30 144 0 146 Z",
+          "color": "blue",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M0 118 C40 116 80 118 112 124",
+          "color": "night",
+          "width": "thin"
+         },
+         {
+          "d": "M14 132 q6 -3 12 0 M50 136 q6 -3 12 0",
+          "color": "blue",
+          "width": "thin"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 50,
+         "y": 150
+        },
+        "spot": "",
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "bob"
+       },
+       {
+        "id": "t35",
+        "forms": [],
+        "lines": [
+         {
+          "d": "M320 236 C240 200 180 170 130 140 M282 240 C214 204 164 174 122 142",
+          "color": "gray",
+          "width": "bold"
+         },
+         {
+          "d": "M300 228 l-26 9 M262 208 l-22 8 M228 190 l-18 6 M200 175 l-15 5 M176 162 l-12 4 M154 151 l-9 3",
+          "color": "umber",
+          "width": "mid"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 160,
+         "y": 120
+        },
+        "spot": "",
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
+       },
+       {
+        "id": "t37",
+        "forms": [
+         {
+          "d": "M206 214 l16 -4 l3 9 l-16 4 Z",
+          "color": "white",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M206 214 l16 -4 l3 9 l-16 4 Z",
+          "color": "gray",
+          "width": "thin"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 215,
+         "y": 222
+        },
+        "spot": "",
+        "start": "",
+        "hidden": true,
+        "lit": true,
+        "loop": "none"
+       },
+       {
+        "id": "t38",
+        "forms": [
+         {
+          "d": "M64 206 c10 -6 26 -6 30 0 c-4 6 -20 8 -30 0 Z M86 218 c10 -6 26 -6 30 0 c-4 6 -20 8 -30 0 Z",
+          "color": "brown",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M64 206 c10 -6 26 -6 30 0 c-4 6 -20 8 -30 0 Z M86 218 c10 -6 26 -6 30 0 c-4 6 -20 8 -30 0 Z",
+          "color": "umber",
+          "width": "thin"
+         },
+         {
+          "d": "M74 202 l6 4 l6 -4 M96 214 l6 4 l6 -4",
+          "color": "red",
+          "width": "thin"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 90,
+         "y": 222
+        },
+        "spot": "",
+        "start": "",
+        "hidden": true,
+        "lit": true,
+        "loop": "none"
+       }
+      ],
+      "beats": [
+       {
+        "event": 1,
+        "act": "appear",
+        "to": "",
+        "speed": "mid",
+        "fx": "none",
+        "id": "t37"
+       },
+       {
+        "event": 1,
+        "act": "appear",
+        "to": "",
+        "speed": "mid",
+        "fx": "none",
+        "id": "t38"
+       }
+      ]
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    9,
+    9
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "sample",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "竹藪の側を駈け抜け、羽織を路側に捨てる",
+       "quote": "羽織を路側へ脱いで捨てた"
+      },
+      {
+       "text": "あたりは暗くなり、命さえ助かればと走る",
+       "quote": "「命さえ助かれば――」"
+      },
+      {
+       "text": "村に入ると、家々に電燈がともっている",
+       "quote": "電燈の光がさし合っていた"
+      }
+     ],
+     "scenes": [
+      {
+       "change": "same",
+       "place": "",
+       "place_quote": "",
+       "time": "night",
+       "time_quote": "あたりは暗くなる一方だった",
+       "weather": "unknown",
+       "weather_quote": "",
+       "mood": "unknown",
+       "mood_quote": "",
+       "keep": [],
+       "things": [
+        {
+         "name": "竹藪",
+         "look": "線路の側の竹藪",
+         "quote": "竹藪の側を駈け抜けると",
+         "main": false
+        },
+        {
+         "name": "日金山の空",
+         "look": "火照りが消えかかる夕焼けの山の空",
+         "quote": "夕焼けのした日金山の空",
          "main": false
         },
         {
@@ -1374,27 +2326,39 @@
     {
      "model": "sample",
      "data": {
-      "ground": [
-       {
-        "d": "M0 0 H320 V130 H0 Z",
-        "color": "violet",
-        "tone": "mid"
-       },
-       {
-        "d": "M0 92 C100 84 220 84 320 92 V130 H0 Z",
-        "color": "orange",
-        "tone": "pale"
-       },
-       {
-        "d": "M0 130 C120 126 220 126 320 132 V240 H0 Z",
-        "color": "umber",
-        "tone": "pale"
-       }
-      ],
+      "ground": [],
       "spots": [],
+      "routes": [],
       "things": [
        {
-        "id": "t28",
+        "id": "t39",
+        "forms": [
+         {
+          "d": "M244 40 l14 -6 l-6 10 Z M262 58 l14 -6 l-6 10 Z M278 34 l14 -6 l-6 10 Z M296 50 l14 -6 l-6 10 Z M248 90 l14 -6 l-6 10 Z M286 96 l14 -6 l-6 10 Z",
+          "color": "green",
+          "tone": "deep"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M250 20 C252 80 254 130 256 176 M266 12 C268 80 270 130 272 180 M282 26 C284 90 286 130 288 176 M298 16 C300 80 302 130 304 172",
+          "color": "green",
+          "width": "mid"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 276,
+         "y": 178
+        },
+        "spot": "",
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "sway"
+       },
+       {
+        "id": "t40",
         "forms": [
          {
           "d": "M120 130 C150 96 180 84 210 86 C236 92 252 110 262 130 Z",
@@ -1420,115 +2384,13 @@
          "y": 120
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        },
        {
-        "id": "t29",
-        "forms": [
-         {
-          "d": "M0 118 C40 116 80 118 112 124 L92 150 C60 146 30 144 0 146 Z",
-          "color": "blue",
-          "tone": "mid"
-         }
-        ],
-        "lines": [
-         {
-          "d": "M0 118 C40 116 80 118 112 124",
-          "color": "night",
-          "width": "thin"
-         },
-         {
-          "d": "M14 132 q6 -3 12 0 M50 136 q6 -3 12 0",
-          "color": "blue",
-          "width": "thin"
-         }
-        ],
-        "light": [],
-        "at": {
-         "x": 160,
-         "y": 120
-        },
-        "spot": "",
-        "lit": true
-       },
-       {
-        "id": "t30",
-        "forms": [
-         {
-          "d": "M244 40 l14 -6 l-6 10 Z M262 58 l14 -6 l-6 10 Z M278 34 l14 -6 l-6 10 Z M296 50 l14 -6 l-6 10 Z M248 90 l14 -6 l-6 10 Z M286 96 l14 -6 l-6 10 Z",
-          "color": "green",
-          "tone": "deep"
-         }
-        ],
-        "lines": [
-         {
-          "d": "M250 20 C252 80 254 130 256 176 M266 12 C268 80 270 130 272 180 M282 26 C284 90 286 130 288 176 M298 16 C300 80 302 130 304 172",
-          "color": "green",
-          "width": "mid"
-         }
-        ],
-        "light": [],
-        "at": {
-         "x": 160,
-         "y": 120
-        },
-        "spot": "",
-        "lit": true
-       },
-       {
-        "id": "t27",
-        "forms": [],
-        "lines": [
-         {
-          "d": "M320 236 C240 200 180 170 130 140 M282 240 C214 204 164 174 122 142",
-          "color": "gray",
-          "width": "bold"
-         },
-         {
-          "d": "M300 228 l-26 9 M262 208 l-22 8 M228 190 l-18 6 M200 175 l-15 5 M176 162 l-12 4 M154 151 l-9 3",
-          "color": "umber",
-          "width": "mid"
-         }
-        ],
-        "light": [],
-        "at": {
-         "x": 160,
-         "y": 120
-        },
-        "spot": "",
-        "lit": true
-       },
-       {
-        "id": "t31",
-        "forms": [
-         {
-          "d": "M64 206 c10 -6 26 -6 30 0 c-4 6 -20 8 -30 0 Z M86 218 c10 -6 26 -6 30 0 c-4 6 -20 8 -30 0 Z",
-          "color": "brown",
-          "tone": "mid"
-         }
-        ],
-        "lines": [
-         {
-          "d": "M64 206 c10 -6 26 -6 30 0 c-4 6 -20 8 -30 0 Z M86 218 c10 -6 26 -6 30 0 c-4 6 -20 8 -30 0 Z",
-          "color": "umber",
-          "width": "thin"
-         },
-         {
-          "d": "M74 202 l6 4 l6 -4 M96 214 l6 4 l6 -4",
-          "color": "red",
-          "width": "thin"
-         }
-        ],
-        "light": [],
-        "at": {
-         "x": 160,
-         "y": 120
-        },
-        "spot": "",
-        "lit": true
-       },
-       {
-        "id": "t32",
+        "id": "t41",
         "forms": [
          {
           "d": "M150 214 C160 200 190 198 204 206 C210 214 200 226 182 228 C166 228 152 224 150 214 Z",
@@ -1550,11 +2412,14 @@
         ],
         "light": [],
         "at": {
-         "x": 160,
-         "y": 120
+         "x": 178,
+         "y": 228
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        }
       ],
       "beats": []
@@ -1581,9 +2446,10 @@
        }
       ],
       "spots": [],
+      "routes": [],
       "things": [
        {
-        "id": "t36",
+        "id": "t45",
         "forms": [
          {
           "d": "M150 116 L170 114 L171 120 L151 122 Z",
@@ -1604,10 +2470,13 @@
          "y": 120
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        },
        {
-        "id": "t34",
+        "id": "t43",
         "forms": [
          {
           "d": "M0 90 L40 70 L80 90 V170 H0 Z M80 100 L110 84 L140 100 V160 H80 Z",
@@ -1633,10 +2502,13 @@
          "y": 120
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
        },
        {
-        "id": "t35",
+        "id": "t44",
         "forms": [],
         "lines": [],
         "light": [
@@ -1654,7 +2526,10 @@
          "y": 120
         },
         "spot": "",
-        "lit": false
+        "start": "",
+        "hidden": false,
+        "lit": false,
+        "loop": "flicker"
        }
       ],
       "beats": [
@@ -1662,7 +2537,9 @@
         "event": 2,
         "act": "light",
         "to": "",
-        "id": "t35"
+        "speed": "slow",
+        "fx": "none",
+        "id": "t44"
        }
       ]
      }
@@ -1673,7 +2550,7 @@
   {
    "pages": [
     10,
-    11
+    10
    ],
    "chapter": 0,
    "reader": {
@@ -1682,16 +2559,16 @@
      "seed": "",
      "events": [
       {
-       "text": "良平は雑貨屋や床屋の前を走り過ぎ、家の門口で大声に泣き出す",
+       "text": "雑貨屋や床屋の明るい家の前を走り過ぎる",
+       "quote": "明るい家の前を走り過ぎた"
+      },
+      {
+       "text": "家の門口で、とうとう大声に泣き出す",
        "quote": "わっと泣き出さずにはいられなかった"
       },
       {
-       "text": "二十六の良平は東京の雑誌社で校正をしている",
-       "quote": "校正の朱筆を握っている"
-      },
-      {
-       "text": "今もときどき、その時の薄暗い藪や坂のある路を思い出す",
-       "quote": "薄暗い藪や坂のある路が"
+       "text": "二十六の年、良平は東京へ出て来た",
+       "quote": "妻子と一しょに東京へ出て来た"
       }
      ],
      "scenes": [
@@ -1708,21 +2585,129 @@
        "keep": [],
        "things": [
         {
-         "name": "門口",
-         "look": "薄暗い家の門口",
-         "quote": "薄暗い門口へ集って来た",
-         "main": false
-        },
-        {
          "name": "雑貨屋",
          "look": "明るい雑貨屋の店先",
          "quote": "雑貨屋だの床屋だの、明るい家の前",
+         "main": false
+        },
+        {
+         "name": "門口",
+         "look": "薄暗い家の門口",
+         "quote": "薄暗い門口へ集って来た",
          "main": false
         }
        ],
        "changes": [],
        "beats": []
+      }
+     ]
+    }
+   },
+   "drawers": [
+    {
+     "model": "sample",
+     "data": {
+      "ground": [],
+      "spots": [],
+      "routes": [],
+      "things": [
+       {
+        "id": "t46",
+        "forms": [
+         {
+          "d": "M10 170 H90 V232 H10 Z",
+          "color": "sand",
+          "tone": "mid"
+         },
+         {
+          "d": "M6 164 H94 L88 176 H12 Z",
+          "color": "red",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M10 176 V232 H90 V176 M6 164 H94 L88 176 H12 Z",
+          "color": "umber",
+          "width": "thin"
+         }
+        ],
+        "light": [
+         {
+          "d": "M20 186 H80 V214 H20 Z",
+          "color": "lemon"
+         }
+        ],
+        "at": {
+         "x": 160,
+         "y": 120
+        },
+        "spot": "",
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "flicker"
+       },
+       {
+        "id": "t47",
+        "forms": [
+         {
+          "d": "M232 150 h8 v90 h-8 Z M288 150 h8 v90 h-8 Z M226 146 H302 V154 H226 Z",
+          "color": "umber",
+          "tone": "deep"
+         },
+         {
+          "d": "M240 158 H288 V240 H240 Z",
+          "color": "night",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M226 146 H302 V154 H226 Z M232 154 V240 M296 154 V240",
+          "color": "umber",
+          "width": "mid"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 160,
+         "y": 120
+        },
+        "spot": "",
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
+       }
+      ],
+      "beats": []
+     }
+    }
+   ],
+   "summary": null
+  },
+  {
+   "pages": [
+    11,
+    11
+   ],
+   "chapter": 0,
+   "reader": {
+    "model": "sample",
+    "data": {
+     "seed": "",
+     "events": [
+      {
+       "text": "良平は雑誌社の二階で校正をしている",
+       "quote": "校正の朱筆を握っている"
       },
+      {
+       "text": "今もときどき、その時の薄暗い藪や坂のある路を思い出す",
+       "quote": "薄暗い藪や坂のある路が"
+      }
+     ],
+     "scenes": [
       {
        "change": "new",
        "place": "雑誌社の二階",
@@ -1758,79 +2743,6 @@
     {
      "model": "sample",
      "data": {
-      "ground": [],
-      "spots": [],
-      "things": [
-       {
-        "id": "t37",
-        "forms": [
-         {
-          "d": "M232 150 h8 v90 h-8 Z M288 150 h8 v90 h-8 Z M226 146 H302 V154 H226 Z",
-          "color": "umber",
-          "tone": "deep"
-         },
-         {
-          "d": "M240 158 H288 V240 H240 Z",
-          "color": "night",
-          "tone": "mid"
-         }
-        ],
-        "lines": [
-         {
-          "d": "M226 146 H302 V154 H226 Z M232 154 V240 M296 154 V240",
-          "color": "umber",
-          "width": "mid"
-         }
-        ],
-        "light": [],
-        "at": {
-         "x": 160,
-         "y": 120
-        },
-        "spot": "",
-        "lit": true
-       },
-       {
-        "id": "t38",
-        "forms": [
-         {
-          "d": "M10 170 H90 V232 H10 Z",
-          "color": "sand",
-          "tone": "mid"
-         },
-         {
-          "d": "M6 164 H94 L88 176 H12 Z",
-          "color": "red",
-          "tone": "mid"
-         }
-        ],
-        "lines": [
-         {
-          "d": "M10 176 V232 H90 V176 M6 164 H94 L88 176 H12 Z",
-          "color": "umber",
-          "width": "thin"
-         }
-        ],
-        "light": [
-         {
-          "d": "M20 186 H80 V214 H20 Z",
-          "color": "lemon"
-         }
-        ],
-        "at": {
-         "x": 160,
-         "y": 120
-        },
-        "spot": "",
-        "lit": true
-       }
-      ],
-      "beats": []
-     }
-    },
-    {
-     "model": "sample",
-     "data": {
       "ground": [
        {
         "d": "M0 0 H320 V150 H0 Z",
@@ -1844,48 +2756,10 @@
        }
       ],
       "spots": [],
+      "routes": [],
       "things": [
        {
-        "id": "t41",
-        "forms": [
-         {
-          "d": "M30 130 C80 90 140 70 210 60 C250 56 280 60 300 70 V130 Z",
-          "color": "green",
-          "tone": "pale"
-         },
-         {
-          "d": "M60 130 C100 108 150 92 200 80 C230 74 260 72 290 74 L292 80 C262 80 232 84 204 90 C156 102 110 118 72 132 Z",
-          "color": "sand",
-          "tone": "pale"
-         },
-         {
-          "d": "M40 60 C60 40 90 44 100 70 C80 84 52 84 40 60 Z",
-          "color": "green",
-          "tone": "mid"
-         }
-        ],
-        "lines": [
-         {
-          "d": "M60 130 C100 108 150 92 200 80 C230 74 260 72 290 74",
-          "color": "brown",
-          "width": "thin"
-         },
-         {
-          "d": "M56 40 L60 96 M70 36 L72 96 M84 44 L86 96",
-          "color": "green",
-          "width": "thin"
-         }
-        ],
-        "light": [],
-        "at": {
-         "x": 160,
-         "y": 120
-        },
-        "spot": "",
-        "lit": true
-       },
-       {
-        "id": "t40",
+        "id": "t49",
         "forms": [
          {
           "d": "M70 172 L230 162 L240 216 L80 228 Z",
@@ -1921,10 +2795,64 @@
          "y": 120
         },
         "spot": "",
-        "lit": true
+        "start": "",
+        "hidden": false,
+        "lit": true,
+        "loop": "none"
+       },
+       {
+        "id": "t50",
+        "forms": [
+         {
+          "d": "M30 130 C80 90 140 70 210 60 C250 56 280 60 300 70 V130 Z",
+          "color": "green",
+          "tone": "pale"
+         },
+         {
+          "d": "M60 130 C100 108 150 92 200 80 C230 74 260 72 290 74 L292 80 C262 80 232 84 204 90 C156 102 110 118 72 132 Z",
+          "color": "sand",
+          "tone": "pale"
+         },
+         {
+          "d": "M40 60 C60 40 90 44 100 70 C80 84 52 84 40 60 Z",
+          "color": "green",
+          "tone": "mid"
+         }
+        ],
+        "lines": [
+         {
+          "d": "M60 130 C100 108 150 92 200 80 C230 74 260 72 290 74",
+          "color": "brown",
+          "width": "thin"
+         },
+         {
+          "d": "M56 40 L60 96 M70 36 L72 96 M84 44 L86 96",
+          "color": "green",
+          "width": "thin"
+         }
+        ],
+        "light": [],
+        "at": {
+         "x": 160,
+         "y": 120
+        },
+        "spot": "",
+        "start": "",
+        "hidden": true,
+        "lit": true,
+        "loop": "drift"
        }
       ],
-      "beats": []
+      "beats": [
+       {
+        "event": 1,
+        "act": "appear",
+        "to": "",
+        "speed": "slow",
+        "fx": "none",
+        "id": "t50"
+       }
+      ]
      }
     }
    ],

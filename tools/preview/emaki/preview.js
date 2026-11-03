@@ -1,4 +1,4 @@
-import { paginate, replay, timeline, stageAt, placement, tint, groundSvg, thingSvg, panelSvg, scrollSvg, drawable, whereIs, TIMES, WEATHERS, MOODS, ACTS } from './emaki.js';
+import { paginate, replay, timeline, stageAt, placement, pointAt, routeOf, tint, groundSvg, thingSvg, panelSvg, scrollSvg, drawable, whereIs, TIMES, WEATHERS, MOODS, ACTS } from './emaki.js';
 import { svgUrl, edgeSvg, VIEW } from '../scene/scene.js';
 import { cost, callsOf, label, measure } from './measure.js';
 
@@ -8,15 +8,15 @@ const get = (url) => fetch(url, { cache: 'no-store' }).then((r) => r.json());
 const [{ books }, { files }] = await Promise.all([get('./books.json'), get('./runs/index.json')]);
 const runs = await Promise.all(files.filter((f) => f !== 'unknown.json').map((file) => get(`./runs/${file}`).then((run) => ({ file, run }))));
 const shelf = books.filter((b) => runs.some((r) => r.run.book === b.id));
-const STEP = 900; // 一段の長さ(ms)。CSS の transition と同じ
+const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let page = 0;
-let timer = null;
+let playing = null; // 演じている途中の場面(めくり直したら止めて、終わりの様子に置く)
 
 for (const b of shelf) $('book').append(new Option(`${b.title}(${b.author})`, b.id));
 if (shelf.some((b) => b.id === params.get('book'))) $('book').value = params.get('book');
 $('styled').checked = params.get('styled') !== '0';
-if ([...$('size').options].some((o) => o.value === params.get('size'))) $('size').value = params.get('size');
+for (const id of ['size', 'pace']) if ([...$(id).options].some((o) => o.value === params.get(id))) $(id).value = params.get(id);
 if (params.get('theme') === 'dark') document.body.classList.add('dark');
 $('edge').src = svgUrl(edgeSvg());
 
@@ -48,8 +48,8 @@ function range(run) {
   return [run.settings.start, last ? last.pages[1] : run.settings.start];
 }
 
-// ページ p を開いたときに届いている回の数(答えは、その回の最後のページの次のめくりで届く)
-const arrived = (run, p) => run.ticks.filter((t) => t.pages[1] < p).length;
+// ページ p を開いたときに封を開けた回の数(回の答えは、その回の最後のページをめくった瞬間に開く)
+const opened = (run, p) => run.ticks.filter((t) => t.pages[1] < p).length;
 
 function prose(pages, p) {
   const pg = pages[p];
@@ -65,98 +65,218 @@ function prose(pages, p) {
   $('folio').textContent = `${p + 1}ページ(${p - a + 1} / ${z - a + 1})`;
 }
 
-// ---- 余白: 区画を横に並べた帯を、いまの区画まで流す。区画の中は、地・物の層(物ごと)・色を重ねる層。いちばん上に縁の紙 ----
+// ---- 余白: 320×240 の舞台を余白の大きさに縮めて置く。区画を横に並べた帯を流し、区画の中は地・物ごとの層・色を重ねる層。いちばん上に縁の紙 ----
 
 let built = { key: '', panels: new Map() };
 
 function panelNode(panel, index) {
   const styled = $('styled').checked;
-  const el = document.createElement('div');
-  el.className = 'panel';
-  el.style.left = `${index * 100}%`;
-  const ground = document.createElement('img');
-  ground.src = svgUrl(groundSvg(panel, { styled }));
-  ground.alt = '';
-  el.append(ground);
-  const things = new Map();
-  for (const t of panel.things) {
-    if (!t.shapes) continue;
-    // 灯りのある物は、灯っていない姿と灯った姿を重ねて持ち、入れ替える
-    const img = (lit) => Object.assign(document.createElement('img'), { className: 'thing', src: svgUrl(thingSvg(t, { lit, styled })), alt: '' });
-    const dark = t.shapes.light.length ? img(false) : null, lit = img(true);
-    if (dark) el.append(dark);
-    el.append(lit);
-    things.set(t.id, { lit, dark });
-  }
-  const shade = document.createElement('div');
-  shade.className = 'tint';
+  const el = Object.assign(document.createElement('div'), { className: 'panel' });
+  el.style.left = `${index * VIEW.width}px`;
+  el.append(Object.assign(document.createElement('img'), { src: svgUrl(groundSvg(panel, { styled })), alt: '' }));
+  const shade = Object.assign(document.createElement('div'), { className: 'tint' });
   el.append(shade);
-  return { el, things, shade };
+  const node = { el, things: new Map(), shade, panel };
+  addThings(node);
+  return node;
 }
 
-function apply(state, bookState, { still = false } = {}) {
-  const card = $('card'), strip = $('strip');
+// 物の層を足す。描き足した物(あとから形が来た物)は色の層の下に足し、描き直した物は画像を替える
+function addThings(node) {
+  const styled = $('styled').checked;
+  for (const t of node.panel.things) {
+    if (!t.shapes) continue;
+    const had = node.things.get(t.id);
+    if (had) had.thing = t;
+    if (had?.drawn === t.drawn) continue;
+    const img = (lit) => Object.assign(document.createElement('img'), { src: svgUrl(thingSvg(t, { lit, styled })), alt: '' });
+    if (had) { had.lit.src = img(true).src; if (had.dark) had.dark.src = img(false).src; had.drawn = t.drawn; continue; }
+    // 物は動かす枠(mover)に入れ、揺らぎは中の画像に付ける。灯りのある物は、灯っていない姿と灯った姿を重ねて入れ替える
+    const mover = Object.assign(document.createElement('div'), { className: 'mover' });
+    if (t.at) mover.style.transformOrigin = `${t.at.x}px ${t.at.y}px`;
+    const dark = t.shapes.light.length ? img(false) : null, lit = img(true);
+    for (const i of [dark, lit].filter(Boolean)) { if (t.at) i.style.transformOrigin = `${t.at.x}px ${t.at.y}px`; mover.append(i); }
+    node.el.insertBefore(mover, node.shade);
+    node.things.set(t.id, { mover, lit, dark, thing: t, drawn: t.drawn });
+  }
+}
+
+// 区画の DOM を用意する(state に出てくる区画すべて)
+function ensure(state, bookState) {
   const key = `${$('run').value}|${bookState.emaki.chapter}|${$('styled').checked}`;
-  if (built.key !== key) { strip.replaceChildren(); built = { key, panels: new Map() }; }
-  card.classList.toggle('still', still);
+  if (built.key !== key) { $('strip').replaceChildren(); built = { key, panels: new Map() }; }
   state.panels.forEach((shown, i) => {
     const panel = bookState.emaki.panels.find((p) => p.id === shown.id);
-    let node = built.panels.get(shown.id);
-    if (!node) { node = panelNode(panel, i); built.panels.set(shown.id, node); strip.append(node.el); }
-    for (const [id, { lit, dark }] of node.things) {
+    const had = built.panels.get(shown.id);
+    if (had) { had.panel = panel; addThings(had); return; }
+    const node = panelNode(panel, i);
+    built.panels.set(shown.id, node);
+    $('strip').append(node.el);
+  });
+  for (const [id, node] of built.panels) if (!state.panels.some((p) => p.id === id)) { node.el.remove(); built.panels.delete(id); }
+}
+
+const moveOf = (panel, t, pos) => { const { dx, dy, scale } = placement(panel, t, pos); return `translate(${dx}px, ${dy}px) scale(${scale})`; };
+const indexOf = (state, id) => Math.max(0, state.panels.findIndex((p) => p.id === id));
+
+// 様子を、動かさずにそのまま置く
+function place(state) {
+  for (const anim of document.getAnimations().filter((a) => a.effect?.target?.closest?.('#card'))) anim.cancel();
+  state.panels.forEach((shown) => {
+    const node = built.panels.get(shown.id);
+    if (!node) return;
+    for (const [id, { mover, lit, dark, thing }] of node.things) {
       const s = shown.things[id];
-      const t = panel.things.find((x) => x.id === id);
-      const { dx, dy, scale } = s ? placement(panel, t, s.pos) : { dx: 0, dy: 0, scale: 1 };
-      const origin = t.at ? `${(t.at.x / VIEW.width) * 100}% ${(t.at.y / VIEW.height) * 100}%` : '50% 50%';
-      for (const img of [lit, dark].filter(Boolean)) {
-        img.style.transformOrigin = origin;
-        img.style.transform = `translate(${(dx / VIEW.width) * 100}%, ${(dy / VIEW.height) * 100}%) scale(${scale})`;
-      }
+      mover.style.transform = s ? moveOf(node.panel, thing, s.pos) : '';
       const visible = !!s && s.shown;
-      lit.style.opacity = visible && (!dark || s.lit) ? 1 : 0;
-      if (dark) dark.style.opacity = visible && !s.lit ? 1 : 0;
+      mover.style.opacity = visible ? 1 : 0;
+      lit.style.opacity = !dark || s?.lit ? 1 : 0;
+      if (dark) dark.style.opacity = s?.lit ? 0 : 1;
     }
-    const shade = tint(panel, shown.time);
+    const shade = tint(node.panel, shown.time);
     node.shade.style.backgroundColor = shade?.color ?? 'transparent';
     node.shade.style.opacity = shade?.opacity ?? 0;
   });
-  // 届いていない区画(戻ったとき)は外す
-  for (const [id, node] of built.panels) if (!state.panels.some((p) => p.id === id)) { node.el.remove(); built.panels.delete(id); }
-  const at = Math.max(0, state.panels.findIndex((p) => p.id === state.current));
-  strip.style.transform = `translateX(${-at * 100}%)`;
-  card.classList.toggle('on', state.panels.length > 0);
-  if (still) requestAnimationFrame(() => requestAnimationFrame(() => card.classList.remove('still')));
+  $('strip').style.transform = `translateX(${-indexOf(state, state.current) * VIEW.width}px)`;
+  $('card').style.opacity = state.panels.length ? 1 : 0;
 }
 
-// ページ p を開いたときの余白。めくってきたなら一段目を演じてから二段目へ。飛んできたら(戻る・ページの指定)動かさずに置く
+// 道に沿った動きのキーフレーム。道が無ければまっすぐ。fx が bob なら揺れながら、spin なら回りながら
+function path(panel, t, from, to, fx, dur) {
+  const route = routeOf(panel, from, to);
+  const a = panel.spots.find((s) => s.name === from), b = panel.spots.find((s) => s.name === to);
+  const steps = 16;
+  const points = [];
+  if (route) {
+    const el = $('measure');
+    el.setAttribute('d', route.d);
+    const length = el.getTotalLength();
+    for (let i = 0; i <= steps; i += 1) { const pt = el.getPointAtLength(length * (route.reverse ? 1 - i / steps : i / steps)); points.push([pt.x, pt.y]); }
+  } else {
+    const [x0, y0] = a ? [a.x, a.y] : [t.at.x, t.at.y], [x1, y1] = [b.x, b.y];
+    for (let i = 0; i <= steps; i += 1) points.push([x0 + ((x1 - x0) * i) / steps, y0 + ((y1 - y0) * i) / steps]);
+  }
+  const s0 = a?.scale ?? panel.spots.find((s) => s.name === t.spot)?.scale ?? 1, s1 = b.scale;
+  const turns = Math.max(1, Math.round(dur / 700));
+  return points.map(([x, y], i) => {
+    const k = i / steps;
+    const { dx, dy, scale } = pointAt(panel, t, x, y, s0 + (s1 - s0) * k);
+    const bob = fx === 'bob' && i % 2 && i < steps ? -1.6 : 0;
+    const spin = fx === 'spin' ? ` rotate(${Math.round(360 * turns * k)}deg)` : '';
+    return { transform: `translate(${dx}px, ${dy + bob}px) scale(${scale})${spin}`, offset: k };
+  });
+}
+
+// 演じている間だけの揺らぎ(終わると止まる)
+const LOOPS = {
+  sway: { period: 1600, frames: [{ transform: 'rotate(0deg)' }, { transform: 'rotate(-1.6deg)' }, { transform: 'rotate(1.4deg)' }, { transform: 'rotate(0deg)' }] },
+  bob: { period: 1400, frames: [{ transform: 'translateY(0)' }, { transform: 'translateY(-1.8px)' }, { transform: 'translateY(1.2px)' }, { transform: 'translateY(0)' }] },
+  flicker: { period: 700, frames: [{ opacity: 1 }, { opacity: .72 }, { opacity: 1 }, { opacity: .86 }, { opacity: 1 }] },
+  drift: { period: 2400, frames: [{ transform: 'translate(0, 0)' }, { transform: 'translate(3px, -1.5px)' }, { transform: 'translate(0, 0)' }] },
+};
+
+/**
+ * めくった瞬間に、いま読み終えたページの場面を演じる。before から始め、cues を時刻どおりに動かし、終わったら after に置く。
+ * 返すのは演じる長さ(ms)
+ */
+function play(bookState, before, after, cues) {
+  ensure(after, bookState);
+  place(before);
+  if (!cues.length || calm()) { place(after); return 0; }
+  const end = Math.max(...cues.map((c) => c.start + c.dur));
+  const state = structuredClone(before);
+  // 始まる前は before の様子のまま(fill は forwards だけ。同じ物を二度動かすとき、後の動きが前を上書きしないように)
+  const anim = (el, frames, c) => el.animate(frames, { delay: c.start, duration: c.dur, easing: 'ease-in-out', fill: 'forwards' });
+  for (const c of cues) {
+    if (c.kind === 'panel') {
+      const fromIndex = indexOf(state, state.current), toIndex = after.panels.findIndex((p) => p.id === c.panel);
+      if (!state.panels.length) anim($('card'), [{ opacity: 0 }, { opacity: 1 }], c);
+      else anim($('strip'), [{ transform: `translateX(${-fromIndex * VIEW.width}px)` }, { transform: `translateX(${-toIndex * VIEW.width}px)` }], c);
+      const panel = bookState.emaki.panels.find((p) => p.id === c.panel);
+      state.panels.push({ id: c.panel, time: panel.time0, things: stageInit(panel) });
+      state.current = c.panel;
+      continue;
+    }
+    const node = built.panels.get(c.panel);
+    const shown = state.panels.find((p) => p.id === c.panel);
+    if (!node || !shown) continue;
+    if (c.kind === 'time') {
+      const from = tint(node.panel, shown.time), to = tint(node.panel, c.to);
+      anim(node.shade, [{ backgroundColor: from?.color ?? to?.color ?? 'transparent', opacity: from?.opacity ?? 0 }, { backgroundColor: to?.color ?? 'transparent', opacity: to?.opacity ?? 0 }], c);
+      shown.time = c.to;
+      continue;
+    }
+    const item = node.things.get(c.id);
+    if (!item) continue;
+    const s = shown.things[c.id] ?? (shown.things[c.id] = { pos: item.thing.pos0, shown: false, lit: item.thing.lit0 });
+    if (c.kind === 'appear' || c.act === 'appear') {
+      anim(item.mover, [{ opacity: 0, transform: `${moveOf(node.panel, item.thing, s.pos)} translateY(6px)` }, { opacity: 1, transform: moveOf(node.panel, item.thing, s.pos) }], c);
+      s.shown = true;
+    } else if (c.act === 'move' || (c.act === 'leave' && c.to)) {
+      const frames = path(node.panel, item.thing, s.pos ?? item.thing.spot, c.to, c.fx, c.dur);
+      if (c.act === 'leave') frames.forEach((f) => { f.opacity = f.offset < .6 ? 1 : 1 - (f.offset - .6) / .4; });
+      anim(item.mover, frames, c);
+      Object.assign(s, { pos: c.to, shown: c.act === 'move' });
+    } else if (c.act === 'leave') {
+      anim(item.mover, [{ opacity: 1 }, { opacity: 0 }], c);
+      s.shown = false;
+    } else if (c.act === 'light' || c.act === 'dark') {
+      const on = c.act === 'light';
+      anim(item.lit, [{ opacity: on ? 0 : 1 }, { opacity: on ? 1 : 0 }], c);
+      if (item.dark) anim(item.dark, [{ opacity: on ? 1 : 0 }, { opacity: on ? 0 : 1 }], c);
+      s.lit = on;
+    }
+  }
+  // 揺らぎ: 演じている間、見えている区画の物を揺らす
+  for (const shown of after.panels) {
+    const node = built.panels.get(shown.id);
+    for (const [, item] of node?.things ?? []) {
+      const loop = LOOPS[item.thing.loop];
+      if (!loop) continue;
+      for (const img of [item.lit, item.dark].filter(Boolean)) img.animate(loop.frames, { duration: loop.period, iterations: Math.max(1, Math.round(end / loop.period)), easing: 'ease-in-out' });
+    }
+  }
+  playing = setTimeout(() => { playing = null; place(after); }, end + 60);
+  return end;
+}
+
+// 区画が現れたときの物の様子(区画の cue で使う)
+function stageInit(panel) {
+  return Object.fromEntries(panel.things.filter((t) => !t.late).map((t) => [t.id, { pos: t.pos0, shown: t.shown0, lit: t.lit0 }]));
+}
+
+// ページ p を開いたときの余白。めくってきたなら、いま読み終えたページの場面を演じる。飛んできたら(戻る・ページの指定)動かさずに置く
 function margin(run, pages, p, { turned }) {
-  clearTimeout(timer);
-  const { book: bookState, logs } = replay(run, pages, arrived(run, p));
+  if (playing) { clearTimeout(playing); playing = null; }
+  $('stage').style.transform = `scale(${+$('size').value / VIEW.width})`;
+  document.documentElement.style.setProperty('--card', `${$('size').value}px`);
+  const { book: bookState, logs } = replay(run, pages, opened(run, p));
   const cues = timeline(run, pages, logs);
   const chapter = pages[p].chapter;
-  const final = stageAt(bookState, cues, p, chapter, 1);
+  const after = stageAt(bookState, cues, p, chapter);
   const now = cues.filter((c) => c.turn === p && c.chapter === chapter);
-  document.documentElement.style.setProperty('--card', `${$('size').value}px`);
-  if (turned && now.some((c) => c.step === 1) && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    apply(stageAt(bookState, cues, p, chapter, 0), bookState);
-    timer = setTimeout(() => apply(final, bookState), STEP);
-  } else apply(final, bookState, { still: !turned });
-  return { bookState, logs, cues: now, final };
+  if (turned) play(bookState, stageAt(bookState, cues, p - 1, chapter), after, now);
+  else { ensure(after, bookState); place(after); }
+  return { bookState, logs, cues: now, final: after };
 }
 
 function facts(run, pages, p, { bookState, logs, cues, final }) {
-  const k = arrived(run, p);
+  const k = opened(run, p);
   const brief = run.brief?.data;
   const rows = [['版', label(run)], ['下調べ', !run.brief ? 'なし(書名を渡していない)' : brief?.known === 'yes' ? brief.work : '知らない本(読んだ所だけで進める)']];
   const tick = k > 0 && run.ticks[k - 1].pages[1] === p - 1 ? run.ticks[k - 1] : null;
   if (tick) {
-    rows.push(['届いた答え', `読み取り ${tick.pages[0] + 1}〜${tick.pages[1] + 1}ページ・${model(tick.reader)} ${sec(tick.reader?.ms)} ${money(cost(tick.reader))}${tick.reader?.data ? '' : ` × ${tick.reader?.error ?? tick.reader?.stop_reason}`}`]);
+    const calls = callsOf(tick).filter((c) => c !== tick.summary);
+    const ms = calls.reduce((n, c) => n + (c.ms ?? 0), 0);
+    const late = calls.every((c) => c.ms != null) && ms > +$('pace').value;
+    rows.push(['封を開けた答え', `${tick.pages[0] + 1}${tick.pages[1] > tick.pages[0] ? `〜${tick.pages[1] + 1}` : ''}ページ・読み取り ${model(tick.reader)} ${sec(tick.reader?.ms)} ${money(cost(tick.reader))}${tick.reader?.data ? '' : ` × ${tick.reader?.error ?? tick.reader?.stop_reason}`}`]);
     logs[k - 1].read.draws.forEach((d, i) => {
       const r = tick.drawers?.[i];
       rows.push(['', `描く(${d.mode === 'new' ? '新しい区画' : '描き足し'}・${d.ids.length}つ)・${model(r)} ${sec(r?.ms)} ${money(cost(r))}${r?.data ? '' : ' × 来ていない'}`]);
     });
     if (tick.summary) rows.push(['', `章のまとめ・${model(tick.summary)} ${sec(tick.summary.ms)} ${money(cost(tick.summary))}`]);
-  } else rows.push(['届いた答え', '—']);
+    if (late) rows.push(['', `⚠ 間に合わない(用意に ${sec(ms)}。1ページ ${sec(+$('pace').value)} で読むと、次のめくりまで待つ)`]);
+  } else rows.push(['封を開けた答え', '—']);
   const spent = [run.brief, ...run.ticks.slice(0, k).flatMap(callsOf)].filter(Boolean).map(cost);
   rows.push(['ここまで', spent.some((c) => c == null) ? '$—(見本)' : `$${spent.reduce((n, c) => n + c, 0).toFixed(3)}(${k}回)`]);
   rows.push(['この章の区画', String(final.panels.length)]);
@@ -174,21 +294,21 @@ function facts(run, pages, p, { bookState, logs, cues, final }) {
   const said = (cue) => (cue.kind === 'panel' ? `区画が現れる: ${panelOf(cue)?.place.name || '(場所の名前なし)'}`
     : cue.kind === 'appear' ? `${nameOf(cue)}が現れる`
     : cue.kind === 'time' ? `時が移る: ${TIMES[cue.to]}`
-    : `${nameOf(cue)}: ${ACTS[cue.act]}${cue.to ? ` → ${cue.to}` : ''}`);
-  $('cues').replaceChildren(...(cues.length ? cues.map((c) => li(`${c.step ? '二段目' : '一段目'} ${said(c)}`, '', c.quote)) : [li('無い(止まっている)')]));
+    : `${nameOf(cue)}: ${ACTS[cue.act]}${cue.to ? ` → ${cue.to}` : ''}${cue.speed && cue.act !== 'light' && cue.act !== 'dark' ? `(${{ slow: 'ゆっくり', mid: '', fast: '速く' }[cue.speed]}${cue.fx === 'bob' ? '・揺れながら' : cue.fx === 'spin' ? '・回りながら' : ''})`.replace('()', '') : ''}`);
+  $('cues').replaceChildren(...(cues.length ? cues.map((c) => li(`${(c.start / 1000).toFixed(1)}秒 ${said(c)}`, '', c.quote)) : [li('無い(止まっている)')]));
 
   const shown = final.panels.find((x) => x.id === final.current);
   const panel = shown && bookState.emaki.panels.find((x) => x.id === shown.id);
   const things = panel ? [li(sceneLine(panel)), ...panel.things.filter((t) => shown.things[t.id]).map((t) => {
     const s = shown.things[t.id];
-    const where = [s.pos ? `所: ${s.pos}` : '', s.shown ? '' : '去った', t.shapes?.light.length ? (s.lit ? '灯っている' : '灯っていない') : ''].filter(Boolean).join('・');
+    const where = [s.pos ? `所: ${s.pos}` : '', s.shown ? '' : '見えない', t.shapes?.light.length ? (s.lit ? '灯っている' : '灯っていない') : '', t.loop && t.loop !== 'none' ? { sway: '揺れる', bob: '浮き沈み', flicker: 'ゆらぐ', drift: 'ただよう' }[t.loop] : ''].filter(Boolean).join('・');
     return li(`${t.main ? '★' : '・'}${t.name}${where ? `[${where}]` : ''} — ${t.look}`, '', t.quote);
-  })] : [li('まだ無い(この章の最初の答えを待っている)')];
+  })] : [li('まだ無い(この章の最初のページを読み終えるのを待っている)')];
   $('things').replaceChildren(...things);
 
   const dropped = logs.flatMap((log) => log.read.dropped.filter((d) => d.why === 'quote').map((d) => ({ ...d, tick: log.tick, where: whereIs(d.quote, pages, run.ticks[log.tick].pages[1]) }))).reverse();
-  const where = { later: '先(まだ読んでいない所にだけ有る)', before: '前に読んだ所に有る', none: '本文に無い' };
-  $('dropped').replaceChildren(...(dropped.length ? dropped.map((d) => li(`${d.tick + 1}回目 ${d.kind} ${d.what}「${d.quote}」→ ${where[d.where]}`, d.where === 'later' ? 'warn' : '')) : [li('無い')]));
+  const where = { later: '先(それより後のページにだけ有る)', before: '前のページに有る', none: '本文に無い' };
+  $('dropped').replaceChildren(...(dropped.length ? dropped.map((d) => li(`${run.ticks[d.tick].pages[1] + 1}ページ ${d.kind} ${d.what}「${d.quote}」→ ${where[d.where]}`, d.where === 'later' ? 'warn' : '')) : [li('無い')]));
 
   const verdicts = run.judge?.data?.ticks ?? null;
   if (!verdicts) $('judge').replaceChildren(li(run.judge ? `× ${run.judge.error ?? run.judge.stop_reason}` : '判定していない(見本・判定役なし)'));
@@ -211,32 +331,36 @@ function show({ turned = false } = {}) {
   facts(run, pages, page, margin(run, pages, page, { turned }));
 }
 
-// 章の終わり: その章の区画を順に並べた絵巻を広げ、左から右へゆっくり流す(灯りがともる)
+// 章の終わり: 最後のページの場面を余白で演じてから、その章の区画を順に並べた絵巻を広げ、左から右へゆっくり流す(灯りがともる)
 function unroll(run, pages, p) {
   const upTo = run.ticks.filter((t) => t.pages[1] <= p).length;
-  const { book: state } = replay(run, pages, upTo);
+  const { book: state, logs } = replay(run, pages, upTo);
   const panels = state.emaki.panels.filter(drawable);
   if (!panels.length) return false;
-  const img = $('scroll');
-  img.style.transition = 'none';
-  img.style.transform = 'translateX(0)';
-  img.src = svgUrl(scrollSvg(panels, { styled: $('styled').checked }));
-  $('unroll-note').textContent = `${book().chapters[pages[p].chapter].title || book().title} · ${panels.length}区画`;
-  $('unroll').classList.add('on');
-  img.decode().catch(() => {}).then(() => {
-    const travel = img.getBoundingClientRect().width - img.parentElement.getBoundingClientRect().width;
-    if (travel <= 0 || matchMedia('(prefers-reduced-motion: reduce)').matches) { img.parentElement.style.overflowX = 'auto'; return; }
-    requestAnimationFrame(() => { img.style.transition = `transform ${2.2 * panels.length}s linear .6s`; img.style.transform = `translateX(${-travel}px)`; });
-  });
-  $('close').focus();
+  const cues = timeline(run, pages, logs);
+  const chapter = pages[p].chapter;
+  const wait = play(state, stageAt(state, cues, p, chapter), stageAt(state, cues, p + 1, chapter), cues.filter((c) => c.turn === p + 1 && c.chapter === chapter));
+  setTimeout(() => {
+    const img = $('scroll');
+    img.style.transition = 'none';
+    img.style.transform = 'translateX(0)';
+    img.src = svgUrl(scrollSvg(panels, { styled: $('styled').checked }));
+    $('unroll-note').textContent = `${book().chapters[chapter].title || book().title} · ${panels.length}区画`;
+    $('unroll').classList.add('on');
+    img.decode().catch(() => {}).then(() => {
+      const travel = img.getBoundingClientRect().width - img.parentElement.getBoundingClientRect().width;
+      if (travel <= 0 || calm()) { img.parentElement.style.overflowX = 'auto'; return; }
+      requestAnimationFrame(() => { img.style.transition = `transform ${2.2 * panels.length}s linear .6s`; img.style.transform = `translateX(${-travel}px)`; });
+    });
+    $('close').focus();
+  }, wait ? wait + 500 : 0);
   return true;
 }
 
 function closeUnroll() {
   $('unroll').classList.remove('on');
-  const turned = page < range(current())[1];
-  if (turned) page += 1;
-  show({ turned });
+  if (page < range(current())[1]) page += 1;
+  show(); // 次の章の最初のページ。前の章の最後の場面は、もう演じた
 }
 
 function turn() {
@@ -249,7 +373,7 @@ function turn() {
   show({ turned: true });
 }
 
-// 全部を並べる: 版ごとに、章の絵巻と、回ごとの区画・動き・止めたもの
+// 全部を並べる: 版ごとに、章の絵巻と、ページごとの区画・動き・止めたもの
 function all() {
   const b = book();
   const sections = runs.filter((r) => r.run.book === b.id).map(({ run }) => {
@@ -280,7 +404,7 @@ function all() {
       const meta = document.createElement('td'), body = document.createElement('td'), pic = document.createElement('td');
       meta.className = 'meta';
       const costs = callsOf(tick).map(cost);
-      meta.textContent = `${log.tick + 1}回目 ${tick.pages[0] + 1}〜${tick.pages[1] + 1}ページ ${sec(callsOf(tick).reduce((n, c) => n + (c.ms ?? 0), 0) || null)} ${money(costs.every((c) => c != null) ? costs.reduce((n, c) => n + c, 0) : null)}`;
+      meta.textContent = `${tick.pages[0] + 1}${tick.pages[1] > tick.pages[0] ? `〜${tick.pages[1] + 1}` : ''}ページ ${sec(callsOf(tick).reduce((n, c) => n + (c.ms ?? 0), 0) || null)} ${money(costs.every((c) => c != null) ? costs.reduce((n, c) => n + c, 0) : null)}`;
       const ul = document.createElement('ul');
       for (const e of tick.reader?.data?.events ?? []) ul.append(li(e.text));
       for (const d of log.read.draws) ul.append(li(`${d.mode === 'new' ? '新しい区画' : '描き足し'}: ${d.ids.length}つ`));
@@ -289,7 +413,7 @@ function all() {
       for (const d of log.read.dropped.filter((x) => x.why === 'quote')) { const w = whereIs(d.quote, pages, tick.pages[1]); ul.append(li(`止めた: ${d.kind} ${d.what}「${d.quote}」${w === 'later' ? '(先)' : ''}`, w === 'later' ? 'warn' : '')); }
       for (const v of (run.judge?.data?.ticks ?? []).filter((x) => x.tick === log.tick && x.spoiler)) for (const f of v.found) ul.append(li(`⚠ 判定役: ${f.what} — ${f.why}`, 'warn'));
       body.append(ul);
-      // この回に描いた区画(動きを演じ終えた様子)
+      // このページの区画(演じ終えた様子)
       const state = replay(run, pages, log.tick + 1).book;
       pic.className = 'pics';
       for (const d of log.read.draws) {
@@ -316,7 +440,7 @@ $('back').addEventListener('click', () => { page -= 1; show(); });
 $('reset').addEventListener('click', () => { page = current().settings.start; show(); });
 $('page').addEventListener('input', () => { page = +$('page').value; show(); });
 $('styled').addEventListener('change', () => (document.body.classList.contains('all-view') ? all() : show()));
-$('size').addEventListener('change', () => show());
+for (const id of ['size', 'pace']) $(id).addEventListener('change', () => show());
 $('close').addEventListener('click', closeUnroll);
 $('theme').addEventListener('click', () => { const dark = document.body.classList.toggle('dark'); $('theme').setAttribute('aria-pressed', String(dark)); });
 document.addEventListener('keydown', (e) => {

@@ -55,12 +55,18 @@ export function sceneSchema() {
   };
 }
 
+/** path の d を1つ検める(コマンドと数字だけ・長さ・座標の範囲)。読めなければ null */
+export function checkPath(value) {
+  const d = typeof value === 'string' ? value.trim() : '';
+  if (!d || d.length > LIMITS.d || !PATH.test(d)) return null;
+  return (d.match(NUMBER) ?? []).every((n) => Math.abs(+n) <= 1000) ? d : null;
+}
+
 /** 形を1つ検める。layer は ground / forms / lines / light。読めない形は null */
 export function checkShape(layer, s) {
   if (!s || typeof s !== 'object') return null;
-  const d = typeof s.d === 'string' ? s.d.trim() : '';
-  if (!d || d.length > LIMITS.d || !PATH.test(d)) return null;
-  if (!(d.match(NUMBER) ?? []).every((n) => Math.abs(+n) <= 1000)) return null;
+  const d = checkPath(s.d);
+  if (!d) return null;
   if (typeof s.color !== 'string' || !Object.hasOwn(COLORS, s.color)) return null;
   if (layer === 'light') return { d, color: s.color };
   if (layer === 'lines') return typeof s.width === 'string' && Object.hasOwn(WIDTHS, s.width) ? { d, color: s.color, width: s.width } : null;

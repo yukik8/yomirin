@@ -1,6 +1,6 @@
 // 章の絵巻の試作(#51)の計測。試写室と check.mjs で使う。判定基準は #51 に書いたもので、あとから動かさない。
 import { PRICES } from '../scene/measure.js';
-import { sceneAt, whereIs } from './emaki.js';
+import { sceneAt, timeline, whereIs } from './emaki.js';
 
 export { PRICES };
 export const CRITERIA = {
@@ -11,7 +11,7 @@ export const CRITERIA = {
   perThousand: .07, // 1,000字あたりの費用の中央値($)。1日 5,000字で月 $10 ほど
 };
 export const SAMPLE = 'sample'; // Claude Code が手で書いた見本。計測が無く、判定に入れない
-export const FORMAT = 2; // 記録の形の版(run.py と同じ)。ほかの版は判定に入れない
+export const FORMAT = 3; // 記録の形の版(run.py と同じ)。ほかの版は判定に入れない
 
 /** 1回の費用($)。キャッシュの書き込みは入力の 1.25 倍、読み出しは 0.1 倍。単価が分からない・usage が無いときは null */
 export function cost(record) {
@@ -65,6 +65,8 @@ export function measure(run, logs, book, pages) {
   const chars = run.ticks.reduce((n, t) => n + pages.slice(t.pages[0], t.pages[1] + 1).reduce((m, p) => m + p.to - p.from, 0), 0);
   const total = sum([...ticks.map((t) => t.cost), ...[run.brief].filter(Boolean).map(cost)]);
   const spoilers = (run.judge?.data?.ticks ?? []).filter((t) => t.spoiler);
+  // 封: そのページをめくる前のめくりに演じたもの(0 でなければ道具のまちがい)
+  const early = timeline(run, pages, logs).filter((c) => c.turn <= run.ticks[c.tick].pages[1]).length;
   return {
     grounded: tried ? (tried - missed) / tried : null, missed, later,
     scenes: scored ? agree / scored : null, scored,
@@ -75,7 +77,7 @@ export function measure(run, logs, book, pages) {
     shapesDropped: logs.reduce((n, l) => n + l.drawn.reduce((m, d) => m + (d?.dropped ?? 0), 0), 0),
     medianMs: median(ticks.map((t) => t.ms)), maxMs: ticks.some((t) => Number.isFinite(t.ms)) ? Math.max(...ticks.map((t) => t.ms).filter(Number.isFinite)) : null,
     chars, cost: total, perThousand: total == null || !chars ? null : (total / chars) * 1000,
-    judged: run.judge?.data ? run.judge.data.ticks.length : null, spoilers,
+    judged: run.judge?.data ? run.judge.data.ticks.length : null, spoilers, early,
     judgeCost: cost(run.judge), extra: extra.length,
   };
 }

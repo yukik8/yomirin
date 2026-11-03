@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import {
   EMAKI, paginate, ticksOf, pageOf, newBook, startChapter, readRequest, applyReading, drawRequest, applyDrawing, applySummary,
-  replay, next, timeline, stageAt, placement, tint, groundSvg, thingSvg, panelSvg, scrollSvg, whereIs, checkBrief,
+  replay, next, timeline, clipOf, stageAt, placement, pointAt, routeOf, tint, groundSvg, thingSvg, panelSvg, scrollSvg, whereIs, checkBrief, CLIP, SPEEDS,
   briefSchema, readSchema, drawSchema, summarySchema, judgeSchema, judgeRequest,
 } from '../../tools/preview/emaki/emaki.js';
 import { edgeSvg } from '../../tools/preview/scene/scene.js';
@@ -126,7 +126,7 @@ test('描く係に渡すものに、書名と下調べは入らない', () => {
   const req = drawRequest(book, draws[0]);
   const text = JSON.stringify(req);
   assert.ok(!text.includes(BRIEF.work) && !text.includes(BRIEF.whole) && !text.includes(BRIEF.world));
-  assert.deepEqual(Object.keys(req).sort(), ['current', 'events', 'mode', 'scene', 'spots', 'story', 'things']);
+  assert.deepEqual(Object.keys(req).sort(), ['current', 'events', 'mode', 'routes', 'scene', 'spots', 'story', 'things']);
   assert.deepEqual(req.events, []);
   assert.equal(req.current, null);
   assert.ok(JSON.stringify(readRequest(book, TEXT)).includes(BRIEF.whole), '読み取りには渡す');
@@ -196,20 +196,26 @@ function staged() {
   const result = applyDrawing(book, {
     ground: [{ d: 'M0 0 H320 V240 H0 Z', color: 'sky', tone: 'pale' }],
     spots: [{ name: '線路の下', x: 80, y: 200, scale: 1 }, { name: '坂の上', x: 220, y: 140, scale: .5 }, { name: '線路の下', x: 1, y: 1, scale: 1 }, { name: '空', x: 'x', y: 0, scale: 1 }],
-    things: [{ id: cart, at: { x: 80, y: 200 }, spot: '線路の下', lit: true, ...shape() }, { id: lamp, at: { x: 10, y: 10 }, spot: '', lit: false, forms: [], lines: [], light: [{ d: 'M5 5 h4 v4 h-4 z', color: 'orange' }] }],
-    beats: [{ event: 0, id: cart, act: 'move', to: '坂の上' }, { event: 5, id: cart, act: 'move', to: '線路の下' }, { event: 0, id: cart, act: 'move', to: '知らない所' }],
+    routes: [{ from: '線路の下', to: '坂の上', d: 'M80 200 C120 190 180 160 220 140' }, { from: '線路の下', to: '海', d: 'M0 0 L1 1' }, { from: '線路の下', to: '坂の上', d: 'url(x)' }],
+    things: [{ id: cart, at: { x: 80, y: 200 }, spot: '線路の下', start: '', hidden: false, lit: true, loop: 'none', ...shape() }, { id: lamp, at: { x: 10, y: 10 }, spot: '', start: '', hidden: true, lit: false, loop: 'flicker', forms: [], lines: [], light: [{ d: 'M5 5 h4 v4 h-4 z', color: 'orange' }] }],
+    beats: [{ event: 0, id: cart, act: 'move', to: '坂の上', speed: 'fast', fx: 'bob' }, { event: 5, id: cart, act: 'move', to: '線路の下' }, { event: 0, id: cart, act: 'move', to: '知らない所' }],
   }, draws[0], 0);
   return { book, draws, result, cart, lamp, panel: book.emaki.panels[0] };
 }
 
-test('描く: 所は名前が重ならず座標の読めるものだけ。物は足もと・居る所・灯りを持ち、出来事の番号の付いた動きだけを演じる', () => {
+test('描く: 所は名前が重ならず座標の読めるものだけ。道は知っている所どうしの読める d だけ。物は足もと・最初の様子・灯り・揺らぎを持ち、出来事の番号の付いた動きだけを演じる', () => {
   const { result, panel, cart, lamp } = staged();
   assert.deepEqual(panel.spots.map((x) => x.name), ['線路の下', '坂の上']);
+  assert.deepEqual(panel.routes, [{ from: '線路の下', to: '坂の上', d: 'M80 200 C120 190 180 160 220 140' }]);
   const t = panel.things.find((x) => x.id === cart);
-  assert.deepEqual([t.at, t.spot, t.pos], [{ x: 80, y: 200 }, '線路の下', '坂の上']);
-  assert.equal(panel.things.find((x) => x.id === lamp).lit0, false);
-  assert.equal(result.dropped, 2 + 2); // 所 2(名前が重なる・座標が読めない)+ 動き 2(出来事の番号が無い・知らない所)
-  assert.deepEqual(result.cues, [{ kind: 'beat', panel: panel.id, id: cart, act: 'move', to: '坂の上', quote: '一番端にあるトロッコを押した' }]);
+  assert.deepEqual([t.at, t.spot, t.pos0, t.pos], [{ x: 80, y: 200 }, '線路の下', '線路の下', '坂の上']);
+  const l = panel.things.find((x) => x.id === lamp);
+  assert.deepEqual([l.lit0, l.shown0, l.loop], [false, false, 'flicker']);
+  assert.equal(result.dropped, 2 + 2 + 2); // 所 2(名前が重なる・座標が読めない)+ 道 2(知らない所・読めない d)+ 動き 2(出来事の番号が無い・知らない所)
+  assert.deepEqual(result.cues, [{ kind: 'beat', panel: panel.id, id: cart, act: 'move', to: '坂の上', from: '線路の下', speed: 'fast', fx: 'bob', quote: '一番端にあるトロッコを押した' }]);
+  assert.deepEqual(routeOf(panel, '線路の下', '坂の上'), { d: panel.routes[0].d, reverse: false });
+  assert.deepEqual(routeOf(panel, '坂の上', '線路の下'), { d: panel.routes[0].d, reverse: true });
+  assert.equal(routeOf(panel, '坂の上', '海'), null);
 });
 
 test('読み取りの動き: 同じ場面のときだけ。語句が段落に無い・知らない物や所の動きは捨て、時刻が移れば日が暮れるのを演じる', () => {
@@ -235,43 +241,54 @@ test('読み取りの動き: 同じ場面のときだけ。語句が段落に無
   assert.deepEqual(other.cues.map((c) => c.kind), ['panel']);
 });
 
-test('演じる順: 答えは回の次のめくりから、語句のページごとに1めくりずつ。区画が先に現れ、混んでいれば1めくりに二段', () => {
+test('封: ページの答えは、そのページをめくった瞬間(turn = 最後のページ + 1)にだけ演じる。それより前のめくりの様子には入らない', () => {
   const pages = paginate(books.find((b) => b.id === 'torokko'));
-  assert.equal(pageOf('三人の子供は恐る恐る', pages, [0, 1]), 1);
-  assert.equal(pageOf('書いていない', pages, [0, 1]), 0);
   const run = JSON.parse(readFileSync(new URL('runs/torokko.sample.json', dir), 'utf8'));
-  const { logs } = replay(run, pages);
-  const cues = timeline(run, pages, logs);
-  for (const c of cues) {
-    const [a, b] = run.ticks[c.tick].pages;
-    assert.ok(c.turn >= b + 1 && c.turn <= b + 1 + (b - a), `${c.kind} ${c.turn}`);
-  }
-  // 1回目: 区画が現れ(3ページ目を開いたとき)、次のめくりでトロッコが坂を上る
-  assert.deepEqual(cues.filter((c) => c.tick === 0).map((c) => [c.kind, c.turn, c.step]), [['panel', 2, 0], ['beat', 3, 0]]);
-  // 2回目: トロッコが下り、同じめくりの二段目で次の区画へ流れる
-  assert.deepEqual(cues.filter((c) => c.tick === 1).map((c) => [c.kind, c.turn, c.step]), [['beat', 4, 0], ['panel', 4, 1], ['beat', 5, 0]]);
-  for (const c of cues.filter((x) => x.kind !== 'panel')) {
-    const made = cues.find((x) => x.kind === 'panel' && x.panel === c.panel);
-    assert.ok(made.turn < c.turn || (made.turn === c.turn && made.step < c.step), '区画より先に動かない');
+  assert.deepEqual(ticksOf(pages, run.settings), pages.map((p) => [p.index, p.index]), '1ページに1回');
+  for (let k = 1; k <= run.ticks.length; k += 1) {
+    const { book, logs } = replay(run, pages, k);
+    const cues = timeline(run, pages, logs);
+    const page = run.ticks[k - 1].pages[1];
+    for (const c of cues.filter((x) => x.tick === k - 1)) assert.equal(c.turn, page + 1);
+    // そのページを開いている間(turn = page)の様子に、そのページの答えは無い
+    const before = stageAt(book, cues, page, run.ticks[k - 1].chapter);
+    const earlier = stageAt(book, cues.filter((c) => c.tick < k - 1), page, run.ticks[k - 1].chapter);
+    assert.deepEqual(before, earlier, `${page + 1}ページを読んでいる間`);
   }
 });
 
-test('めくりごとの様子: 区画は現れたときの所から始まり、動き・灯り・時刻を順に当てる。あとから出た物は現れるまで出さない', () => {
+test('1ページの場面: 同じ語句の動きは一緒に、ほかは順に。区画が先に流れ、長すぎれば縮める', () => {
+  const a = { kind: 'panel', panel: 'p1', quote: '一' };
+  const b = { kind: 'beat', panel: 'p1', id: 't1', act: 'move', to: 'x', speed: 'fast', fx: 'bob', quote: '二' };
+  const c = { kind: 'beat', panel: 'p1', id: 't2', act: 'appear', speed: 'slow', quote: '二' };
+  const d = { kind: 'time', panel: 'p1', to: 'night', quote: '三' };
+  assert.deepEqual(clipOf([a, b, c, d]).map((x) => [x.start, x.dur]), [[0, CLIP.panel], [CLIP.panel, SPEEDS.fast], [CLIP.panel, CLIP.change * 2], [CLIP.panel + CLIP.change * 2, CLIP.time]]);
+  const many = Array.from({ length: 8 }, (_, i) => ({ ...b, quote: `語${i}`, speed: 'slow' }));
+  const clip = clipOf(many);
+  const end = Math.max(...clip.map((x) => x.start + x.dur));
+  assert.ok(end <= CLIP.max + 2 && clip.every((x) => x.dur >= CLIP.min), `${end}`);
+});
+
+test('めくりごとの様子(見本): 区画は現れたときの様子から始まり、動き・灯り・時刻を順に当てる。あとから出た物は現れるまで出さない', () => {
   const pages = paginate(books.find((b) => b.id === 'torokko'));
   const run = JSON.parse(readFileSync(new URL('runs/torokko.sample.json', dir), 'utf8'));
   const { book, logs } = replay(run, pages);
   const cues = timeline(run, pages, logs);
-  const cart = (turn, step = 1) => { const s = stageAt(book, cues, turn, 0, step); return s.panels[0].things[book.emaki.panels[0].things.find((t) => t.name === 'トロッコ').id].pos; };
-  assert.equal(stageAt(book, cues, 1, 0).panels.length, 0);
-  assert.deepEqual([cart(2), cart(3), cart(4)], ['線路の下', '坂の途中', '線路の下']);
-  assert.equal(stageAt(book, cues, 4, 0, 0).current, book.emaki.panels[0].id, '一段目では、まだ前の区画');
-  assert.equal(stageAt(book, cues, 4, 0, 1).current, book.emaki.panels[1].id);
-  const village = book.emaki.panels.find((p) => p.place.name === '村の家並み');
-  const lamp = village.things.find((t) => t.name === '電燈');
-  const at = (turn) => stageAt(book, cues, turn, 0).panels.find((p) => p.id === village.id);
-  assert.equal(at(10).things[lamp.id].lit, false);
-  assert.equal(at(11).things[lamp.id].lit, true);
-  assert.ok(!at(11).things[village.things.find((t) => t.name === '門口').id], '門口はまだ現れていない');
+  const at = (turn, name) => { const panel = book.emaki.panels.find((p) => p.place.name === name); return [panel, stageAt(book, cues, turn, 0).panels.find((p) => p.id === panel.id)]; };
+  assert.equal(stageAt(book, cues, 0, 0).panels.length, 0, '1ページ目を読んでいる間は何も無い');
+  const [yard, y1] = at(1, '村外れの工事場');
+  const cart = yard.things.find((t) => t.name === 'トロッコ');
+  assert.equal(cart.pos0, '山の上', '山の上から下りて来る');
+  assert.deepEqual([y1.things[cart.id].pos, y1.things[yard.things.find((t) => t.name === '土の山').id].shown], ['山の上', true], '下りて土をぶちまけ、また山へ');
+  const [evening] = at(2, '夕方の村外れ');
+  const mud = evening.things.find((t) => t.name === '泥だらけのトロッコ');
+  assert.deepEqual([at(2, '夕方の村外れ')[1].things[mud.id].pos, at(3, '夕方の村外れ')[1].things[mud.id].pos], ['坂の途中', '線路の下']);
+  const [village, v10] = at(10, '村の家並み');
+  assert.equal(v10.things[village.things.find((t) => t.name === '電燈').id].lit, true, '村に入ると電燈がともる');
+  assert.ok(!v10.things[village.things.find((t) => t.name === '門口').id], '門口はまだ現れていない');
+  assert.ok(at(11, '村の家並み')[1].things[village.things.find((t) => t.name === '門口').id].shown);
+  const [road, r10] = at(10, '夕暮れの線路');
+  assert.deepEqual([road.time0, r10.time], ['evening', 'night'], '帰り道で日が暮れる');
   assert.equal(stageAt(book, cues, 12, 1).panels.length, 0, '次の章では前の章の区画を出さない');
 });
 
@@ -281,6 +298,7 @@ test('置き方と色: 所へ動かすぶんと大きさの比。時刻が描い
   assert.deepEqual(placement(panel, t, '坂の上'), { dx: 140, dy: -60, scale: .5 });
   assert.deepEqual(placement(panel, t, '線路の下'), { dx: 0, dy: 0, scale: 1 });
   assert.deepEqual(placement(panel, t, null), { dx: 0, dy: 0, scale: 1 });
+  assert.deepEqual(pointAt(panel, t, 150, 170, .75), { dx: 70, dy: -30, scale: .75 });
   assert.equal(tint({ time0: 'evening' }, 'evening'), null);
   assert.equal(tint({ time0: 'day' }, 'morning'), null);
   assert.ok(tint({ time0: 'day' }, 'evening').opacity < tint({ time0: 'day' }, 'night').opacity);
@@ -294,6 +312,7 @@ test('絵: 地・物・縁の紙の層に分け、物の層は透明。一枚の
   assert.ok(lit.includes('url(#glow)') && !dark.includes('url(#glow)') && !lit.includes('#fdfaf3"/>'));
   const edge = edgeSvg();
   assert.ok(edge.includes('mask="url(#rim)"'));
+  panel.things.find((x) => x.id === lamp).shown = true; // 灯りは見えているが、まだ消えている
   const art = panelSvg(panel);
   assert.ok(art.includes('translate(220 140) scale(0.5) translate(-80 -200)'), 'トロッコは坂の上に居る');
   assert.ok(!art.includes('url(#glow)'), '消えている灯り');
