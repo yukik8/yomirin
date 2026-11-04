@@ -1,4 +1,4 @@
-import {BEATS,initial,advance} from './story.js';
+import {BEATS,initial,advance,canResolve} from './story.js';
 import {createScene,preload} from './scene.js';
 import {paginate} from '../emaki/emaki.js';
 const $=id=>document.getElementById(id),scene=createScene($('stage')),motion=matchMedia('(prefers-reduced-motion: reduce)');
@@ -7,10 +7,11 @@ const reduced=()=>motion.matches||$('reduced').checked;
 function render({quiet=false}={}){
  document.body.classList.toggle('reading',mode==='reading');$('paper').hidden=mode!=='reading';
  $('theatre').setAttribute('aria-pressed',String(mode==='theatre'));$('reading').setAttribute('aria-pressed',String(mode==='reading'));
- $('next').disabled=!ready||state.ended||(mode==='theatre'&&state.step===BEATS.length-1);
+ $('next').disabled=!ready||state.ended;
  $('finish').disabled=!ready||state.ended;
+ $('finish').textContent=mode==='theatre'?'ここで章を終える':'章を読み終える';
  $('replay').disabled=!ready||reduced();
- $('next').textContent=mode==='theatre'?'つぎのひとコマ →':page===pages.length-1?'読み終える →':'読み終えて、めくる →';
+ $('next').textContent=mode==='theatre'?(canResolve(state)?'結末を見る →':'つぎのひとコマ →'):page===pages.length-1?'読み終える →':'読み終えて、めくる →';
  $('status').textContent=state.ended?'おしまい。':mode==='theatre'?'ひとコマずつ、くまの動きを試せます。':'くまは、ページをめくるときに、ときどき動きます。';
  if(mode==='reading'){
   $('folio').textContent=`${page+1} / ${pages.length}`;
@@ -27,7 +28,7 @@ function turn(end=false){
  // Ignore accidental double turns; suppress subsequent animation during rapid scanning.
  if(now-lastTurn<280)return;
  const quiet=now-lastTurn<1200;lastTurn=now;
- if(end||(mode==='reading'&&page===pages.length-1))state=advance(state,{end:true});
+ if(end||(mode==='reading'&&page===pages.length-1)||(mode==='theatre'&&canResolve(state)))state=advance(state,{end:true});
  else if(mode==='theatre')state=advance(state,{demo:true});
  else{page++;state=advance(state,{page,total:pages.length});}
  render({quiet});
