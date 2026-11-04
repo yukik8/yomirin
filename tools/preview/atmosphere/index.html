@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>よみりん · ページの余韻</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<header class="top"><a class="brand" href="../">よみりん<span>試写室 / 52</span></a><button id="settings-toggle" aria-expanded="false" aria-controls="settings">試写の設定 <span aria-hidden="true">＋</span></button></header>
+<section id="settings" hidden aria-label="試写の設定">
+<div><label for="mode">演出</label><select id="mode"><option value="linked">本文に連動</option><option value="constant">毎回同じ（比較用）</option><option value="off">なし</option></select></div>
+<div><label for="strength">強さ <output id="strength-value">100%</output></label><input id="strength" type="range" min="0" max="150" value="100" step="10"></div>
+<div><label for="jump">ページへ移動</label><select id="jump"></select></div>
+<label class="check"><input id="reduced" type="checkbox">動きを減らす</label>
+<p>手付けの演出台本で、体験を比べる試作です。AIの自動判定・API通信はありません。</p>
+</section>
+<main>
+<div class="intro"><span class="eyebrow">ページの余韻</span><h1>読んだ空気が、ふっと広がる。</h1><p>ページをめくる、その一瞬だけ。</p></div>
+<div class="reader-wrap">
+<div class="side-note" aria-hidden="true"><span>芥川龍之介</span><i></i><span>トロッコ</span></div>
+<article id="paper" aria-label="トロッコの本文"><div class="book-meta"><span>トロッコ</span><span id="folio">01 / 12</span></div><div id="prose"></div><div id="end" hidden><p class="end-title">トロッコ　読了</p><p>いまの余韻は、読む時間に合っていましたか。</p><button id="restart">もう一度、はじめから</button></div><footer>芥川龍之介「トロッコ」 · 青空文庫の公開本文より</footer></article>
+</div>
+<nav class="reading-controls" aria-label="ページ操作"><button id="back" disabled>← 戻る</button><span id="position">1 / 12</span><button id="next" class="primary" disabled>読み終えて、めくる <span aria-hidden="true">→</span></button></nav>
+<div class="afterglow"><div class="afterglow-top"><span id="status" role="status">読み込み中…</span><button id="replay" disabled>余韻をもう一度 ↻</button></div><details id="evidence"><summary>いまの余韻を確かめる</summary><div id="source">読み終えたページの根拠だけを、ここに表示します。</div><label class="check"><input id="freeze" type="checkbox">コマ止めで見る</label><div id="scrub" hidden><input id="time" type="range" min="0" max="1800" value="260" step="10" aria-label="演出の時刻"><output id="time-value">260 ms</output></div></details></div>
+<p class="keyboard">Space / → でめくる · ← で戻る</p>
+</main>
+<div id="fx-edge" class="fx" aria-hidden="true"></div><div id="fx-flash" class="fx" aria-hidden="true"></div>
+<script type="module" src="./preview.js"></script>
+</body></html>

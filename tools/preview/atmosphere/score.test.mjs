@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {paginate} from '../emaki/emaki.js';
+import {SCORE,cueFor,revealedCue} from './score.js';
+const book=JSON.parse(readFileSync(new URL('../emaki/books.json',import.meta.url))).books.find(b=>b.id==='torokko');
+const pages=paginate(book);
+test('全12ページの演出の根拠が当該ページ本文に存在する',()=>{assert.equal(pages.length,12);assert.equal(SCORE.length,pages.length);for(let i=0;i<pages.length;i++)assert.ok(cueFor(i,pages[i].text),`page ${i+1}`);});
+test('未読・範囲外・不正なページ数から演出を出さない',()=>{for(const n of [0,-1,13,NaN,1.5])assert.equal(revealedCue(n,pages),null);assert.equal(cueFor(0,'根拠を含まない本文'),null);});
+test('次のページを読むことなく、直前に読み終えたページだけを参照する',()=>{for(let completed=1;completed<=pages.length;completed++){const guarded=new Proxy(pages,{get(target,key){if(/^\d+$/.test(String(key))&&Number(key)>=completed)throw Error('未読ページを参照した');return Reflect.get(target,key);}});assert.equal(revealedCue(completed,guarded),SCORE[completed-1]);}});
