@@ -1,6 +1,6 @@
 import {paginate} from '../emaki/emaki.js';
 import {revealedCue,CONSTANT} from './score.js';
-import {createAtmosphere} from './fx.js';
+import {createAtmosphere,DURATION} from './fx.js';
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
 const fx=createAtmosphere($('fx-edge'),$('fx-flash'),$('paper'));
 const motion=matchMedia('(prefers-reduced-motion: reduce)');
@@ -26,25 +26,27 @@ function info(){
 function play(at=null){if($('mode').value==='off')return;fx.play(selectedCue(),{strength:+$('strength').value/100,reduced:motion.matches||$('reduced').checked,at,seed:(lastRead??0)+1});}
 function forward(){
   if(!pages.length||completed)return;
-  clear();lastRead=page;if(page<pages.length-1)page++;else completed=true;
+  const now=performance.now(),quiet=now-lastTurn<DURATION;
+  if(quiet){cancelAnimationFrame(pending);fx.fadeOut();$('freeze').checked=false;$('scrub').hidden=true;}else clear();
+  lastRead=page;if(page<pages.length-1)page++;else completed=true;
   render();info();
   // 長いページを読み終えた場合も次の本文の先頭へ戻す。再配置後に除外領域を測る。
   if(scrollY>120)window.scrollTo({top:Math.max(0,$('paper').getBoundingClientRect().top+scrollY-24),behavior:'instant'});
-  const now=performance.now();if(now-lastTurn>700){pending=requestAnimationFrame(()=>{pending=requestAnimationFrame(()=>play());});}lastTurn=now;
+  fx.syncBounds();if(!quiet){pending=requestAnimationFrame(()=>{pending=requestAnimationFrame(()=>play());});}lastTurn=now;
 }
 function reset(to=0){clear();page=to;completed=false;lastRead=null;lastTurn=-Infinity;render();info();}
 $('next').addEventListener('click',forward);
 $('back').addEventListener('click',()=>reset(completed?page:Math.max(0,page-1)));
 $('restart').addEventListener('click',()=>reset());
 $('jump').addEventListener('change',()=>reset(+$('jump').value));
-$('replay').addEventListener('click',()=>{clear();play();});
+$('replay').addEventListener('click',()=>{const now=performance.now();if(now-lastTurn<DURATION)return;lastTurn=now;clear();play();});
 $('settings-toggle').addEventListener('click',()=>{clear();const open=$('settings').hidden;$('settings').hidden=!open;$('settings-toggle').setAttribute('aria-expanded',String(open));});
 for(const id of ['mode','strength','reduced'])$(id).addEventListener('input',()=>{clear();info();});
 $('freeze').addEventListener('change',()=>{$('scrub').hidden=!$('freeze').checked;if($('freeze').checked)play(+$('time').value);else fx.clear();});
 $('time').addEventListener('input',()=>{$('time-value').value=`${$('time').value} ms`;play(+$('time').value);});
 $('evidence').addEventListener('toggle',()=>{if(!$('evidence').open)clear();});
 addEventListener('keydown',e=>{if(e.repeat||e.altKey||e.metaKey||e.ctrlKey||/INPUT|SELECT|TEXTAREA|SUMMARY/.test(e.target.tagName)||(e.key===' '&&e.target.tagName==='BUTTON'))return;if([' ','ArrowRight','ArrowLeft'].includes(e.key)){e.preventDefault();if(e.key==='ArrowLeft')$('back').click();else forward();}});
-addEventListener('resize',clear);addEventListener('scroll',()=>{if($('freeze').checked)play(+$('time').value);else fx.clear();},{passive:true});addEventListener('pagehide',clear);
+addEventListener('resize',clear);addEventListener('scroll',()=>fx.syncBounds(),{passive:true});addEventListener('pagehide',clear);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)clear();});motion.addEventListener('change',clear);
 try{
  const response=await fetch('../emaki/books.json');if(!response.ok)throw Error('本文を読み込めませんでした。');

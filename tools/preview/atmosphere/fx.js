@@ -1,23 +1,31 @@
 const NS='http://www.w3.org/2000/svg';
-export const DURATION=1600, FLASH=360;
+export const DURATION=1600;
 const el=(name,attrs={})=>{const n=document.createElementNS(NS,name);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,String(v));return n;};
 const rand=(seed)=>()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
 export function createAtmosphere(edge,flash,paper){
-  let animations=[],generation=0;
-  function clear(){generation++;for(const a of animations)a.cancel();animations=[];edge.replaceChildren();flash.replaceChildren();}
+  let animations=[],generation=0,exclusion=null;
+  function clear(){exclusion=null;generation++;for(const a of animations)a.cancel();animations=[];edge.replaceChildren();flash.replaceChildren();}
+  // スクロールではSVGを作り直さず、本文の除外範囲だけを更新する。
+  function syncBounds(){if(!exclusion)return;const r=paper.getBoundingClientRect();for(const [key,value] of Object.entries({x:r.left-12,y:r.top-12,width:r.width+24,height:r.height+24}))exclusion.setAttribute(key,value);}
+  function fadeOut(){
+    if(!edge.firstChild)return;
+    const token=++generation;
+    const a=edge.animate([{opacity:getComputedStyle(edge).opacity},{opacity:0}],{duration:180,easing:'ease-out',fill:'forwards'});
+    animations.push(a);a.finished.then(()=>{if(generation===token)clear();}).catch(()=>{});
+  }
   function play(cue,{strength=1,reduced=false,at=null,seed=1}={}){
     clear();if(!cue||strength<=0)return;
     const token=generation,W=innerWidth,H=innerHeight,r=paper.getBoundingClientRect(),random=rand(seed+52);
     const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,width:W,height:H});
     const defs=el('defs');svg.append(defs);
     const mask=el('mask',{id:'reading-mask',maskUnits:'userSpaceOnUse',x:0,y:0,width:W,height:H});
-    mask.append(el('rect',{width:W,height:H,fill:'white'}),el('rect',{x:r.left-12,y:r.top-12,width:r.width+24,height:r.height+24,rx:16,fill:'black'}));defs.append(mask);
+    exclusion=el('rect',{x:r.left-12,y:r.top-12,width:r.width+24,height:r.height+24,rx:16,fill:'black'});mask.append(el('rect',{width:W,height:H,fill:'white'}),exclusion);defs.append(mask);
     cue.colors.forEach((c,i)=>{const g=el('radialGradient',{id:`wash-${i}`});g.append(el('stop',{offset:0,'stop-color':c,'stop-opacity':.64}),el('stop',{offset:.5,'stop-color':c,'stop-opacity':.24}),el('stop',{offset:1,'stop-color':c,'stop-opacity':0}));defs.append(g);});
     const artwork=el('g',{mask:'url(#reading-mask)'});svg.append(artwork);edge.append(svg);
     const root=el('g');artwork.append(root);
-    function animate(n,frames,duration=DURATION,delay=0){const a=n.animate(frames,{duration,delay,fill:'both',easing:'linear'});animations.push(a);return a;}
-    const peak=Math.min(1,strength*.9);
-    const envelope=[{opacity:0,offset:0},{opacity:peak,offset:.13},{opacity:peak*.72,offset:.38},{opacity:0,offset:1}];
+    function animate(n,frames,duration=DURATION,delay=0){const a=n.animate(frames,{duration,delay,fill:'both',easing:'ease-in-out'});animations.push(a);return a;}
+    const peak=Math.min(.85,strength*.68);
+    const envelope=[{opacity:0,offset:0},{opacity:peak,offset:.28},{opacity:peak*.8,offset:.48},{opacity:0,offset:1}];
     animate(root,envelope);
     const dark=cue.kind==='narrow'||cue.kind==='memory';
     for(let i=0;i<5;i++){
@@ -40,24 +48,22 @@ export function createAtmosphere(edge,flash,paper){
         else {d=`M${-W*.2} ${y} C${W*.1} ${y-H*.23} ${W*.6} ${y+H*.2} ${W*1.2} ${y-H*.16}`;dx=W*.2;}
         const band=el('path',{d,fill:'none',stroke:c,'stroke-width':kind==='memory'?1.5:8+i*3,'stroke-opacity':kind==='memory'?.5:.2,'stroke-linecap':'round'});
         root.append(band);animate(band,[{transform:`translate(${-dx}px,${-dy}px)`,opacity:0},{transform:'translate(0,0)',opacity:1,offset:.22},{transform:`translate(${dx}px,${dy}px)`,opacity:0}],kind==='rush'?1000:DURATION);
-        const line=el('path',{d,fill:'none',stroke:c,'stroke-width':i%3===0?2:1,'stroke-opacity':.7,'stroke-linecap':'round',pathLength:100,'stroke-dasharray':'36 64'});root.append(line);animate(line,[{strokeDashoffset:100},{strokeDashoffset:-70}],kind==='rush'?750:1500);
+        const line=el('path',{d,fill:'none',stroke:c,'stroke-width':i%3===0?2:1.2,'stroke-opacity':.45,'stroke-linecap':'round'});root.append(line);animate(line,[{transform:`translate(${-dx}px,${-dy}px)`},{transform:`translate(${dx}px,${dy}px)`}]);
       }
-      const count=kind==='memory'?18:kind==='rush'?60:45;
+      const count=kind==='memory'?18:kind==='rush'?36:28;
       for(let i=0;i<count;i++){
         const side=i%2===0,s=side?1:-1,x=side?random()*W*.35:W*(.65+random()*.35),y=random()*H,c=cue.colors[i%3],size=2+random()*7;
         const n=el('g');const grain=kind==='rush'?el('path',{d:`M0 0 l${size*6*s} ${-size}`,stroke:c,'stroke-width':size*.35,'stroke-linecap':'round'}):el('ellipse',{rx:size,ry:size*(.25+random()*.45),fill:c,transform:`rotate(${random()*180})`});n.append(grain);root.append(n);
         let dx=(kind==='rush'||kind==='open')?-s*(60+random()*W*.25):kind==='narrow'?s*45:40+random()*100;
         let dy=kind==='release'?100+random()*140:kind==='warm'?-50-random()*100:kind==='dusk'?50:-20-random()*60;
-        const start=80+random()*160,duration=kind==='rush'?550+random()*300:900+random()*300;
-        animate(n,[{transform:`translate(${x-dx*.2}px,${y-dy*.2}px) scale(.3)`,opacity:0},{transform:`translate(${x}px,${y}px) scale(1)`,opacity:.65,offset:.2},{transform:`translate(${x+dx}px,${y+dy}px) scale(.6)`,opacity:0}],duration,start);
+        const start=80+random()*160,duration=kind==='rush'?900+random()*200:1000+random()*200;
+        animate(n,[{transform:`translate(${x-dx*.2}px,${y-dy*.2}px) scale(.3)`,opacity:0},{transform:`translate(${x}px,${y}px) scale(1)`,opacity:.55,offset:.35},{transform:`translate(${x+dx}px,${y+dy}px) scale(.6)`,opacity:0}],duration,start);
       }
-      // 本文上は低濃度の色だけ。360msで完全に消える独立した層。
-      const flashSvg=el('svg',{viewBox:`0 0 ${W} ${H}`});const fd=el('defs'),g=el('linearGradient',{id:'page-flash',x1:0,y1:0,x2:1,y2:1});
-      cue.colors.forEach((c,i)=>g.append(el('stop',{offset:i/2,'stop-color':c})));fd.append(g);flashSvg.append(fd,el('rect',{width:W,height:H,fill:'url(#page-flash)'}));flash.append(flashSvg);
-      animate(flashSvg,[{opacity:0},{opacity:strength*.11,offset:.28},{opacity:0}],FLASH);
+      // 本文の明るさを変える全面フラッシュは出さない。
+
     }
     if(at!==null){for(const a of animations){a.pause();a.currentTime=Math.max(0,at);}}
     else {const last=animations[0];last.finished.then(()=>{if(generation===token)clear();}).catch(()=>{});}
   }
-  return {play,clear};
+  return {play,clear,syncBounds,fadeOut};
 }
