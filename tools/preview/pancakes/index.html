@@ -1,10 +1,10 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>よみりん · パンケーキの小さな劇場</title><link rel="stylesheet" href="style.css"></head>
 <body><header><a href="../" class="brand">よみりん <small>試写室</small></a><span class="edition">小さなストーリー / 01</span></header>
-<main><div class="intro"><span class="eyebrow">PANCAKE THEATRE</span><h1>まだ、のせるの？</h1><p>本を読んでいるあいだ、くまにはくまの物語。</p></div>
+<main><div class="intro"><span class="eyebrow">PANCAKE THEATRE · ORIGINAL ART</span><h1>まだ、のせるの？</h1><p>あのくまの絵に、ほんの少しのしぐさを。</p></div>
 <div class="toolbar" role="group" aria-label="試写モード"><button id="theatre" aria-pressed="true">動きを見る</button><button id="reading" aria-pressed="false">本文の横で読む</button></div>
 <div id="layout"><article id="paper" hidden aria-label="トロッコの本文"><div class="book-meta"><span>芥川龍之介 · トロッコ</span><span id="folio"></span></div><div id="prose"></div><footer>青空文庫の公開本文より</footer></article>
-<div class="stage-wrap"><div id="stage" role="img" aria-label="パンケーキを積むくま"></div><div class="stage-baseline" aria-hidden="true"></div></div></div>
+<div class="stage-wrap"><div id="stage" role="img" aria-label="パンケーキを積むくま"></div></div></div>
 <nav aria-label="試写の操作"><button id="reset" class="quiet">最初から</button><button id="next" class="primary" disabled>つぎのひとコマ <span aria-hidden="true">→</span></button><button id="finish" class="quiet" disabled>章を読み終える</button></nav>
-<p id="status" role="status">準備しています…</p>
-<details id="settings"><summary>試写の設定</summary><div class="settings-row"><label>本文の区切り <select id="length"><option value="short">ふつう</option><option value="long" selected>細かく（長い章の進行を試す）</option></select></label><label><input type="checkbox" id="reduced">動きを減らす</label></div><p>動きを見るモードでは一操作で一コマ。読書モードでは変わらないページも挟みます。章末の動きは、途中からでも試せます。</p><label id="beat-picker">コマを選ぶ <select id="beat"></select></label><p id="direction"></p></details>
+<p id="status" role="status">準備しています…</p><div class="replay-row"><button id="replay" disabled>いまのしぐさをもう一度 ↻</button></div>
+<details id="settings"><summary>試写の設定</summary><div class="settings-row"><label>本文の区切り <select id="length"><option value="short">ふつう</option><option value="long" selected>細かく（長い章の進行を試す）</option></select></label><label><input type="checkbox" id="reduced">原画のまま見る（動きなし）</label></div><p>元の6枚に短いしぐさを添えた試作です。動きを見るモードでは一操作で一場面。読書モードでは変わらないページも挟みます。章末の動きは、途中からでも試せます。</p><label id="beat-picker">コマを選ぶ <select id="beat"></select></label><p id="direction"></p></details>
 <p class="footnote">動くのは、めくるときだけ。 Space / → でも進めます。</p></main><script type="module" src="preview.js"></script></body></html>

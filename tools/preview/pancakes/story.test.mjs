@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {BEATS,initial,advance} from './story.js';
+import {BEATS,initial,advance,illustrationFor} from './story.js';
 test('long chapter progresses in order, includes pauses, and waits for chapter ending',()=>{
  let s=initial(),holds=0;const seen=[];
  for(let page=1;page<80;page++){
@@ -20,6 +20,14 @@ test('short chapter ends with its accumulated stack, without jumping to the full
  assert.strictEqual(advance(ended,{demo:true}),ended);assert.strictEqual(advance(ended,{end:true}),ended);
 });
 test('demo waits at its last beat, and even an empty scene can end',()=>{
- let s=initial();for(let i=0;i<40;i++)s=advance(s,{demo:true});assert.equal(s.step,23);assert.equal(s.ended,false);
+ let s=initial();for(let i=0;i<40;i++)s=advance(s,{demo:true});assert.equal(s.step,BEATS.length-1);assert.equal(s.ended,false);
  assert.equal(advance(initial(),{end:true}).step,-1);
+});
+
+test('ending never reveals the final pile before the tall tower exists',()=>{
+ for(let step=-1;step<BEATS.length;step++){
+  const state={...initial(),step},frame=illustrationFor(state);
+  assert.ok(frame>=1&&frame<=5);
+  assert.equal(illustrationFor({...state,ended:true}),frame===5?6:frame);
+ }
 });

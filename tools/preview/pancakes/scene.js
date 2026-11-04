@@ -1,65 +1,56 @@
-import {BEATS} from './story.js';
+import {BEATS,illustrationFor} from './story.js';
 const NS='http://www.w3.org/2000/svg';
-const bearURL=name=>`../../../extension/assets/bear/${name}.webp`;
-export async function preload(){await Promise.all(['front','wait','surprise','hop'].map(async name=>{const img=new Image();img.src=bearURL(name);await img.decode();}));}
+// Original pixel dimensions. Preserve the same scale and ground across all six drawings.
+const SIZES=[[251,229],[221,189],[238,276],[267,342],[316,388],[362,460]];
+const imageURL=frame=>`../../../extension/assets/story/pancakes-${frame}.webp`;
+export async function preload(){await Promise.all(SIZES.map(async(_,i)=>{const image=new Image();image.src=imageURL(i+1);await image.decode();}));}
+const pose=(angle=0,y=0,squash=1)=>`translateY(${y}px) rotate(${angle}deg) scaleY(${squash})`;
+const gestures={
+ peek:[pose(),pose(-1,-2),pose()],
+ settle:[pose(0,-5),pose(0,1,.99),pose()],
+ reach:[pose(),pose(-1.3,0),pose(-.4,-1),pose()],
+ 'small-lean':[pose(),pose(1.7,0),pose(.8,0),pose()],
+ recover:[pose(1.3),pose(-.5),pose()],
+ lean:[pose(),pose(2.5),pose(1.7),pose()],
+ brace:[pose(1.7),pose(-.8,1,.99),pose(.3),pose()],
+ 'last-lean':[pose(),pose(3),pose(2.1),pose()],
+ ending:[pose(0,-6),pose(0,2,.985),pose(0,-1),pose()],
+};
 export function createScene(host){
- host.innerHTML=`<svg viewBox="0 0 600 390" xmlns="${NS}" aria-hidden="true"><defs>
- <linearGradient id="cake-side" x2="0" y2="1"><stop stop-color="#f5cd7e"/><stop offset=".6" stop-color="#ffe3a3"/><stop offset="1" stop-color="#d99c50"/></linearGradient>
- <radialGradient id="cake-top" cx=".4" cy=".35" r=".8"><stop stop-color="#eab16a"/><stop offset=".8" stop-color="#ce8a43"/><stop offset="1" stop-color="#b97438"/></radialGradient>
- <filter id="pencil" x="-10%" y="-20%" width="120%" height="140%"><feTurbulence type="fractalNoise" baseFrequency=".14" numOctaves="2" seed="12" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale=".6" xChannelSelector="R" yChannelSelector="G"/></filter>
- <g id="cake" stroke="#94613c" stroke-width="1.4" stroke-linejoin="round"><path d="M-73,-7 C-73,9 -47,17 0,17 S73,8 73,-7 L73,-13 L-73,-13Z" fill="url(#cake-side)"/><ellipse cy="-12" rx="73" ry="20" fill="url(#cake-top)"/><ellipse cy="-13" rx="65" ry="15" fill="none" stroke="#f5d18b" opacity=".7"/><path d="M-45,-15 Q-25,-24 -5,-21 M26,-4 L32,-5 M-33,1 L-28,2" fill="none" stroke="#ffe4a8" stroke-linecap="round" opacity=".65"/></g>
- <g id="butter-shape" stroke="#bd934b" stroke-width="1.2" stroke-linejoin="round"><path d="M-17,-8 L7,-13 L19,-6 L-5,1Z" fill="#fff0b4"/><path d="M-17,-8 L-17,3 L-5,11 L-5,1Z" fill="#efd080"/><path d="M-5,1 L19,-6 L19,5 L-5,11Z" fill="#f9df94"/></g></defs>
- <ellipse cx="300" cy="352" rx="160" ry="10" fill="#b49b7e" opacity=".1"/>
- <g id="stool" stroke="#916d50" stroke-width="2" fill="#d2ae83"><path d="M373,310 L369,348 M418,310 L425,348 M373,334 L422,334" fill="none" stroke-width="7"/><path d="M360,302 Q393,292 430,302 L430,314 Q396,322 360,314Z"/><ellipse cx="395" cy="302" rx="36" ry="10" fill="#e9cfaa"/></g>
- <g id="bear-position"><g id="bear-motion"><image id="bear" href="${bearURL('front')}" x="-94" y="-164" width="188" height="164"/></g></g>
- <g id="plate" transform="translate(225 338)"><ellipse cy="5" rx="101" ry="23" fill="#dfcdb1" stroke="#bda585" stroke-width="1.4"/><ellipse rx="102" ry="22" fill="#faf1db" stroke="#bda585" stroke-width="1.4"/><ellipse cy="-1" rx="83" ry="15" fill="#eee0c4" stroke="#d8c3a1"/></g>
- <g transform="translate(225 322)"><g id="stack-motion" filter="url(#pencil)"></g></g>
- <g id="butter-position"><g id="butter-motion"><use href="#butter-shape"/></g></g>
- <g id="extra-position"><g id="extra-motion"><use href="#cake" transform="scale(.65)"/></g></g>
- </svg>`;
- const q=id=>host.querySelector(`#${id}`),stack=q('stack-motion');
- const cakes=Array.from({length:8},()=>{const pos=document.createElementNS(NS,'g'),motion=document.createElementNS(NS,'g'),use=document.createElementNS(NS,'use');use.setAttribute('href','#cake');motion.append(use);pos.append(motion);stack.append(pos);return{pos,motion};});
- let animations=[],lastStep=-2;
- function stop(){animations.forEach(a=>a.cancel());animations=[];}
- function animate(node,frames,duration=900){animations.push(node.animate(frames,{duration,easing:'cubic-bezier(.25,.7,.3,1)'}));}
- function render(state,{reduced=false,quiet=false}={}){
-  stop();const b=BEATS[Math.max(0,state.step)],ending=state.ended,active=state.step>=0;
-  const n=active?b.n:0,up=b.stool===2?42:0;
-  host.setAttribute('aria-label',ending?'パンケーキの山が崩れ、くまがそばに座っている':active?b.name:'お皿のそばに立つくま');
-  const bearX=b.action==='catch'&&b.stool!==2?335:b.action==='inspect'?410:385;
-  q('bear-position').setAttribute('transform',`translate(${ending?375:bearX} ${ending?348:348-up})`);
-  const pose=ending?'front':b.pose;q('bear').setAttribute('href',bearURL(pose));
-  // Fixed body height; the transparent pose canvas varies substantially.
-  const width=pose==='wait'?190:pose==='surprise'?228:pose==='hop'?158:188;
-  q('bear').setAttribute('width',width);q('bear').setAttribute('x',-width/2);
-  q('stool').style.visibility=b.stool&&!ending?'visible':'hidden';
-  cakes.forEach(({pos},i)=>{
-   pos.style.visibility=i<n?'visible':'hidden';
-   const x=ending?(i%2?-1:1)*(17+Math.floor(i/2)*25):b.lean*i*.7;
-   const y=ending?-Math.floor(i/3)*10:-i*19;
-   const rotation=ending?(i%2?-1:1)*(7+i*3):b.lean*i/Math.max(1,n);
-   pos.setAttribute('transform',`translate(${x} ${y}) rotate(${rotation})`);
-  });
-  const butterY=322-Math.max(0,n-1)*19-28;
-  q('butter-position').style.visibility=b.butter&&active?'visible':'hidden';
-  q('butter-position').setAttribute('transform',ending?'translate(275 327) rotate(12)':`translate(${225+(b.butterX||0)+b.lean*(n-1)*.7} ${butterY})`);
-  q('extra-position').style.visibility=b.extra&&active&&!ending?'visible':'hidden';
-  q('extra-position').setAttribute('transform',`translate(${bearX-57} ${267-up}) rotate(-12)`);
-  const changed=state.step!==lastStep;lastStep=state.step;
-  if(reduced||quiet||(!changed&&!ending))return;
-  if(ending){
-   cakes.slice(0,n).forEach(({motion},i)=>animate(motion,[{transform:`translate(${(i%2?1:-1)*(17+Math.floor(i/2)*25)+b.lean*i*.7}px,${-i*19+Math.floor(i/3)*10}px) rotate(${-(i%2?-1:1)*(7+i*3)}deg)`},{transform:`translate(0,-${12+i*2}px) rotate(3deg)`,offset:.7},{transform:'none'}],1100));
-   animate(q('bear-motion'),[{transform:'rotate(-7deg)'},{transform:'translateY(-9px) rotate(4deg)',offset:.45},{transform:'none'}],1100);return;
+ // SVG is only a carrier. No replacement character, food, props, texture, or filter.
+ host.innerHTML=`<svg viewBox="0 0 500 440" xmlns="${NS}" aria-hidden="true"><g transform="translate(250 412)"><g id="artwork"></g></g></svg>`;
+ const artwork=host.querySelector('#artwork');
+ const images=SIZES.map(([width,height],i)=>{
+  const image=document.createElementNS(NS,'image');
+  for(const [name,value] of Object.entries({href:imageURL(i+1),x:-width*.9/2,y:-height*.9,width:width*.9,height:height*.9}))image.setAttribute(name,value);
+  image.style.visibility='hidden';artwork.append(image);return image;
+ });
+ let animations=[],currentFrame=1,lastKey='',generation=0;
+ function stop(){
+  generation++;animations.forEach(a=>a.cancel());animations=[];
+  images.forEach((image,i)=>{image.style.opacity='1';image.style.visibility=i===currentFrame-1?'visible':'hidden';});
+  artwork.style.transform='none';host.dataset.moving='false';
+ }
+ function render(state,{reduced=false,quiet=false,replay=false}={}){
+  const previousFrame=currentFrame;stop();currentFrame=illustrationFor(state);
+  const key=`${state.step}:${state.ended}`,changed=key!==lastKey;lastKey=key;
+  images.forEach((image,i)=>{image.style.visibility=i===currentFrame-1?'visible':'hidden';});
+  const beat=BEATS[Math.max(0,state.step)],action=state.ended?'ending':beat.action;
+  host.setAttribute('aria-label',state.ended?(currentFrame===6?'崩れたパンケーキの上で、くまがブルーベリーを食べている':'くまとパンケーキの物語、おしまい'):beat.name);
+  host.dataset.frame=String(currentFrame);
+  if(reduced||quiet||(!changed&&!replay))return;
+  host.dataset.moving='true';const token=generation;
+  if(previousFrame!==currentFrame){
+   const old=images[previousFrame-1],next=images[currentFrame-1];
+   // Crossfade only the drawings, never the entire screen. Both images are predecoded.
+   old.style.visibility='visible';
+   animations.push(old.animate([{opacity:1},{opacity:0}],{duration:180,fill:'forwards'}));
+   animations.push(next.animate([{opacity:0},{opacity:1}],{duration:180,fill:'forwards'}));
   }
-  if(b.action==='place'&&n){animate(cakes[n-1].motion,[{transform:'translate(90px,-36px) rotate(-10deg)'},{transform:'translate(0,-3px)',offset:.75},{transform:'none'}],1000);}
-  else if(b.action==='wobble'){animate(stack,[{transform:'translateX(-3px) rotate(-2deg)'},{transform:'translateX(4px) rotate(2deg)',offset:.45},{transform:'none'}],1100);}
-  else if(b.action==='catch'||b.action==='nudge'){animate(stack,[{transform:`translateX(${b.action==='catch'?10:-8}px) rotate(2deg)`},{transform:'none'}],900);}
-  if(b.action==='slide')animate(q('butter-motion'),[{transform:'translateX(-34px)'},{transform:'none'}],1050);
-  if(b.action==='butter')animate(q('butter-motion'),[{transform:'translate(90px,-20px)'},{transform:'none'}],1000);
-  if(b.action==='tempt')animate(q('extra-motion'),[{transform:'translate(22px,24px) rotate(20deg)'},{transform:'none'}],1000);
-  if(b.action==='stool')animate(q('stool'),[{transform:'translateX(35px)'},{transform:'none'}],900);
-  const moves={climb:'translate(15px,42px)',reach:'translateY(7px)',inspect:'translateX(-18px)',catch:'translateX(16px) rotate(5deg)',nudge:'rotate(-6deg)',arrive:'translateX(25px)',place:'rotate(4deg)'};
-  if(moves[b.action])animate(q('bear-motion'),[{transform:moves[b.action]},{transform:'none'}],1000);
+  const duration=action==='last-lean'?1120:action==='ending'?900:1000;
+  const movement=artwork.animate(gestures[action].map(transform=>({transform})),{duration,easing:'ease-in-out'});
+  animations.push(movement);
+  movement.finished.then(()=>{if(token===generation)stop();}).catch(()=>{});
  }
  return{render,stop};
 }

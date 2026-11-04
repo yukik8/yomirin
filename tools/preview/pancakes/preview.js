@@ -9,6 +9,7 @@ function render({quiet=false}={}){
  $('theatre').setAttribute('aria-pressed',String(mode==='theatre'));$('reading').setAttribute('aria-pressed',String(mode==='reading'));
  $('next').disabled=!ready||state.ended||(mode==='theatre'&&state.step===BEATS.length-1);
  $('finish').disabled=!ready||state.ended;
+ $('replay').disabled=!ready||reduced();
  $('next').textContent=mode==='theatre'?'つぎのひとコマ →':page===pages.length-1?'読み終える →':'読み終えて、めくる →';
  $('status').textContent=state.ended?'おしまい。':mode==='theatre'?'ひとコマずつ、くまの動きを試せます。':'くまは、ページをめくるときに、ときどき動きます。';
  if(mode==='reading'){
@@ -31,6 +32,7 @@ function turn(end=false){
  else{page++;state=advance(state,{page,total:pages.length});}
  render({quiet});
 }
+$('replay').onclick=()=>{const now=performance.now();if(now-lastTurn<1200)return;lastTurn=now;scene.render(state,{reduced:reduced(),replay:true});};
 $('next').onclick=()=>turn();$('finish').onclick=()=>turn(true);$('reset').onclick=reset;
 for(const name of ['theatre','reading'])$(name).onclick=()=>{mode=name;reset();};
 $('reduced').onchange=()=>render({quiet:true});motion.addEventListener('change',()=>render({quiet:true}));

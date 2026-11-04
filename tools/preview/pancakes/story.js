@@ -1,31 +1,24 @@
-// The bear never sees book text. All suspense belongs to this independent story.
-const beat=(name,n,pose='front',action='place',extra={})=>({name,n,pose,action,lean:0,stool:0,butter:false,...extra});
+// The story uses only the six original illustrations. No book text enters it.
+const beat=(name,frame,action)=>({name,frame,action});
 export const BEATS=[
- beat('お皿を持ってきた',0,'front','arrive'),
- beat('まず、一枚',1),
- beat('もう一枚',2),
- beat('横から高さを確かめる',2,'wait','inspect'),
- beat('三枚目は少しずれた',3,'front','place',{lean:3}),
- beat('端をそろえる',3,'hop','nudge'),
- beat('四枚、五枚',5),
- beat('片側に寄ってきた',5,'surprise','wobble',{lean:9}),
- beat('両手で受け止める',5,'surprise','catch',{lean:4}),
- beat('そっと押し戻す',5,'hop','nudge'),
- beat('一歩離れて確かめる',5,'front','inspect'),
- beat('まだ積むつもりらしい',6),
- beat('届かなくなった',6,'surprise','reach'),
- beat('小さな踏み台を持ってきた',6,'front','stool',{stool:1}),
- beat('踏み台にのぼる',6,'hop','climb',{stool:2}),
- beat('上から七枚目',7,'front','place',{stool:2}),
- beat('今度は上半分が傾いた',7,'surprise','wobble',{stool:2,lean:10}),
- beat('肩で支えている',7,'hop','catch',{stool:2,lean:5}),
- beat('持ち直した。ひと息',7,'front','nudge',{stool:2}),
- beat('八枚目まで重ねた',8,'front','place',{stool:2}),
- beat('頂上にバターをのせる',8,'hop','butter',{stool:2,butter:true}),
- beat('バターが端へ滑った',8,'surprise','slide',{stool:2,butter:true,butterX:34,lean:5}),
- beat('バターを真ん中へ戻す',8,'hop','catch',{stool:2,butter:true,lean:2}),
- beat('片手に、もう一枚',8,'front','tempt',{stool:2,butter:true,lean:3,extra:true}),
+ beat('お皿の向こうから、ちらり',1,'peek'),
+ beat('一枚、できた',2,'settle'),
+ beat('いつのまにか、こんな山に',3,'settle'),
+ beat('上のいちごに手を伸ばす',4,'reach'),
+ beat('体重をかけたら、少しぐらり',4,'small-lean'),
+ beat('そっと体勢を戻す',4,'recover'),
+ beat('もっと高くして、しがみついた',5,'settle'),
+ beat('重みで、ゆっくり傾く',5,'lean'),
+ beat('ぎゅっと踏ん張る',5,'brace'),
+ beat('ひとまず落ち着いた',5,'recover'),
+ beat('もう一度、あぶない',5,'last-lean'),
+ beat('なんとか持ちこたえている',5,'brace'),
 ];
+export function illustrationFor(state){
+ const beat=BEATS[Math.max(0,state.step)];
+ // Do not conjure a large pile when a short chapter ends before the tall tower.
+ return state.ended&&beat.frame===5?6:beat.frame;
+}
 export const initial=()=>({step:-1,furthest:0,ended:false});
 // Irregular dwell times, scaled to chapter length. No countdown is shown to readers.
 export function schedule(total){
