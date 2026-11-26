@@ -1,0 +1,321 @@
+<!doctype html>
+<!--
+  目の実験室(#6)。ノートPCのカメラで、目が画面にあるか・うとうと・ページのどこを読んでいるかが、
+  どこまで取れるかを、拡張に入れる前に測る。拡張には入れない。手順は README.md。
+
+    python3 -m http.server 8000      (リポジトリの一番上で)
+    → http://localhost:8000/tools/eyes-lab/
+
+  カメラの映像はこのページの中で数字にするだけで、保存も送信もしない。
+  MediaPipe(JS・WASM・顔のモデル)はネットから読む(拡張に入れるときは #7 で同梱する)。
+-->
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>よみりん 目の実験室</title>
+    <style>
+      :root {
+        --bg: #f6f0e6;
+        --paper: #fdfaf3;
+        --ink: #4f3a2c;
+        --muted: rgba(79, 58, 44, 0.62);
+        --faint: rgba(79, 58, 44, 0.12);
+        --caramel: #c58a5c;
+        --caramel-soft: #ecd7c3;
+        --sage: #94a888;
+        --sage-soft: #e3eadb;
+        --sage-ink: #55694a;
+        --danger: #b5523b;
+        --shadow: 0 1px 2px rgba(79, 58, 44, 0.05), 0 6px 18px rgba(79, 58, 44, 0.06);
+        font-family: 'Hiragino Maru Gothic ProN', 'Zen Maru Gothic', 'M PLUS Rounded 1c', sans-serif;
+        color: var(--ink);
+      }
+      body {
+        margin: 0;
+        height: 100vh;
+        background: var(--bg);
+        display: grid;
+        grid-template-rows: auto 1fr;
+        overflow: hidden;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 16px;
+        border-bottom: 1px solid var(--faint);
+        font-size: 13px;
+      }
+      h1 {
+        font-size: 16px;
+        margin: 0 8px 0 0;
+      }
+      h1 small {
+        color: var(--muted);
+        font-weight: normal;
+      }
+      #status,
+      #where {
+        color: var(--muted);
+      }
+      #where {
+        margin-left: auto;
+      }
+      button {
+        font: inherit;
+        color: var(--ink);
+        background: var(--paper);
+        border: 1px solid var(--faint);
+        border-radius: 10px;
+        padding: 5px 12px;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      #start {
+        background: var(--caramel-soft);
+      }
+      main {
+        display: grid;
+        grid-template-columns: 1fr 390px;
+        min-height: 0;
+      }
+      #stage {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+        min-height: 0;
+        position: relative;
+      }
+      #book {
+        display: flex;
+      }
+      #book.v.spread {
+        flex-direction: row-reverse;
+      }
+      .page {
+        background: var(--paper);
+        box-shadow: var(--shadow);
+        border-radius: 4px;
+        box-sizing: border-box;
+        padding: var(--pad);
+        position: relative;
+        cursor: pointer;
+        font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+        font-size: var(--fs);
+        font-kerning: none;
+        user-select: none;
+      }
+      .v .body {
+        writing-mode: vertical-rl;
+        height: 100%;
+      }
+      .line {
+        white-space: pre;
+        line-height: var(--lh);
+        border-radius: 3px;
+      }
+      .h .line {
+        height: var(--lh);
+      }
+      .v .line {
+        width: var(--lh);
+      }
+      .line.title {
+        font-weight: 600;
+      }
+      .foot {
+        position: absolute;
+        bottom: 12px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font: 11px/1 'Hiragino Maru Gothic ProN', sans-serif;
+        color: var(--muted);
+      }
+      /* なぞる: いまの行だけ濃く、ほかは薄く。行の中の進みを下線で見せる */
+      .guiding .line {
+        opacity: 0.32;
+      }
+      .guiding .line.guide {
+        opacity: 1;
+      }
+      .h .line.guide {
+        background: linear-gradient(to right, var(--caramel-soft) var(--g, 0%), transparent var(--g, 0%)) bottom / 100% 3px no-repeat;
+      }
+      .v .line.guide {
+        background: linear-gradient(to bottom, var(--caramel-soft) var(--g, 0%), transparent var(--g, 0%)) left / 3px 100% no-repeat;
+      }
+      /* 推定: このあたりを読んでいるはず。真ん中の行を濃く、確からしさの幅を薄く(門が閉じているときは枠だけ) */
+      .line.est {
+        box-shadow: inset 0 0 0 999px rgba(148, 168, 136, 0.26);
+      }
+      .line.near {
+        box-shadow: inset 0 0 0 999px rgba(148, 168, 136, 0.1);
+      }
+      .line.est.closed,
+      .line.near.closed {
+        box-shadow: inset 0 0 0 1px rgba(148, 168, 136, 0.45);
+      }
+      #panel {
+        overflow-y: auto;
+        border-left: 1px solid var(--faint);
+        padding: 12px 14px 24px;
+        font-size: 12.5px;
+      }
+      #panel h2 {
+        font-size: 13px;
+        margin: 16px 0 6px;
+      }
+      #cam {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        background: #2b211a;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      #cam video,
+      #cam canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        transform: scaleX(-1);
+        object-fit: contain;
+      }
+      dl {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 3px 10px;
+        margin: 0;
+      }
+      dt {
+        color: var(--muted);
+      }
+      dd {
+        margin: 0;
+        font-variant-numeric: tabular-nums;
+      }
+      .ok {
+        color: var(--sage-ink);
+      }
+      .ng {
+        color: var(--danger);
+      }
+      #labels {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+      }
+      #labels button {
+        text-align: left;
+        padding: 4px 8px;
+      }
+      #labels button.on {
+        background: var(--sage-soft);
+        border-color: var(--sage);
+      }
+      kbd {
+        display: inline-block;
+        min-width: 1.2em;
+        margin-right: 6px;
+        color: var(--muted);
+        font-family: inherit;
+      }
+      .settings {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 6px 10px;
+        align-items: center;
+      }
+      .settings select,
+      .settings input[type='number'],
+      .settings input[type='text'] {
+        font: inherit;
+        color: var(--ink);
+        background: var(--paper);
+        border: 1px solid var(--faint);
+        border-radius: 8px;
+        padding: 3px 6px;
+        min-width: 0;
+      }
+      .note {
+        color: var(--muted);
+        margin: 6px 0 0;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>目の実験室 <small>#6</small></h1>
+      <button id="start">カメラを始める</button>
+      <button id="export" disabled>書き出す</button>
+      <span id="status"></span>
+      <span id="where"></span>
+    </header>
+    <main>
+      <section id="stage"><div id="book"></div></section>
+      <aside id="panel">
+        <div id="cam"><video id="video" playsinline muted></video><canvas id="overlay"></canvas></div>
+        <p class="note">映像はこのページの中で数字にするだけで、保存も送信もしません。書き出すのは数字の CSV だけです。</p>
+
+        <h2>いま</h2>
+        <dl id="now"></dl>
+
+        <h2>ラベル <small class="note">押すと付き、もう一度押すと外れる(0 で外す)</small></h2>
+        <div id="labels"></div>
+
+        <h2>判定(#6 の基準)</h2>
+        <dl id="judge"></dl>
+
+        <h2>設定</h2>
+        <div class="settings">
+          <label for="book">本</label><select id="book"></select>
+          <label for="vertical">組み方</label>
+          <select id="vertical">
+            <option value="false">横書き(→ でめくる)</option>
+            <option value="true">縦書き(← でめくる)</option>
+          </select>
+          <label for="spread">見開き</label><input id="spread" type="checkbox" />
+          <label for="fs">文字</label>
+          <select id="fs">
+            <option value="18">18px</option>
+            <option value="20">20px</option>
+            <option value="22">22px</option>
+            <option value="24">24px</option>
+          </select>
+          <label for="fps">1秒に</label>
+          <select id="fps">
+            <option value="6">6コマ(#7 の予定)</option>
+            <option value="15">15コマ</option>
+            <option value="30">30コマ</option>
+          </select>
+          <label for="res">カメラ</label>
+          <select id="res">
+            <option value="320">320×240(#7 の予定)</option>
+            <option value="640">640×480</option>
+          </select>
+          <label for="show">推定を帯で見せる</label><input id="show" type="checkbox" />
+          <label for="guided">なぞる(G)</label><input id="guided" type="checkbox" />
+          <label for="speed">なぞる速さ</label><input id="speed" type="number" min="0" max="30" step="0.5" title="字/秒。0 はふつうに読んだページから測った速さ" />
+          <label for="set">推定に使う数字</label>
+          <select id="set">
+            <option value="eyes">eyes: 目だけ(虹彩の位置・視線・まぶたの開き 14)</option>
+            <option value="base">base: 虹彩の位置と頭の向き(#8 の6つ)</option>
+            <option value="plus">plus: eyes + 頭の向き(16)</option>
+          </select>
+          <label for="flip">pitch の向きを逆に</label><input id="flip" type="checkbox" />
+          <label for="note">条件</label><input id="note" type="text" placeholder="眼鏡あり・昼の部屋・外付け など" />
+        </div>
+        <p class="note">めくる: スペース・→(縦書きは ←)・ページをクリック。戻る: ←(縦書きは →)。E で帯を消す。<br />帯: めくるとページの頭から、ふだんの速さで進み、目の数字で速さと位置を直す(画面から外れている間は止まる)。濃い行が真ん中、薄い行が確からしさの幅。<br />なぞる: いまの行だけが濃くなり、下線が進む。速さはページごとに ×0.6〜1.5 で揺れ、途中で一度 2.5 秒止まる。それを目で追うと、本当の位置と「目だけ・時間だけ・合わせた」を比べられる。</p>
+      </aside>
+    </main>
+    <script type="module" src="./lab.js"></script>
+  </body>
+</html>
